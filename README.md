@@ -1,7 +1,14 @@
-# SecondLifeGrp6
-Projet inter-disciplinaire, backend en C# et frontend en Java (android).
+# Second Life (Grp 6)
+
+Second Life est une application ayant pour but de faciliter les échanges de jeux vidéos entre différentes personnes. Les utilisateurs peuvent mettre des annonces sur l'application, et les personnes intéréssées les découvrir. Grâce à un système d'offre et de contre-offre les utilisateurs peuvent effectuer des négociations directement avec le vendeur afin d'obtenir leur produit au meilleur prix.
 
 -------------------------
+
+## Structure
+Il s'agit d'un projet inter-disciplinaire séparant le backend du frontend.
+* Backend (API) : C#
+* Frontend (appli) : Java / Android
+
 
 ## Liens du projet
 
