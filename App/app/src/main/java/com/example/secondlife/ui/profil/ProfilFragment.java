@@ -13,23 +13,25 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.secondlife.R;
+import com.example.secondlife.databinding.FragmentProfilBinding;
 
 public class ProfilFragment extends Fragment {
 
     private ProfilViewModel profilViewModel;
+    private FragmentProfilBinding binding;
 
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-        profilViewModel =
-                new ViewModelProvider(this).get(ProfilViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_profil, container, false);
-        final TextView textView = root.findViewById(R.id.text_profil);
-        profilViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });
-        return root;
+    @Override
+    public View onCreateView (LayoutInflater inflater,
+                              ViewGroup container,
+                              Bundle savedInstanceState) {
+        binding = FragmentProfilBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
+        return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
