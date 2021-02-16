@@ -3,7 +3,25 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30523.141
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS_SecondLifeGrp6", "VS_SecondLifeGrp6\VS_SecondLifeGrp6.csproj", "{CFFCA3C9-80EF-4DFA-B50F-D7E69ECB980B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VS_SLG6.Api", "VS_SecondLifeGrp6\VS_SLG6.Api.csproj", "{CFFCA3C9-80EF-4DFA-B50F-D7E69ECB980B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{75F63220-791B-4012-AC75-1E0DFFE29084} = {75F63220-791B-4012-AC75-1E0DFFE29084}
+		{57F69C25-5413-4E98-9455-468060EC4159} = {57F69C25-5413-4E98-9455-468060EC4159}
+		{88E83851-B656-42D8-9878-74B9E98EC1F1} = {88E83851-B656-42D8-9878-74B9E98EC1F1}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS_SLG6.Model", "VS_SecondLifeGrp6.Model\VS_SLG6.Model.csproj", "{75F63220-791B-4012-AC75-1E0DFFE29084}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS_SLG6.Repositories", "VS_SecondLifeGrp6.Repositories\VS_SLG6.Repositories.csproj", "{88E83851-B656-42D8-9878-74B9E98EC1F1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{75F63220-791B-4012-AC75-1E0DFFE29084} = {75F63220-791B-4012-AC75-1E0DFFE29084}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VS_SLG6.Services", "VS_SLG6.Services\VS_SLG6.Services.csproj", "{57F69C25-5413-4E98-9455-468060EC4159}"
+	ProjectSection(ProjectDependencies) = postProject
+		{75F63220-791B-4012-AC75-1E0DFFE29084} = {75F63220-791B-4012-AC75-1E0DFFE29084}
+		{88E83851-B656-42D8-9878-74B9E98EC1F1} = {88E83851-B656-42D8-9878-74B9E98EC1F1}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +33,18 @@ Global
 		{CFFCA3C9-80EF-4DFA-B50F-D7E69ECB980B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFFCA3C9-80EF-4DFA-B50F-D7E69ECB980B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFFCA3C9-80EF-4DFA-B50F-D7E69ECB980B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75F63220-791B-4012-AC75-1E0DFFE29084}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75F63220-791B-4012-AC75-1E0DFFE29084}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75F63220-791B-4012-AC75-1E0DFFE29084}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75F63220-791B-4012-AC75-1E0DFFE29084}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88E83851-B656-42D8-9878-74B9E98EC1F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88E83851-B656-42D8-9878-74B9E98EC1F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88E83851-B656-42D8-9878-74B9E98EC1F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88E83851-B656-42D8-9878-74B9E98EC1F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57F69C25-5413-4E98-9455-468060EC4159}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57F69C25-5413-4E98-9455-468060EC4159}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57F69C25-5413-4E98-9455-468060EC4159}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57F69C25-5413-4E98-9455-468060EC4159}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
