@@ -6,6 +6,7 @@ namespace VS_SLG6.Model
     public class VS_SLG6DbContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<Rating> Rating { get; set; }
 
         public VS_SLG6DbContext(DbContextOptions<VS_SLG6DbContext> options) : base(options) { }
 
