@@ -32,6 +32,12 @@ namespace VS_SLG6.Controllers
             return user;
         }
 
+        [HttpGet("{id}/rating")]
+        public ActionResult<double> GetRating(int id)
+        {
+            return NoContent();
+        }
+
         [HttpPost]
         public ActionResult<User> Add(User u)
         {
