@@ -9,6 +9,7 @@ namespace VS_SLG6.Model
         public DbSet<Rating> Rating { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<Proposal> Proposal { get; set; }
+        public DbSet<Photo> Photo { get; set; }
 
         public VS_SLG6DbContext(DbContextOptions<VS_SLG6DbContext> options) : base(options) { }
 
