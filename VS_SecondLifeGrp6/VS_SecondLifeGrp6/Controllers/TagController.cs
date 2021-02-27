@@ -25,7 +25,7 @@ namespace VS_SLG6.Api.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Tag> GetPhoto(int id)
+        public ActionResult<Tag> GetTag(int id)
         {
             var tag = _service.Get(id);
             if (tag == null) return BadRequest();
