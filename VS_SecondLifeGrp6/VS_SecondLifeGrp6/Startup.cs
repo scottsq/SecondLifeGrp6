@@ -65,10 +65,13 @@ namespace VS_SecondLifeGrp6
             services.AddScoped(typeof(IService<>), typeof(GenericService<>));
             services.AddScoped(typeof(IValidator<>), typeof(GenericValidator<>));
 
+            services.AddScoped<ProductService>();
             services.AddScoped<IService<User>, UserService>();
             services.AddScoped<IService<Rating>, RatingService>();
+            services.AddScoped<IService<Product>, ProductService>();
             services.AddScoped<IValidator<User>, UserValidator>();
             services.AddScoped<IValidator<Rating>, RatingValidator>();
+            services.AddScoped<IValidator<Product>, ProductValidator>();
         }
 
         private void InjectRepositories(IServiceCollection services)

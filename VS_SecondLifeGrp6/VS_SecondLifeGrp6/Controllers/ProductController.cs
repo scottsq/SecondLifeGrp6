@@ -9,9 +9,9 @@ namespace VS_SLG6.Api.Controllers
     [ApiController, Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
-        private IService<Product> _service;
+        private ProductService _service;
 
-        public ProductController(IService<Product> service)
+        public ProductController(ProductService service)
         {
             _service = service;
         }
@@ -30,6 +30,14 @@ namespace VS_SLG6.Api.Controllers
             var product = _service.Get(id);
             if (product == null) return BadRequest();
             return product;
+        }
+
+        [HttpGet("latest")]
+        public ActionResult<List<Product>> GetLatestProducts()
+        {
+            var list = _service.GetLatest();
+            if (list.Count == 0) return NoContent();
+            return list;
         }
 
         [HttpPost]

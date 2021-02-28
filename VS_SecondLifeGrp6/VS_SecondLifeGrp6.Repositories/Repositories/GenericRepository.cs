@@ -38,6 +38,11 @@ namespace VS_SLG6.Repositories.Repositories
             return _context.Set<T>().FirstOrDefault(condition);
         }
 
+        public List<T> FindAll(Expression<Func<T, bool>> condition)
+        {
+            return _context.Set<T>().Where(condition).ToList();
+        }
+
         public T Remove(T obj)
         {
             _context.Set<T>().Remove(obj);
