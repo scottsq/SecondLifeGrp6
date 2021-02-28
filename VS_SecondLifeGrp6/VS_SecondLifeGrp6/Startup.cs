@@ -1,15 +1,19 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using VS_SLG6.Api.Extensions;
+using VS_SLG6.Model;
+using VS_SLG6.Model.Entities;
+using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Validators;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace VS_SecondLifeGrp6
 {
@@ -26,6 +30,53 @@ namespace VS_SecondLifeGrp6
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddControllersWithViews().AddNewtonsoftJson();
+            services.AddControllersWithViews(options =>
+            {
+                options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+            });
+            InjectServices(services);
+            InjectRepositories(services);
+            services.AddDbContextPool<VS_SLG6DbContext>(x => x.UseMySql(Configuration.GetConnectionString("Slg6")));
+            /* "server=localhost;port=3306;database=slg6;uid=slg;password=slg;TreatTinyAsBoolean=false"
+            //"server=host.docker.internal;port=3306;database=slg6;uid=slg;password=slg;TreatTinyAsBoolean=false"
+            ); ;);*/
+
+        }
+
+        private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
+        {
+            var builder = new ServiceCollection()
+                .AddLogging()
+                .AddMvc()
+                .AddNewtonsoftJson()
+                .Services.BuildServiceProvider();
+
+            return builder
+                .GetRequiredService<IOptions<MvcOptions>>()
+                .Value
+                .InputFormatters
+                .OfType<NewtonsoftJsonPatchInputFormatter>()
+                .First();
+        }
+
+        private void InjectServices(IServiceCollection services)
+        {
+            services.AddScoped(typeof(IService<>), typeof(GenericService<>));
+            services.AddScoped(typeof(IValidator<>), typeof(GenericValidator<>));
+
+            services.AddScoped<ProductService>();
+            services.AddScoped<IService<User>, UserService>();
+            services.AddScoped<IService<Rating>, RatingService>();
+            services.AddScoped<IService<Product>, ProductService>();
+            services.AddScoped<IValidator<User>, UserValidator>();
+            services.AddScoped<IValidator<Rating>, RatingValidator>();
+            services.AddScoped<IValidator<Product>, ProductValidator>();
+        }
+
+        private void InjectRepositories(IServiceCollection services)
+        {
+            services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +97,8 @@ namespace VS_SecondLifeGrp6
             {
                 endpoints.MapControllers();
             });
+
+            EnsureMigration.EnsureMigrationOfContext<VS_SLG6DbContext>(app);
         }
     }
 }
