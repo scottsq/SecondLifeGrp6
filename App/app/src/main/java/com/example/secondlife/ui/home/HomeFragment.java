@@ -23,7 +23,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
 
     private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://swapi.dev/api/")
+            .baseUrl("https://localhost/api/")
             .build();
 
     @Override
