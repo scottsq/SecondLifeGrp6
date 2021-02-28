@@ -36,6 +36,7 @@ namespace VS_SecondLifeGrp6
                 options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
             });
             InjectServices(services);
+            InjectValidators(services);
             InjectRepositories(services);
             services.AddDbContextPool<VS_SLG6DbContext>(x => x.UseMySql(Configuration.GetConnectionString("Slg6")));
             /* "server=localhost;port=3306;database=slg6;uid=slg;password=slg;TreatTinyAsBoolean=false"
@@ -63,15 +64,20 @@ namespace VS_SecondLifeGrp6
         private void InjectServices(IServiceCollection services)
         {
             services.AddScoped(typeof(IService<>), typeof(GenericService<>));
-            services.AddScoped(typeof(IValidator<>), typeof(GenericValidator<>));
-
             services.AddScoped<ProductService>();
             services.AddScoped<IService<User>, UserService>();
             services.AddScoped<IService<Rating>, RatingService>();
             services.AddScoped<IService<Product>, ProductService>();
+        }
+
+        private void InjectValidators(IServiceCollection services)
+        {
+            services.AddScoped(typeof(IValidator<>), typeof(GenericValidator<>));
             services.AddScoped<IValidator<User>, UserValidator>();
             services.AddScoped<IValidator<Rating>, RatingValidator>();
             services.AddScoped<IValidator<Product>, ProductValidator>();
+            services.AddScoped<IValidator<Message>, MessageValidator>();
+
         }
 
         private void InjectRepositories(IServiceCollection services)
