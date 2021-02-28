@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Validators;
@@ -28,7 +30,31 @@ namespace VS_SLG6.Services.Services
 
         public virtual T Get(int id)
         {
-            return null;
+            ParameterExpression argParam = Expression.Parameter(typeof(T), "x");
+            Expression idProperty = Expression.Property(argParam, "Id");
+            var val1 = Expression.Constant(id);
+            Expression e1 = Expression.Equal(idProperty, val1);
+            var lambda = Expression.Lambda<Func<T, bool>>(e1, argParam);
+            return _repo.FindOne(lambda);
+
+
+
+
+
+            /*Func<T, bool> rule = x =>
+            {
+                Type t = x.GetType();
+                int propId = -1;
+                foreach (PropertyInfo p in t.GetProperties())
+                {
+                    if (p.Name == "Id")
+                    {
+                        propId = (int)p.GetValue(x, null);
+                        break;
+                    }
+                }
+                return propId == id;
+            };*/
         }
 
         public virtual ValidationModel<T> Add(T obj)
@@ -37,7 +63,7 @@ namespace VS_SLG6.Services.Services
             else
             {
                 _validationModel.Value = obj;
-                _validationModel.Errors.Add("User already existing.");
+                _validationModel.Errors.Add("Cannot add this object.");
             }
             return _validationModel;
         }
