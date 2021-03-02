@@ -30,12 +30,14 @@ namespace VS_SLG6.Services.Services
 
         public virtual T Get(int id)
         {
-            ParameterExpression argParam = Expression.Parameter(typeof(T), "x");
-            Expression idProperty = Expression.Property(argParam, "Id");
-            var val1 = Expression.Constant(id);
-            Expression e1 = Expression.Equal(idProperty, val1);
-            var lambda = Expression.Lambda<Func<T, bool>>(e1, argParam);
-            return _repo.FindOne(lambda);
+            return _repo.FindOne(id);
+
+            //ParameterExpression argParam = Expression.Parameter(typeof(T), "x");
+            //Expression idProperty = Expression.Property(argParam, "Id");
+            //var val1 = Expression.Constant(id);
+            //Expression e1 = Expression.Equal(idProperty, val1);
+            //var lambda = Expression.Lambda<Func<T, bool>>(e1, argParam);
+            //return _repo.FindOne(lambda);
 
 
 

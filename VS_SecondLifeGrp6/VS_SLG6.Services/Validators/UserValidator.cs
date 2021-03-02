@@ -17,9 +17,7 @@ namespace VS_SLG6.Services.Validators
 
         public bool canAdd(User obj)
         {
-            var dbUser = _repo.FindOne(user =>
-                    user.Login.Equals(obj.Login, StringComparison.InvariantCultureIgnoreCase)
-                );
+            var dbUser = _repo.FindOne(obj.Id); 
             return dbUser == null;
         }
 

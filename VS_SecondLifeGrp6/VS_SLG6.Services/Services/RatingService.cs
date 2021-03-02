@@ -13,9 +13,9 @@ namespace VS_SLG6.Services.Services
         {
         }
 
-        public override Rating Get(int id)
-        {
-            return _repo.FindOne(x => x.Id == id);
-        }
+        //public override Rating Get(int id)
+        //{
+        //    return _repo.FindOne(x => x.Id == id);
+        //}
     }
 }

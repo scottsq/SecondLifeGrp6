@@ -12,7 +12,7 @@ namespace VS_SLG6.Repositories.Repositories
         T Update(T obj);
         T Remove(T obj);
         bool Exists(T obj);
-        T FindOne(Expression<Func<T, bool>> condition);
+        T FindOne(params object[] keys);
 
         List<T> FindAll(Expression<Func<T, bool>> condition);
     }
