@@ -16,7 +16,7 @@ import retrofit2.http.Path;
 public interface UserService {
 
     @GET("user/{id}")
-    Call<User> getUser(@Path("id") Integer id);
+    Call<User> getUser(@Path("id") int id);
 
     @POST("user")
     Call<User> createUser(@Body User user);

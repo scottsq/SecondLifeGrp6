@@ -1,6 +1,7 @@
 package com.example.secondlife.ui.home;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,22 +15,65 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.secondlife.R;
 import com.example.secondlife.databinding.FragmentHomeBinding;
+import com.example.secondlife.model.User;
+import com.example.secondlife.network.OkHttpClass;
+import com.example.secondlife.network.UserService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 
 public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
 
+    Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+            .create();
     private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("https://localhost/api/")
+            .baseUrl("http://localhost:61169/api/")
+            .client(OkHttpClass.getUnsafeOkHttpClient())
+            .addConverterFactory(GsonConverterFactory.create())
             .build();
 
     @Override
     public View onCreateView (LayoutInflater inflater,
                               ViewGroup container,
                               Bundle savedInstanceState) {
+
+        UserService apiService = retrofit.create(UserService.class);
+        int id = 1;
+        apiService.getUser(id).enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                // int statusCode = response.code();
+                //User user = response.body();
+                Log.v("test user" , "test");
+                try {
+                    Log.v("test user" , response.errorBody().string());
+                }
+                catch (IOException e){};
+
+                // getResources().getResourceEntryName(user.getId())
+                //Log.i("test call",call.toString());
+                //localhost:61169/api/user/1
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+                // Log error here since request failed
+                Log.i("test","fail");
+                t.printStackTrace();
+            }
+        });
 
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 

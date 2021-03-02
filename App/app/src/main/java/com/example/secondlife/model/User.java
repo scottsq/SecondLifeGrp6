@@ -2,13 +2,13 @@ package com.example.secondlife.model;
 
 public class User {
 
-    private Integer id;
+    private int id;
     private String login;
     private String password;
     private String name;
     private String avatarUrl;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
