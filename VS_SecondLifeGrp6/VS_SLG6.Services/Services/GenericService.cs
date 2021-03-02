@@ -31,32 +31,6 @@ namespace VS_SLG6.Services.Services
         public virtual T Get(int id)
         {
             return _repo.FindOne(id);
-
-            //ParameterExpression argParam = Expression.Parameter(typeof(T), "x");
-            //Expression idProperty = Expression.Property(argParam, "Id");
-            //var val1 = Expression.Constant(id);
-            //Expression e1 = Expression.Equal(idProperty, val1);
-            //var lambda = Expression.Lambda<Func<T, bool>>(e1, argParam);
-            //return _repo.FindOne(lambda);
-
-
-
-
-
-            /*Func<T, bool> rule = x =>
-            {
-                Type t = x.GetType();
-                int propId = -1;
-                foreach (PropertyInfo p in t.GetProperties())
-                {
-                    if (p.Name == "Id")
-                    {
-                        propId = (int)p.GetValue(x, null);
-                        break;
-                    }
-                }
-                return propId == id;
-            };*/
         }
 
         public virtual ValidationModel<T> Add(T obj)

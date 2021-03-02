@@ -12,10 +12,5 @@ namespace VS_SLG6.Services.Services
         public RatingService(IRepository<Rating> repo, IValidator<Rating> validator) : base(repo, validator)
         {
         }
-
-        //public override Rating Get(int id)
-        //{
-        //    return _repo.FindOne(x => x.Id == id);
-        //}
     }
 }
