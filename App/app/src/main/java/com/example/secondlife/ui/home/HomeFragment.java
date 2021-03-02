@@ -39,7 +39,7 @@ public class HomeFragment extends Fragment {
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
             .create();
     private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://localhost:61169/api/")
+            .baseUrl("http://10.0.2.2:61169/api/")
             .client(OkHttpClass.getUnsafeOkHttpClient())
             .addConverterFactory(GsonConverterFactory.create())
             .build();
@@ -55,15 +55,16 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 // int statusCode = response.code();
-                //User user = response.body();
+                User user = response.body();
                 Log.v("test user" , "test");
-                try {
-                    Log.v("test user" , response.errorBody().string());
-                }
-                catch (IOException e){};
+//                try {
+//                    Log.v("test user" , response.errorBody().string());
+//                }
+//                catch (IOException e){};
+                Log.v("Name: ",user.getName());
+                Log.v("Login :",user.getLogin());
 
-                // getResources().getResourceEntryName(user.getId())
-                //Log.i("test call",call.toString());
+                //getResources().getResourceEntryName(user.getId())
                 //localhost:61169/api/user/1
             }
 
