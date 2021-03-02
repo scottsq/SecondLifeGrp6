@@ -12,10 +12,5 @@ namespace VS_SLG6.Services.Services
         public UserService(IRepository<User> repo, IValidator<User> validator) : base(repo, validator)
         {
         }
-
-        //public override User Get(int id)
-        //{
-        //    return _repo.FindOne(id);
-        //}
     }
 }
