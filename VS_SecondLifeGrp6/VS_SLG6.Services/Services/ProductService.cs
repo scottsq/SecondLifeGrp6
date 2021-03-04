@@ -11,13 +11,13 @@ namespace VS_SLG6.Services.Services
 {
     public class ProductService : GenericService<Product>, IProductService
     {
-        IService<Proposal> _serviceProposal;
-        IService<Tag> _serviceTag;
+        IProposalService _serviceProposal;
+        IProductTagService _serviceProductTag;
 
-        public ProductService(IRepository<Product> repo, IValidator<Product> validator, IService<Proposal> serviceProposal, IService<Tag> serviceTag) : base(repo, validator)
+        public ProductService(IRepository<Product> repo, IValidator<Product> validator, IProposalService serviceProposal, IProductTagService serviceProductTag) : base(repo, validator)
         {
             _serviceProposal = serviceProposal;
-            _serviceTag = serviceTag;
+            _serviceProductTag = serviceProductTag;
         }
 
         public List<Product> GetLatest()
@@ -51,7 +51,41 @@ namespace VS_SLG6.Services.Services
 
         public List<Product> GetProductsByInterest(int id)
         {
-            throw new NotImplementedException();
+            // Get all accepted proposals from user
+            var listProposalAccepted = _serviceProposal.GetAcceptedProposalByUser(id);
+            // Count tags occurence from those proposals
+            Dictionary<Tag, int> listTags = listProposalAccepted.Aggregate(new Dictionary<Tag, int>(), (acc, item) =>
+            {
+                var tags = _serviceProductTag.GetByProductId(item.Product.Id);
+                for (int i = 0; i < tags.Count; i++)
+                {
+                    if (acc.ContainsKey(tags[i].Tag)) acc[tags[i].Tag] += 1;
+                    else acc.Add(tags[i].Tag, 1);
+                }                
+                return acc;
+            });
+            // Get the 3 most used tags
+            var listMostUsed = new Tag[3];
+            for (int i = 0; i < 3; i++)
+            {
+                var t = listTags.Where(x => x.Value == listTags.Max(x => x.Value)).ToDictionary(x => x.Key, y => y.Value);
+                listTags.Remove(t.First().Key);
+                listMostUsed[i] = t.First().Key;
+            }
+            // Get products which have those tags
+            List<Product> listProductsTags = _serviceProductTag.List().Where(x =>
+            {
+                for (int i = 0; i < listMostUsed.Length; i++)
+                {
+                    if (listMostUsed.Contains(x.Tag)) return true;
+                }
+                return false;
+            }).ToList().Aggregate(new List<Product>(), (acc, item) =>
+            {
+                acc.Add(item.Product);
+                return acc;
+            });
+            return _repo.All().Where(x => listProductsTags.Contains(x)).ToList();
         }
     }
 }
