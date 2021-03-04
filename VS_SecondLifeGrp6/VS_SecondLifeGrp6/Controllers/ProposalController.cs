@@ -9,9 +9,9 @@ namespace VS_SLG6.Api.Controllers
     [ApiController, Route("api/[controller]")]
     public class ProposalController : ControllerBase
     {
-        private IService<Proposal> _service;
+        private IProposalService _service;
 
-        public ProposalController(IService<Proposal> service)
+        public ProposalController(IProposalService service)
         {
             _service = service;
         }
@@ -30,6 +30,18 @@ namespace VS_SLG6.Api.Controllers
             var proposal = _service.Get(id);
             if (proposal == null) return BadRequest();
             return proposal;
+        }
+
+        [HttpGet("user/{id}")]
+        public ActionResult<List<Proposal>> ListByUserId(int id)
+        {
+            return _service.ListByUserId(id);
+        }
+
+        [HttpGet("user/{id}/active")]
+        public ActionResult<List<Proposal>> ListByUserIdAndActive(int id)
+        {
+            return _service.ListByUserIdAndActive(id);
         }
 
         [HttpPost]

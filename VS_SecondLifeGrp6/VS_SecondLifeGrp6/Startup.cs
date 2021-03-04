@@ -66,6 +66,7 @@ namespace VS_SecondLifeGrp6
             services.AddScoped(typeof(IService<>), typeof(GenericService<>));
             services.AddScoped<IProductService>();
             services.AddScoped<IUserService>();
+            services.AddScoped<IProposalService>();
             services.AddScoped<IService<User>, UserService>();
             services.AddScoped<IService<Rating>, RatingService>();
             services.AddScoped<IService<Product>, ProductService>();
