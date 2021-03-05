@@ -12,13 +12,14 @@ namespace VS_SLG6.Api.Controllers
     [ApiController, Route("api/[controller]")]
     public class MessageController : ControllerBase
     {
-        private IService<Message> _service;
+        private IMessageService _service;
 
-        public MessageController(IService<Message> service)
+        public MessageController(IMessageService service)
         {
             _service = service;
         }
 
+        #region GET
         [HttpGet]
         public ActionResult<List<Message>> List()
         {
@@ -34,7 +35,21 @@ namespace VS_SLG6.Api.Controllers
             if (message == null) return BadRequest();
             return message;
         }
+        
+        [HttpGet("{idOrigin}")]
+        public ActionResult<List<Message>> GetConversations(int idOrigin)
+        {
+            return _service.GetConversations(idOrigin);
+        }
 
+        [HttpGet("{idOrigin}/{idDest}")]
+        public ActionResult<List<Message>> GetConversation(int idOrigin, int idDest)
+        {
+            return _service.GetConversation(idOrigin, idDest);
+        }
+        #endregion
+
+        #region POST
         [HttpPost]
         public ActionResult<Message> Add(Message u)
         {
@@ -42,7 +57,9 @@ namespace VS_SLG6.Api.Controllers
             if (res.Errors.Count > 0) return BadRequest(res);
             return res.Value;
         }
+        #endregion
 
+        #region PATCH
         [HttpPatch("{id}")]
         public ActionResult<Message> Patch(int id, [FromBody] JsonPatchDocument<Message> patchDoc)
         {
@@ -50,7 +67,9 @@ namespace VS_SLG6.Api.Controllers
             var message = _service.Patch(id, patchDoc);
             return message;
         }
+        #endregion
 
+        #region DELETE
         [HttpDelete]
         public ActionResult<Message> Delete(int id)
         {
@@ -63,5 +82,6 @@ namespace VS_SLG6.Api.Controllers
             else return BadRequest("Invalid Product");
 
         }
+        #endregion
     }
 }

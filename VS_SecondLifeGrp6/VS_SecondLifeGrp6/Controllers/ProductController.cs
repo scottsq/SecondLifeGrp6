@@ -9,9 +9,9 @@ namespace VS_SLG6.Api.Controllers
     [ApiController, Route("api/[controller]")]
     public class ProductController : ControllerBase
     {
-        private ProductService _service;
+        private IProductService _service;
 
-        public ProductController(ProductService service)
+        public ProductController(IProductService service)
         {
             _service = service;
         }
@@ -38,6 +38,24 @@ namespace VS_SLG6.Api.Controllers
             var list = _service.GetLatest();
             if (list.Count == 0) return NoContent();
             return list;
+        }
+
+        [HttpGet("search/{id}")]
+        public ActionResult<List<Product>> GetProductsByUser(int id)
+        {
+            return _service.GetUserProducts(id);
+        }
+
+        [HttpGet("user/search?keys={keys}")]
+        public ActionResult<List<Product>> GetProductsByTags(string[] keys)
+        {
+            return _service.GetProductsByKeys(keys);
+        }
+
+        [HttpGet("user/{id}/like")]
+        public ActionResult<List<Product>> GetProductsByInterest(int id)
+        {
+            return _service.GetProductsByInterest(id);
         }
 
         [HttpPost]

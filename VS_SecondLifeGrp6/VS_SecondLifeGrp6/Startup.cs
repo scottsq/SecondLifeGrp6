@@ -64,10 +64,18 @@ namespace VS_SecondLifeGrp6
         private void InjectServices(IServiceCollection services)
         {
             services.AddScoped(typeof(IService<>), typeof(GenericService<>));
-            services.AddScoped<ProductService>();
+            services.AddScoped<IProductService>();
+            services.AddScoped<IUserService>();
+            services.AddScoped<IProposalService>();
+            services.AddScoped<IMessageService>();
+            services.AddScoped<IRatingService>();
+            services.AddScoped<IProductTagService>();
             services.AddScoped<IService<User>, UserService>();
             services.AddScoped<IService<Rating>, RatingService>();
             services.AddScoped<IService<Product>, ProductService>();
+            services.AddScoped<IService<Message>, MessageService>();
+            services.AddScoped<IService<Proposal>, ProposalService>();
+            services.AddScoped<IService<ProductTag>, ProductTagService>();
         }
 
         private void InjectValidators(IServiceCollection services)

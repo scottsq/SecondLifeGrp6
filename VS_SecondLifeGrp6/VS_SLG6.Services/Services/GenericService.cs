@@ -14,13 +14,13 @@ namespace VS_SLG6.Services.Services
     {
         protected IRepository<T> _repo;
         protected IValidator<T> _validator;
-        protected ValidationModel<T> _validationModel;
+        protected Models.ValidationModel<T> _validationModel;
 
         public GenericService(IRepository<T> repo, IValidator<T> validator)
         {
             _repo = repo;
             _validator = validator;
-            _validationModel = new ValidationModel<T>();
+            _validationModel = new Models.ValidationModel<T>();
         }
 
         public List<T> List()
@@ -33,7 +33,7 @@ namespace VS_SLG6.Services.Services
             return _repo.FindOne(id);
         }
 
-        public virtual ValidationModel<T> Add(T obj)
+        public virtual Models.ValidationModel<T> Add(T obj)
         {
             if (_validator.canAdd(obj)) _validationModel.Value = _repo.Add(obj);
             else

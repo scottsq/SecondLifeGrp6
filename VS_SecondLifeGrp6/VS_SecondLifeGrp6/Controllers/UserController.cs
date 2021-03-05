@@ -9,9 +9,9 @@ namespace VS_SLG6.Controllers
     [ApiController, Route("api/[controller]")]
     public class UserController : ControllerBase
     {
-        private IService<User> _service;
+        private IUserService _service;
 
-        public UserController(IService<User> service)
+        public UserController(IUserService service)
         {
             _service = service;
         }
@@ -32,18 +32,32 @@ namespace VS_SLG6.Controllers
             return user;
         }
 
-        [HttpGet("{id}/rating")]
-        public ActionResult<double> GetRating(int id)
-        {
-            return NoContent();
-        }
-
         [HttpPost]
         public ActionResult<User> Add(User u)
         {
             var res = _service.Add(u);
             if (res.Errors.Count > 0) return BadRequest(res);
             return res.Value;
+        }
+
+        [HttpPost("login")]
+        public ActionResult<string> Login(string login)
+        {
+            return BadRequest("Not implemented, to do!");
+        }
+
+        [HttpPost("reset")]
+        public ActionResult<string> Reset(string login)
+        {
+            return BadRequest("Not implemented, to do!");
+        }
+
+        [HttpPost("senduser")]
+        public ActionResult<string> SendUser(string mail)
+        {
+            var res = _service.FindByMail(mail);
+            if (res.Errors.Count > 0) return BadRequest(res.Errors);
+            return res.Value.Login;
         }
 
         [HttpPatch("{id}")]

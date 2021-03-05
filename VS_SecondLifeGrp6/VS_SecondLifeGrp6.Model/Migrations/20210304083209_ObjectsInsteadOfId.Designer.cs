@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VS_SLG6.Model;
 
 namespace VS_SLG6.Model.Migrations
 {
     [DbContext(typeof(VS_SLG6DbContext))]
-    partial class VS_SLG6DbContextModelSnapshot : ModelSnapshot
+    [Migration("20210304083209_ObjectsInsteadOfId")]
+    partial class ObjectsInsteadOfId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -192,9 +194,6 @@ namespace VS_SLG6.Model.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("AvatarURL")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("Email")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Login")
