@@ -8,6 +8,6 @@ namespace VS_SLG6.Services.Services
 {
     public interface IUserService : IService<User>
     {
-        public ValidationModel<User> FindByMail(string email);
+        public Models.ValidationModel<User> FindByMail(string email);
     }
 }

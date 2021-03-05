@@ -11,7 +11,7 @@ namespace VS_SLG6.Services.Services
     {
         List<T> List();
         T Get(int id);
-        ValidationModel<T> Add(T obj);
+        Models.ValidationModel<T> Add(T obj);
         T Patch(int id, JsonPatchDocument<T> jsonPatch);
         T Remove(T obj);
     }

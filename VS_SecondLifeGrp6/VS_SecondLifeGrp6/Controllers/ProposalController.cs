@@ -16,6 +16,7 @@ namespace VS_SLG6.Api.Controllers
             _service = service;
         }
 
+        #region GET
         [HttpGet]
         public ActionResult<List<Proposal>> List()
         {
@@ -43,7 +44,10 @@ namespace VS_SLG6.Api.Controllers
         {
             return _service.ListByUserIdAndActive(id);
         }
+        #endregion
 
+
+        #region POST
         [HttpPost]
         public ActionResult<Proposal> Add(Proposal p)
         {
@@ -52,6 +56,34 @@ namespace VS_SLG6.Api.Controllers
             return res.Value;
         }
 
+        [HttpPost("accept")]
+        public ActionResult<Proposal> Accept(int id)
+        {
+            return ChangeState(id, State.ACCEPTED);
+        }
+
+        [HttpPost("refuse")]
+        public ActionResult<Proposal> Refuse(int id)
+        {
+            return ChangeState(id, State.REFUSED);
+        }
+
+        [HttpPost("close")]
+        public ActionResult<Proposal> Close(int id)
+        {
+            return ChangeState(id, State.CLOSED);
+        }
+
+        public ActionResult<Proposal> ChangeState(int id, State state)
+        {
+            var res = _service.UpdateProposal(id, state);
+            if (res.Errors.Count > 0) return BadRequest(res);
+            return res.Value;
+        }
+        #endregion
+
+
+        #region PATCH
         [HttpPatch("{id}")]
         public ActionResult<Proposal> Patch(int id, [FromBody] JsonPatchDocument<Proposal> patchDoc)
         {
@@ -59,7 +91,10 @@ namespace VS_SLG6.Api.Controllers
             var proposal = _service.Patch(id, patchDoc);
             return proposal;
         }
+        #endregion
 
+
+        #region DELETE
         [HttpDelete]
         public ActionResult<Proposal> Delete(int id)
         {
@@ -72,5 +107,6 @@ namespace VS_SLG6.Api.Controllers
             else return BadRequest("Invalid Product");
 
         }
+        #endregion
     }
 }

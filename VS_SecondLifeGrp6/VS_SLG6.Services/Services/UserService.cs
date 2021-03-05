@@ -14,7 +14,7 @@ namespace VS_SLG6.Services.Services
         {
         }
 
-        public ValidationModel<User> FindByMail(string email)
+        public Models.ValidationModel<User> FindByMail(string email)
         {
             var user = _repo.FindAll(x => x.Email == email).FirstOrDefault();
             if (user == null)
