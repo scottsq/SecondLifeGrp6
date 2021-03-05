@@ -44,13 +44,13 @@ namespace Services.Tester
         }
 
         [TestMethod]
-        public void Patch_WithObject0LoginBecomesObject1Login_ThenObject1Login()
+        public void Patch_WithObject1Login_ThenObject1Login()
         {
             var o = new Operation<User>();
             o.op = "replace";
             o.path = "/login";
             o.value = _defaultObjects[1].Login;
-            var p = new JsonPatchDocument<User>(new List<Operation<User>> { _operation }, new DefaultContractResolver());
+            var p = new JsonPatchDocument<User>(new List<Operation<User>> { o }, new DefaultContractResolver());
             _service.Patch(0, p);
             Assert.AreEqual(_defaultObjects[1].Login, _workingObjects[0].Login);
         }
