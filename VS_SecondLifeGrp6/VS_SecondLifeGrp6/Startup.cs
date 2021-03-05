@@ -68,10 +68,14 @@ namespace VS_SecondLifeGrp6
             services.AddScoped<IUserService>();
             services.AddScoped<IProposalService>();
             services.AddScoped<IMessageService>();
+            services.AddScoped<IRatingService>();
             services.AddScoped<IProductTagService>();
             services.AddScoped<IService<User>, UserService>();
             services.AddScoped<IService<Rating>, RatingService>();
             services.AddScoped<IService<Product>, ProductService>();
+            services.AddScoped<IService<Message>, MessageService>();
+            services.AddScoped<IService<Proposal>, ProposalService>();
+            services.AddScoped<IService<ProductTag>, ProductTagService>();
         }
 
         private void InjectValidators(IServiceCollection services)

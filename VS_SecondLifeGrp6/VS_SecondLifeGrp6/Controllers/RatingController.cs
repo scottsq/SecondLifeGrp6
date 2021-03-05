@@ -9,13 +9,14 @@ namespace VS_SLG6.Controllers
     [ApiController, Route("api/[controller]")]
     public class RatingController : ControllerBase
     {
-        private IService<Rating> _service;
+        private IRatingService _service;
 
-        public RatingController(IService<Rating> service)
+        public RatingController(IRatingService service)
         {
             _service = service;
         }
 
+        #region GET
         [HttpGet]
         public ActionResult<List<Rating>> List()
         {
@@ -32,6 +33,20 @@ namespace VS_SLG6.Controllers
             return rating;
         }
 
+        [HttpGet("user/{id}")]
+        public ActionResult<Rating> GetUserRating(int id)
+        {
+            return _service.GetUserRating(id);
+        }
+        [HttpGet("product/{id}")]
+        public ActionResult<double> GetProductRating(int id)
+        {
+            return _service.GetProductRating(id);
+        }
+        #endregion
+
+
+        #region POST
         [HttpPost]
         public ActionResult<Rating> Add(Rating r)
         {
@@ -39,7 +54,10 @@ namespace VS_SLG6.Controllers
             if (res.Errors.Count > 0) return BadRequest(res);
             return res.Value;
         }
+        #endregion
 
+
+        #region PATCH
         [HttpPatch("{id}")]
         public ActionResult<Rating> Patch(int id, [FromBody] JsonPatchDocument<Rating> patchDoc)
         {
@@ -47,7 +65,10 @@ namespace VS_SLG6.Controllers
             var user = _service.Patch(id, patchDoc);
             return user;
         }
+        #endregion
 
+
+        #region DELETE
         [HttpDelete]
         public ActionResult<Rating> Delete(int id)
         {
@@ -60,5 +81,6 @@ namespace VS_SLG6.Controllers
             else return BadRequest("Invalid rating");
             
         }
+        #endregion
     }
 }
