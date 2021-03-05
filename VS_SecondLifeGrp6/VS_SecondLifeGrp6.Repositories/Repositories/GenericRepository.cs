@@ -33,11 +33,6 @@ namespace VS_SLG6.Repositories.Repositories
             return _context.Set<T>().FirstOrDefault(x => x.Equals(obj)) != null;
         }
 
-        //public T FindOne(Expression<Func<T, bool>> condition)
-        //{
-        //    return _context.Set<T>().FirstOrDefault(condition);
-        //}
-
         public T FindOne(params object[] keys)
         {
             return _context.Set<T>().Find(keys);
