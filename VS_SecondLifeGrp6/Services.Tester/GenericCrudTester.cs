@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Services;
 using VS_SLG6.Services.Validators;
@@ -12,10 +15,11 @@ namespace Services.Tester
     [TestClass]
     public class GenericCrudTester<T> where T : class
     {
-        protected readonly Mock<IRepository<T>> _repo;
-        private Mock<IValidator<T>> _validator;
-        private IService<T> _service;
+        protected Mock<IRepository<T>> _repo;
+        protected Mock<IValidator<T>> _validator;
+        protected IService<T> _service;
         protected List<T> _defaultObjects;
+        protected List<T> _workingObjects;
         
         public GenericCrudTester()
         {
@@ -24,21 +28,40 @@ namespace Services.Tester
             _service = new GenericService<T>(_repo.Object, _validator.Object);
         }
 
-        public void SetDefaultObjects(params T[] objs)
+        public void InitBehavior(params T[] objs)
         {
             _defaultObjects = objs.ToList();
-            for (int i = 0; i < objs.Length; i++) _repo.Setup(x => x.Add(objs[i]));
+            _workingObjects = _defaultObjects.GetRange(0, 1);
+            _repo.Setup(x => x.All()).Returns(_workingObjects);
+            _repo.Setup(x => x.Add(It.IsAny<T>())).Callback<T>(x => { _workingObjects.Add(_defaultObjects.Find(t => t == x)); });
+            _repo.Setup(x => x.Remove(It.IsAny<T>())).Callback<T>(x => { _workingObjects.Remove(x); });
+            _repo.Setup(x => x.FindAll(It.IsAny<System.Linq.Expressions.Expression<Func<T, bool>>>())).Returns<System.Linq.Expressions.Expression<Func<T, bool>>>(x =>
+            {
+                return _workingObjects.Where(x.Compile()).ToList();
+            });
         }
 
         [TestMethod]
         public void List_ThenList()
         {
-            Assert.IsTrue(_defaultObjects.SequenceEqual(_service.List()));
-            //CollectionAssert.AreEquivalent(_service.List(), _defaultObjects);
+            Assert.IsTrue(_workingObjects.SequenceEqual(_service.List()));
         }
 
         [TestMethod]
-        public void Add_WithExistingObject_ThenValidationError()
+        public void Get_With0_ThenNotNull()
+        {
+            Assert.AreNotEqual(null, _service.Get(0));
+        }
+
+        [TestMethod]
+        public void Get_WithMinus1_ThenNull()
+        {
+            Assert.AreEqual(null, _service.Get(-1));
+        }
+
+
+        [TestMethod]
+        public void Add_WithObject0_ThenValidationError()
         {
             var res = _service.Add(_defaultObjects[0]);
             Assert.AreNotEqual(0, res.Errors.Count);
@@ -49,6 +72,27 @@ namespace Services.Tester
         {
             var res = _service.Add(null);
             Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
+        public void Add_WithObject1_ThenNoError()
+        {
+            var res = _service.Add(_defaultObjects[1]);
+            Assert.AreEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
+        public void Remove_WithObject0_ThenListIsEmpty()
+        {
+            _service.Remove(_service.Get(0));
+            Assert.AreEqual(0, _service.List().Count);
+        }
+
+        [TestMethod]
+        public void Remove_WithNullObject_ThenListIsNotEmpty()
+        {
+            _service.Remove(null);
+            Assert.AreNotEqual(0, _service.List().Count);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
@@ -17,8 +18,8 @@ namespace VS_SLG6.Services.Validators
 
         public bool canAdd(User obj)
         {
-            var dbUser = _repo.FindOne(obj.Id); 
-            return dbUser == null;
+            if (obj == null) return false;
+            return _repo.FindAll(x => x.Login == obj.Login).Count == 0;
         }
 
         public bool canDelete(User obj)
