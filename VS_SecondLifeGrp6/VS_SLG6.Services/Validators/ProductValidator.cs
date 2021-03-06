@@ -2,27 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using VS_SLG6.Model.Entities;
+using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Services.Models;
 
 namespace VS_SLG6.Services.Validators
 {
-    public class ProductValidator : IValidator<Product>
+    public class ProductValidator : GenericValidator<Product>, IValidator<Product>
     {
-        public bool canAdd(Product obj)
-        {
-            if (obj.Name.Trim() == String.Empty) return false;
-            if (obj.Price < 0) return false;
-            if (obj.CreationDate == DateTime.MinValue) obj.CreationDate = DateTime.Now;
-            return true;
-        }
-
-        public bool canDelete(Product obj)
-        {
-            return true;
-        }
-
-        public bool canEdit(Product obj)
-        {
-            return true;
-        }
+        public ProductValidator(IRepository<Product> repo, ValidationModel<bool> validationModel) : base(repo, validationModel) { }
     }
 }

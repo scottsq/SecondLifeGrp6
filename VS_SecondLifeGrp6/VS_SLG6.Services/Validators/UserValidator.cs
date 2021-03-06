@@ -47,12 +47,19 @@ namespace VS_SLG6.Services.Validators
             if (check.Errors.Count > 0) AppendFormattedErrors(check.Errors, CharCountError);
 
             // Check Email
-            var expression = @"\A[\w!#$%&'*+/=?`{|}~^-]+(?:\.[\w!#$%&'*+/=?`{|}~^-]+)*@(?:[A-Z0-9-]+\.)+[A-Z]{2,6}\Z";
-            if (!Regex.Match(obj.Email, expression).Success)
+            var expression = @"^([a-zA-Z0-9]{1,}(\\.{1}[a-zA-Z0-9]{1,}){0,}@[a-zA-Z0-9]{1,}\\.{1}[a-zA-Z0-9]{1,})$";
+            var splittedMail = obj.Email.Split('@');
+            if (obj.Email.Contains("..") || splittedMail.Length < 2 || splittedMail[0].Trim().Length == 0 || splittedMail[1].Trim().Length == 0 || splittedMail[1].Trim().Split('.').Length < 2)
             {
                 _validationModel.Errors.Add("User email is invalid.");
             }
 
+            // Check if exists
+            if (_repo.FindAll(x => x.Login == obj.Login).Count > 0)
+            {
+                _validationModel.Errors.Add("User with this login already exists");
+            }
+            _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;
         }
     }

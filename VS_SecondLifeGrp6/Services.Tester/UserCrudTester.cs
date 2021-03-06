@@ -7,7 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using VS_SLG6.Model.Entities;
+using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Validators;
 
 namespace Services.Tester
 {
@@ -23,29 +25,30 @@ namespace Services.Tester
             user.Login = "John";
             user.Password = "Smith";
             user.Email = "john.smith@lecnam.net";
+            user.Name = "John Smith";
+            user.Id = 2;
             var u = new User();
-            u.Id = 0;
-            u.Login = "test";
+            u.Id = 0; u.Login = "test"; u.Password = "test"; u.Email = "test@test.test"; u.Name = "test";
             var u2 = new User();
-            u2.Id = 1;
-            u2.Login = "test2";
+            u2.Id = 1; u2.Login = "test2"; u2.Password = "test2"; u2.Email = "test@test.test"; u2.Name = "test2";
             InitBehavior(u, u2, user);
             InitTests();
         }
 
         public void InitTests()
         {
+            _validator = new UserValidator(_repo.Object, new ValidationModel<bool>());
             _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x => { 
                 return _workingObjects.Find(u => u.Id == Int32.Parse(x[0].ToString()));
             });
 
-            _service = new UserService(_repo.Object, _validator.Object);
+            _service = new UserService(_repo.Object, _validator);
 
-            _validator.Setup(x => x.canAdd(It.IsAny<User>())).Returns<User>(x =>
+            /*_validator.Setup(x => x.CanAdd(It.IsAny<User>())).Returns<ValidationModel<bool>>(x =>
             {
                 if (x == null) return false;
                 return _workingObjects.FindAll(u => u.Login == x.Login).Count == 0;
-            });
+            });*/
 
             
         }

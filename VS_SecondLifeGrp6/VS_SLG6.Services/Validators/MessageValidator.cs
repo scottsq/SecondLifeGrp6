@@ -2,26 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 using VS_SLG6.Model.Entities;
+using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Services.Models;
 
 namespace VS_SLG6.Services.Validators
 {
-    public class MessageValidator : IValidator<Message>
+    public class MessageValidator : GenericValidator<Message>, IValidator<Message>
     {
-        public bool canAdd(Message obj)
-        {
-            if (obj.Content.Trim() == String.Empty) return false;
-            if (obj.CreationDate == DateTime.MinValue) obj.CreationDate = DateTime.Now;
-            return true;
-        }
-
-        public bool canDelete(Message obj)
-        {
-            return true;
-        }
-
-        public bool canEdit(Message obj)
-        {
-            return true;
-        }
+        public MessageValidator(IRepository<Message> repo, ValidationModel<bool> validationModel) : base(repo, validationModel) { }
     }
 }

@@ -16,7 +16,7 @@ namespace Services.Tester
     public class GenericCrudTester<T> where T : class
     {
         protected Mock<IRepository<T>> _repo;
-        protected Mock<IValidator<T>> _validator;
+        protected IValidator<T> _validator;
         protected IService<T> _service;
         protected List<T> _defaultObjects;
         protected List<T> _workingObjects;
@@ -24,8 +24,7 @@ namespace Services.Tester
         public GenericCrudTester()
         {
             _repo = new Mock<IRepository<T>>();
-            _validator = new Mock<IValidator<T>>();
-            _service = new GenericService<T>(_repo.Object, _validator.Object);
+            _service = new GenericService<T>(_repo.Object, _validator);
         }
 
         public void InitBehavior(params T[] objs)

@@ -40,7 +40,7 @@ namespace VS_SLG6.Services.Services
             else
             {
                 _validationModel.Value = obj;
-                _validationModel.Errors.Concat(v.Errors);
+                _validationModel.Errors = _validationModel.Errors.Concat(v.Errors).ToList();
             }
             return _validationModel;
         }
