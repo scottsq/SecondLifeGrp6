@@ -33,13 +33,14 @@ namespace VS_SLG6.Services.Services
             return _repo.FindOne(id);
         }
 
-        public virtual Models.ValidationModel<T> Add(T obj)
+        public virtual ValidationModel<T> Add(T obj)
         {
-            if (_validator.canAdd(obj)) _validationModel.Value = _repo.Add(obj);
+            var v = _validator.CanAdd(obj);
+            if (v.Value) _validationModel.Value = _repo.Add(obj);
             else
             {
                 _validationModel.Value = obj;
-                _validationModel.Errors.Add("Cannot add this object.");
+                _validationModel.Errors.Concat(v.Errors);
             }
             return _validationModel;
         }
