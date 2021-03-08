@@ -2,8 +2,10 @@
 using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using VS_SLG6.Model.Entities;
+using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Services;
 using VS_SLG6.Services.Validators;
@@ -15,12 +17,15 @@ namespace Services.Tester
     {
         private Message message = new Message();
         private const string BlankString = "     ";
+        private User us1;
+        private User ur1;
+        private User ur2;
 
         public MessageServiceTester()
         {
-            var us1 = new User(); us1.Id = 0;
-            var ur1 = new User(); ur1.Id = 1;
-            var ur2 = new User(); ur1.Id = 2;
+            us1 = new User(); us1.Id = 0;
+            ur1 = new User(); ur1.Id = 1;
+            ur2 = new User(); ur2.Id = 2;
             var m1 = new Message();
             m1.Id = 0;
             m1.Content = "Test";
@@ -44,7 +49,16 @@ namespace Services.Tester
 
         private void InitTests()
         {
-            _validator = new MessageValidator(_repo.Object, new ValidationModel<bool>());
+            var uService = new Mock<UserService>(new Mock<IRepository<User>>().Object, new Mock<IValidator<User>>().Object);
+            uService.Setup(x => x.Get(It.IsAny<int>())).Returns<int>(x =>
+            {
+                if (x == us1.Id) return us1;
+                if (x == ur1.Id) return ur1;
+                if (x == ur2.Id) return ur2;
+                return null;
+            });
+
+            _validator = new MessageValidator(_repo.Object, new ValidationModel<bool>(), uService.Object);
             _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x => {
                 return _workingObjects.Find(m => m.Id == Int32.Parse(x[0].ToString()));
             });
@@ -79,9 +93,12 @@ namespace Services.Tester
         [TestMethod]
         public void Add_WithMinCreationDate_ThenNow()
         {
+            message.CreationDate = DateTime.Now;
+            _defaultObjects.Add(message);
             message.CreationDate = DateTime.MinValue;
-            var res = _service.Add(message).Value.CreationDate;
-            Assert.AreEqual(DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day, res.Year + res.Month + res.Day);
+            var res = _service.Add(message);
+            var d = res.Value.CreationDate;
+            Assert.AreEqual(DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day, d.Year + d.Month + d.Day);
         }
 
         [TestMethod]

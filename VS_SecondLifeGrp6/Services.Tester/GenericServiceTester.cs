@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Services;
 using VS_SLG6.Services.Validators;
 
@@ -32,7 +33,10 @@ namespace Services.Tester
             _defaultObjects = objs.ToList();
             _workingObjects = _defaultObjects.GetRange(0, 1);
             _repo.Setup(x => x.All()).Returns(_workingObjects);
-            _repo.Setup(x => x.Add(It.IsAny<T>())).Callback<T>(x => { _workingObjects.Add(_defaultObjects.Find(t => t == x)); });
+            _repo.Setup(x => x.Add(It.IsAny<T>())).Returns<T>(x => {
+                _workingObjects.Add(x);
+                return x;
+            });
             _repo.Setup(x => x.Remove(It.IsAny<T>())).Callback<T>(x => { _workingObjects.Remove(x); });
             _repo.Setup(x => x.FindAll(It.IsAny<System.Linq.Expressions.Expression<Func<T, bool>>>())).Returns<System.Linq.Expressions.Expression<Func<T, bool>>>(x =>
             {
