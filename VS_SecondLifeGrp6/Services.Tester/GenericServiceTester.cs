@@ -13,7 +13,7 @@ using VS_SLG6.Services.Validators;
 namespace Services.Tester
 {
     [TestClass]
-    public class GenericCrudTester<T> where T : class
+    public class GenericServiceTester<T> where T : class
     {
         protected Mock<IRepository<T>> _repo;
         protected IValidator<T> _validator;
@@ -21,7 +21,7 @@ namespace Services.Tester
         protected List<T> _defaultObjects;
         protected List<T> _workingObjects;
         
-        public GenericCrudTester()
+        public GenericServiceTester()
         {
             _repo = new Mock<IRepository<T>>();
             _service = new GenericService<T>(_repo.Object, _validator);
