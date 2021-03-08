@@ -14,13 +14,13 @@ using VS_SLG6.Services.Validators;
 namespace Services.Tester
 {
     [TestClass]
-    public class UserCrudTester : GenericCrudTester<User>
+    public class UserServiceTester : GenericServiceTester<User>
     {
         private const string TooLongString = "aaabbbcccdddeeefffggghhhiiijjjkkk";
         private const string BlankString = "     ";
         private User user = new User();
 
-        public UserCrudTester()
+        public UserServiceTester()
         {
             user.Login = "John";
             user.Password = "Smith";
@@ -42,15 +42,7 @@ namespace Services.Tester
                 return _workingObjects.Find(u => u.Id == Int32.Parse(x[0].ToString()));
             });
 
-            _service = new UserService(_repo.Object, _validator);
-
-            /*_validator.Setup(x => x.CanAdd(It.IsAny<User>())).Returns<ValidationModel<bool>>(x =>
-            {
-                if (x == null) return false;
-                return _workingObjects.FindAll(u => u.Login == x.Login).Count == 0;
-            });*/
-
-            
+            _service = new UserService(_repo.Object, _validator);            
         }
 
         [TestMethod]

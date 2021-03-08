@@ -47,7 +47,6 @@ namespace VS_SLG6.Services.Validators
             if (check.Errors.Count > 0) AppendFormattedErrors(check.Errors, CharCountError);
 
             // Check Email
-            var expression = @"^([a-zA-Z0-9]{1,}(\\.{1}[a-zA-Z0-9]{1,}){0,}@[a-zA-Z0-9]{1,}\\.{1}[a-zA-Z0-9]{1,})$";
             var splittedMail = obj.Email.Split('@');
             if (obj.Email.Contains("..") || splittedMail.Length < 2 || splittedMail[0].Trim().Length == 0 || splittedMail[1].Trim().Length == 0 || splittedMail[1].Trim().Split('.').Length < 2)
             {
