@@ -8,7 +8,7 @@ using VS_SLG6.Services.Validators;
 
 namespace VS_SLG6.Services.Services
 {
-    class PhotoService : GenericService<Photo>, IPhotoService
+    public class PhotoService : GenericService<Photo>, IPhotoService
     {
         public PhotoService(IRepository<Photo> repo, IValidator<Photo> validator): base(repo, validator) 
         {       

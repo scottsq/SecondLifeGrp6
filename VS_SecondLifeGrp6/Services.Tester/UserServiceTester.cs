@@ -42,7 +42,8 @@ namespace Services.Tester
                 return _workingObjects.Find(u => u.Id == Int32.Parse(x[0].ToString()));
             });
 
-            _service = new UserService(_repo.Object, _validator);            
+            _service = new UserService(_repo.Object, _validator);
+            nullField = "Name";
         }
 
         [TestMethod]

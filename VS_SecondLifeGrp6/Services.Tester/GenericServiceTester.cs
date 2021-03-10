@@ -6,6 +6,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Services;
@@ -21,6 +22,7 @@ namespace Services.Tester
         protected IService<T> _service;
         protected List<T> _defaultObjects;
         protected List<T> _workingObjects;
+        protected string nullField;
         
         public GenericServiceTester()
         {
@@ -74,6 +76,15 @@ namespace Services.Tester
         public void Add_WithNull_ThenValidationError()
         {
             var res = _service.Add(null);
+            Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
+        public void Add_WithObject1NullField_ThenValidationError()
+        {
+            var props = new List<PropertyInfo>(_defaultObjects[1].GetType().GetProperties());
+            for (var i = 0; i < props.Count; i++) if (props[i].Name == nullField) props[i].SetValue(_defaultObjects[1], null);
+            var res = _service.Add(_defaultObjects[1]);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 

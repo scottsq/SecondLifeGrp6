@@ -8,7 +8,7 @@ using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Services.Validators
 {
-    class PhotoValidator : GenericValidator<Photo>, IValidator<Photo>
+    public class PhotoValidator : GenericValidator<Photo>, IValidator<Photo>
     {
         private IService<Product> _serviceProduct;
 
@@ -36,7 +36,7 @@ namespace VS_SLG6.Services.Validators
             var check = StringIsEmptyOrBlank(obj, "Url");
             if (check.Value) AppendFormattedErrors(check.Errors, "Photo {0} cannot be empty.");
             // check product
-            if (_serviceProduct.Get(obj.Id) == null) _validationModel.Errors.Add("Unknown product.");
+            if (_serviceProduct.Get(obj.Product.Id) == null) _validationModel.Errors.Add("Unknown product.");
             // check if already exists
             if (_repo.FindAll(x => x.Product.Id == obj.Product.Id && x.Url == obj.Url).Count > 0)
             {

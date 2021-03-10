@@ -64,6 +64,7 @@ namespace Services.Tester
             });
 
             _service = new MessageService(_repo.Object, _validator);
+            nullField = "Content";
         }
 
         [TestMethod]
