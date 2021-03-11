@@ -46,6 +46,16 @@ namespace Services.Tester
             });
         }
 
+        public T Clone(T origin, T destination)
+        {
+            var props = new List<PropertyInfo>(origin.GetType().GetProperties());
+            for (var i=0; i<props.Count; i++)
+            {
+                props[i].SetValue(destination, props[i].GetValue(origin));
+            }
+            return destination;
+        }
+
         [TestMethod]
         public void List_ThenList()
         {
@@ -80,7 +90,7 @@ namespace Services.Tester
         }
 
         [TestMethod]
-        public void Add_WithObject1NullField_ThenValidationError()
+        public void Add_WithObject1NullFields_ThenValidationError()
         {
             var props = new List<PropertyInfo>(_defaultObjects[1].GetType().GetProperties());
             for (var i = 0; i < props.Count; i++)

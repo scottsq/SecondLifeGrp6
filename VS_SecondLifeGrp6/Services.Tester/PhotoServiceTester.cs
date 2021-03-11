@@ -67,5 +67,12 @@ namespace Services.Tester
         {
             Assert.AreNotEqual(0, ((PhotoService)_service).GetByProduct(p2.Id));
         }
+
+        [TestMethod]
+        public void Add_WithBlankUrl_ThenValidationError()
+        {
+            photo.Url = "    ";
+            Assert.AreNotEqual(0, _service.Add(photo));
+        }
     }
 }

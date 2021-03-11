@@ -72,20 +72,23 @@ namespace VS_SLG6.Services.Services
                 listTags.Remove(t.First().Key);
                 listMostUsed[i] = t.First().Key;
             }
-            // Get products which have those tags
-            List<Product> listProductsTags = _serviceProductTag.List().Where(x =>
+            // Get all ProductTags which have those tags
+            List<Product> listProducts = _serviceProductTag.List().Where(productTag =>
             {
                 for (int i = 0; i < listMostUsed.Length; i++)
                 {
-                    if (listMostUsed.Contains(x.Tag)) return true;
+                    if (listMostUsed.Contains(productTag.Tag)) return true;
                 }
                 return false;
             }).ToList().Aggregate(new List<Product>(), (acc, item) =>
             {
+                // Get every products matching this ProductTag
                 acc.Add(item.Product);
                 return acc;
             });
-            return _repo.All().Where(x => listProductsTags.Contains(x)).ToList();
+
+            // Remove doublons
+            return _repo.All().Where(x => listProducts.Contains(x)).ToList();
         }
     }
 }
