@@ -43,7 +43,7 @@ namespace Services.Tester
             });
 
             _service = new UserService(_repo.Object, _validator);
-            nullField = "Name";
+            nullFields = new List<string> { "Login", "Name", "Password", "Email" };
         }
 
         [TestMethod]

@@ -64,7 +64,7 @@ namespace Services.Tester
             });
 
             _service = new MessageService(_repo.Object, _validator);
-            nullField = "Content";
+            nullFields = new List<string> { "Content", "Receipt", "Sender" };
         }
 
         [TestMethod]

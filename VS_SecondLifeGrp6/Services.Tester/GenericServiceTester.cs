@@ -22,7 +22,7 @@ namespace Services.Tester
         protected IService<T> _service;
         protected List<T> _defaultObjects;
         protected List<T> _workingObjects;
-        protected string nullField;
+        protected List<string> nullFields;
         
         public GenericServiceTester()
         {
@@ -83,9 +83,17 @@ namespace Services.Tester
         public void Add_WithObject1NullField_ThenValidationError()
         {
             var props = new List<PropertyInfo>(_defaultObjects[1].GetType().GetProperties());
-            for (var i = 0; i < props.Count; i++) if (props[i].Name == nullField) props[i].SetValue(_defaultObjects[1], null);
-            var res = _service.Add(_defaultObjects[1]);
-            Assert.AreNotEqual(0, res.Errors.Count);
+            for (var i = 0; i < props.Count; i++)
+            {
+                if (nullFields.Contains(props[i].Name))
+                {
+                    var saved = props[i].GetValue(_defaultObjects[1]);
+                    props[i].SetValue(_defaultObjects[1], null);
+                    var res = _service.Add(_defaultObjects[1]);
+                    Assert.AreNotEqual(0, res.Errors.Count);
+                    props[i].SetValue(_defaultObjects[1], saved);
+                }                
+            }
         }
 
         [TestMethod]

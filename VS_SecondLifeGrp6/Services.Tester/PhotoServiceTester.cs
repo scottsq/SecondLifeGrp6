@@ -53,7 +53,7 @@ namespace Services.Tester
             });
 
             _service = new PhotoService(_repo.Object, _validator);
-            nullField = "Product";
+            nullFields = new List<string> { "Product", "Url" };
         }
 
         [TestMethod]
