@@ -73,6 +73,7 @@ public class HomeFragment extends Fragment {
                 // Log error here since request failed
                 Log.i("test","fail");
                 t.printStackTrace();
+
             }
         });
 
