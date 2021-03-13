@@ -22,10 +22,11 @@ namespace VS_SLG6.Services.Validators
 
         public virtual ValidationModel<bool> CanAdd(T obj)
         {
+            // A bit useless because never called for now but I'll see if I can refactor some stuff here or not
             _validationModel.Value = false;
             if (obj == null)
             {
-                _validationModel.Errors.Add("Cannot add null " + obj.GetType().Name);
+                _validationModel.Errors.Add("Cannot add null object");
                 return _validationModel;
             }
             _validationModel.Value = _validationModel.Errors.Count == 0;
