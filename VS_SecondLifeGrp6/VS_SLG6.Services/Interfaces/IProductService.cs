@@ -8,7 +8,7 @@ namespace VS_SLG6.Services.Services
 {
     public interface IProductService : IService<Product>
     {
-        public List<Product> GetLatest();
+        public List<Product> GetLatest(int max=10);
         public List<Product> GetUserProducts(int id);
         public List<Product> GetProductsByKeys(string[] keys);
         public List<Product> GetProductsByInterest(int id);

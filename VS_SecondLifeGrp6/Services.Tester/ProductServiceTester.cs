@@ -57,8 +57,8 @@ namespace Services.Tester
                 return _workingObjects.Find(m => m.Id == Int32.Parse(x[0].ToString()));
             });
 
-            var propService = new Mock<ProposalService>(new Mock<IRepository<Proposal>>().Object, new Mock<IValidator<Proposal>>().Object);
-            var ptService = new Mock<ProductTagService>(new Mock<IRepository<ProductTag>>().Object, new Mock<IValidator<ProductTag>>().Object);
+            var propService = new Mock<IProposalService>(); /*new Mock<IRepository<Proposal>>().Object, new Mock<IValidator<Proposal>>().Object*/
+            var ptService = new Mock<IProductTagService>(); /*new Mock<IRepository<ProductTag>>().Object, new Mock<IValidator<ProductTag>>().Object*/
 
             var listProductTags = new List<ProductTag>();
             var tag1 = new Tag();
@@ -82,7 +82,7 @@ namespace Services.Tester
                 var proposal = new Proposal();
                 proposal.Id = 0; proposal.Product = p1;
                 var proposal2 = new Proposal();
-                proposal2.Id = 1; proposal.Product = p2;
+                proposal2.Id = 1; proposal2.Product = p2;
                 if (x == u1.Id)
                 {
                     res.Add(proposal);
@@ -117,7 +117,7 @@ namespace Services.Tester
             product.CreationDate = DateTime.Now.AddYears(-2);
             _service.Add(p2); _service.Add(product);
             var res = ((ProductService)_service).GetLatest(2);
-            Assert.AreEqual(0, res.Where(x => x.Id == p2.Id));
+            Assert.AreEqual(0, res.Where(x => x.Id == p2.Id).Count());
         }
 
         [TestMethod]
@@ -144,6 +144,7 @@ namespace Services.Tester
         [TestMethod]
         public void GetProductsByKeys_WithP2Name_Then1Result()
         {
+            _service.Add(p2);
             var res = ((ProductService)_service).GetProductsByKeys(p2.Name.Split(" "));
             Assert.AreEqual(1, res.Count);
         }
@@ -167,6 +168,14 @@ namespace Services.Tester
         {
             var res = ((ProductService)_service).GetProductsByInterest(u2.Id);
             Assert.AreEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void Add_WithNegativePrice_ThenValidationError()
+        {
+            product.Price = -1;
+            var res = _service.Add(product);
+            Assert.AreNotEqual(0, res.Errors.Count);
         }
     }
 }
