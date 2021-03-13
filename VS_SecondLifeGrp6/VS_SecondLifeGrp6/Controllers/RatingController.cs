@@ -34,9 +34,9 @@ namespace VS_SLG6.Controllers
         }
 
         [HttpGet("user/{id}")]
-        public ActionResult<Rating> GetUserRating(int id)
+        public ActionResult<List<Rating>> GetUserRating(int id)
         {
-            return _service.GetUserRating(id);
+            return _service.GetUserRatings(id);
         }
         [HttpGet("product/{id}")]
         public ActionResult<double> GetProductRating(int id)

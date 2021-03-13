@@ -71,5 +71,33 @@ namespace Services.Tester
             _service = new RatingService(_repo.Object, _validator);
             nullFields = new List<string> { "Product", "User" };
         }
+
+        [TestMethod]
+        public void GetProductRating_WithP1_ThenNot0()
+        {
+            var res = ((RatingService)_service).GetProductRating(p1.Id);
+            Assert.AreNotEqual(0, res);
+        }
+
+        [TestMethod]
+        public void GetProductRating_WithP2_Then0()
+        {
+            var res = ((RatingService)_service).GetProductRating(p2.Id);
+            Assert.AreEqual(0, res);
+        }
+
+        [TestMethod]
+        public void GetUserRatings_WithU1_ThenNotEmpty()
+        {
+            var res = ((RatingService)_service).GetUserRatings(u1.Id);
+            Assert.AreNotEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void GetUserRatings_WithU2_ThenNull()
+        {
+            var res = ((RatingService)_service).GetUserRatings(u2.Id);
+            Assert.AreEqual(0, res.Count);
+        }
     }
 }
