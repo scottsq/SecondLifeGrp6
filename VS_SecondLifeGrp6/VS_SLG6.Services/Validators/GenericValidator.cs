@@ -28,6 +28,7 @@ namespace VS_SLG6.Services.Validators
                 _validationModel.Errors.Add("Cannot add null " + obj.GetType().Name);
                 return _validationModel;
             }
+            _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;
         }
 

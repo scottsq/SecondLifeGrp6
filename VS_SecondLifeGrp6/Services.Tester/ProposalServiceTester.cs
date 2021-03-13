@@ -45,12 +45,13 @@ namespace Services.Tester
             pr1.Origin = u2;
             pr1.Target = u1;
 
-            pr2 = Clone(proposal, pr2);
             pr2.Id = 1;
-            proposal.Period = new TimeSpan(7, 0, 0, 0, 0);
-            proposal.Price = 33;
-            proposal.Product = p2;
-            proposal.Target = u3;
+            pr2.Origin = u1;
+            pr2.Period = new TimeSpan(7, 0, 0, 0, 0);
+            pr2.Price = 33;
+            pr2.Product = p2;
+            pr2.State = State.ACCEPTED;
+            pr2.Target = u3;
 
             InitBehavior(pr1, pr2);
             InitTests();
@@ -81,6 +82,100 @@ namespace Services.Tester
 
             _service = new ProposalService(_repo.Object, _validator);
             nullFields = new List<string> { "Origin", "Product", "Target" };
+        }
+
+        [TestMethod]
+        public override void Add_WithObject0_ThenValidationError() {
+            // Not revelant because we can have multiple time same kind of proposal
+        }
+
+        [TestMethod]
+        public void GetAcceptedProposalByUser_WithU1_ThenEmpty()
+        {
+            var res = ((ProposalService)_service).GetAcceptedProposalByUser(u1.Id);
+            Assert.AreEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void GetAcceptedProposalByUser_WithU2_ThenEmpty()
+        {
+            var res = ((ProposalService)_service).GetAcceptedProposalByUser(u2.Id);
+            Assert.AreEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void GetAcceptedProposalByUser_WithU3_ThenNotEmpty()
+        {
+            _service.Add(pr2);
+            ((ProposalService)_service).UpdateProposal(pr2.Id, State.ACCEPTED);
+            var res = ((ProposalService)_service).GetAcceptedProposalByUser(u3.Id);
+            Assert.AreNotEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void GetAcceptedProposalByUser_WithU3_ThenAccepted()
+        {
+            _service.Add(pr2);
+            var res = ((ProposalService)_service).GetAcceptedProposalByUser(u3.Id);
+            for (var i=0; i<res.Count; i++) Assert.AreEqual(State.ACCEPTED, res[i].State);
+        }
+
+        [TestMethod]
+        public void ListByUserId_WithU1_ThenNotEmpty()
+        {
+            var res = ((ProposalService)_service).ListByUserId(u1.Id);
+            Assert.AreNotEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void ListByUserId_WithU2_ThenNotEmpty()
+        {
+            var res = ((ProposalService)_service).ListByUserId(u2.Id);
+            Assert.AreNotEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void ListByUserId_WithU3_ThenEmpty()
+        {
+            var res = ((ProposalService)_service).ListByUserId(u3.Id);
+            Assert.AreEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void ListByUserIdAndActive_WithU1_ThenNotEmpty()
+        {
+            var res = ((ProposalService)_service).ListByUserIdAndActive(u1.Id);
+            Assert.AreNotEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void ListByUserIdAndActive_WithU2_ThenNotEmpty()
+        {
+            var res = ((ProposalService)_service).ListByUserIdAndActive(u2.Id);
+            Assert.AreNotEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void ListByUserIdAndActive_WithU3_ThenEmpty()
+        {
+            _service.Add(pr2);
+            ((ProposalService)_service).UpdateProposal(pr2.Id, State.ACCEPTED);
+            var res = ((ProposalService)_service).ListByUserIdAndActive(u3.Id);
+            Assert.AreEqual(0, res.Count);
+        }
+
+        [TestMethod]
+        public void UpdateProposal_WithPr1AndAccepted_ThenAccepted()
+        {
+            var res = ((ProposalService)_service).UpdateProposal(pr1.Id, State.ACCEPTED);
+            Assert.AreEqual(State.ACCEPTED, res.Value.State);
+        }
+
+        [TestMethod]
+        public void UpdateProposal_WithPr2AndAccepted_ThenValidationError()
+        {
+            var res = ((ProposalService)_service).UpdateProposal(pr2.Id, State.ACCEPTED);
+            Assert.AreNotEqual(0, res.Errors.Count);
         }
     }
 }

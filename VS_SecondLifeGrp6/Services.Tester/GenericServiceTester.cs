@@ -76,7 +76,7 @@ namespace Services.Tester
 
 
         [TestMethod]
-        public void Add_WithObject0_ThenValidationError()
+        public virtual void Add_WithObject0_ThenValidationError()
         {
             var res = _service.Add(_defaultObjects[0]);
             Assert.AreNotEqual(0, res.Errors.Count);

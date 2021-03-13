@@ -16,7 +16,7 @@ namespace VS_SLG6.Services.Services
 
         public List<Proposal> GetAcceptedProposalByUser(int id)
         {
-            return _repo.FindAll(x => x.State == State.ACCEPTED && x.Target.Id == id);
+            return _repo.FindAll(x => x.State == State.ACCEPTED && (x.Target.Id == id || x.Origin.Id == id));
         }
 
         public List<Proposal> ListByUserId(int id)
