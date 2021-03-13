@@ -1,6 +1,6 @@
 ﻿namespace VS_SLG6.Model.Entities
 {
-    public class Rating
+    public class ProductRating
     {
         public int Id { get; set; }
         public Product Product { get; set; }

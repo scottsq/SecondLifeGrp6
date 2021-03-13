@@ -8,9 +8,9 @@ using System.Linq;
 
 namespace VS_SLG6.Services.Services
 {
-    public class RatingService : GenericService<Rating>, IRatingService
+    public class ProductRatingService : GenericService<ProductRating>, IProductRatingService
     {
-        public RatingService(IRepository<Rating> repo, IValidator<Rating> validator) : base(repo, validator)
+        public ProductRatingService(IRepository<ProductRating> repo, IValidator<ProductRating> validator) : base(repo, validator)
         {
         }
 
@@ -21,7 +21,12 @@ namespace VS_SLG6.Services.Services
             return res.Average(x => x.Stars);
         }
 
-        public List<Rating> GetUserRatings(int id)
+        public List<ProductRating> GetRatings(int id)
+        {
+            return _repo.FindAll(x => x.Product.Id == id);
+        }
+
+        public List<ProductRating> GetUserRatings(int id)
         {
             return _repo.FindAll(x => x.User.Id == id);
         }

@@ -5,9 +5,10 @@ using VS_SLG6.Model.Entities;
 
 namespace VS_SLG6.Services.Services
 {
-    public interface IRatingService : IService<Rating>
+    public interface IProductRatingService : IService<ProductRating>
     {
-        public List<Rating> GetUserRatings(int id);
+        public List<ProductRating> GetUserRatings(int id);
         public double GetProductRating(int id);
+        public List<ProductRating> GetRatings(int id);
     }
 }

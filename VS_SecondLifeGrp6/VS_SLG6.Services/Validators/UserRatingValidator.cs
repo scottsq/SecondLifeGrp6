@@ -8,18 +8,16 @@ using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Services.Validators
 {
-    public class RatingValidator : GenericValidator<Rating>, IValidator<Rating>
+    public class UserRatingValidator : GenericValidator<UserRating>, IValidator<UserRating>
     {
-        private IService<Product> _serviceProduct;
         private IService<User> _serviceUser;
 
-        public RatingValidator(IRepository<Rating> repo, ValidationModel<bool> validationModel, IService<Product> serviceProduct, IService<User> serviceUser) : base(repo, validationModel) 
+        public UserRatingValidator(IRepository<UserRating> repo, ValidationModel<bool> validationModel, IService<User> serviceUser) : base(repo, validationModel) 
         {
-            _serviceProduct = serviceProduct;
             _serviceUser = serviceUser;
         }
 
-        public override ValidationModel<bool> CanAdd(Rating obj)
+        public override ValidationModel<bool> CanAdd(UserRating obj)
         {
             _validationModel.Value = false;
             if (obj == null)
@@ -28,21 +26,21 @@ namespace VS_SLG6.Services.Validators
                 return _validationModel;
             }
             // Check null fields
-            if (obj.User == null || obj.Product == null)
+            if (obj.Origin == null || obj.Target == null)
             {
                 _validationModel.Errors.Add("Rating object cannot have empty fields.");
                 return _validationModel;
             }
             // Check stars between 1 and 5
             if (obj.Stars < 1 || obj.Stars > 5) _validationModel.Errors.Add("Rating Stars must be between 1 and 5.");
-            // Check if User exists
-            if (_serviceUser.Get(obj.User.Id) == null) _validationModel.Errors.Add("Rating User doesn't exist.");
+            // Check if Origin exists
+            if (_serviceUser.Get(obj.Origin.Id) == null) _validationModel.Errors.Add("Rating Origin doesn't exist.");
             // Check if Product exists
-            if (_serviceProduct.Get(obj.Product.Id) == null) _validationModel.Errors.Add("Rating Product doesn't exist.");
+            if (_serviceUser.Get(obj.Target.Id) == null) _validationModel.Errors.Add("Rating Target doesn't exist.");
             // Check if Rating already exists
-            if (_repo.FindAll(x => x.Product.Id == obj.Product.Id && x.User.Id == obj.User.Id).Count > 0)
+            if (_repo.FindAll(x => x.Origin.Id == obj.Origin.Id && x.Target.Id == obj.Target.Id).Count > 0)
             {
-                _validationModel.Errors.Add("Rating on this Product already exists for this User.");
+                _validationModel.Errors.Add("Rating on this Target already exists for this Origin.");
             }
             _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;

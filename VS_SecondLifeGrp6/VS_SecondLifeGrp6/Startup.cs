@@ -9,6 +9,7 @@ using VS_SLG6.Model;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Interfaces;
 using VS_SLG6.Services.Validators;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
@@ -64,27 +65,35 @@ namespace VS_SecondLifeGrp6
         private void InjectServices(IServiceCollection services)
         {
             services.AddScoped(typeof(IService<>), typeof(GenericService<>));
-            services.AddScoped<IProductService>();
-            services.AddScoped<IUserService>();
-            services.AddScoped<IProposalService>();
             services.AddScoped<IMessageService>();
-            services.AddScoped<IRatingService>();
+            services.AddScoped<IPhotoService>();
+            services.AddScoped<IProductRatingService>();
+            services.AddScoped<IProductService>();
             services.AddScoped<IProductTagService>();
-            services.AddScoped<IService<User>, UserService>();
-            services.AddScoped<IService<Rating>, RatingService>();
-            services.AddScoped<IService<Product>, ProductService>();
+            services.AddScoped<IProposalService>();
+            services.AddScoped<IUserRatingService>();
+            services.AddScoped<IUserService>();
             services.AddScoped<IService<Message>, MessageService>();
-            services.AddScoped<IService<Proposal>, ProposalService>();
+            services.AddScoped<IService<Photo>, PhotoService>();
+            services.AddScoped<IService<Product>, ProductService>();
+            services.AddScoped<IService<ProductRating>, ProductRatingService>();
             services.AddScoped<IService<ProductTag>, ProductTagService>();
+            services.AddScoped<IService<Proposal>, ProposalService>();
+            services.AddScoped<IService<User>, UserService>();
+            services.AddScoped<IService<UserRating>, UserRatingService>();
         }
 
         private void InjectValidators(IServiceCollection services)
         {
             services.AddScoped(typeof(IValidator<>), typeof(GenericValidator<>));
-            services.AddScoped<IValidator<User>, UserValidator>();
-            services.AddScoped<IValidator<Rating>, RatingValidator>();
-            services.AddScoped<IValidator<Product>, ProductValidator>();
             services.AddScoped<IValidator<Message>, MessageValidator>();
+            services.AddScoped<IValidator<Photo>, PhotoValidator>();
+            services.AddScoped<IValidator<Product>, ProductValidator>();
+            services.AddScoped<IValidator<ProductRating>, ProductRatingValidator>();
+            services.AddScoped<IValidator<Proposal>, ProposalValidator>();
+            services.AddScoped<IValidator<Tag>, TagValidator>();
+            services.AddScoped<IValidator<User>, UserValidator>();
+            services.AddScoped<IValidator<UserRating>, UserRatingValidator>();
 
         }
 
