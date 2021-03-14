@@ -11,13 +11,13 @@ namespace VS_SLG6.Services.Services
 {
     public class ProductService : GenericService<Product>, IProductService
     {
-        IProposalService _serviceProposal;
-        IProductTagService _serviceProductTag;
+        private IProduct_Proposal _pp;
+        private IProduct_ProductTag _ppt;
 
-        public ProductService(IRepository<Product> repo, IValidator<Product> validator, IProposalService serviceProposal, IProductTagService serviceProductTag) : base(repo, validator)
+        public ProductService(IRepository<Product> repo, IValidator<Product> validator, IProduct_Proposal pp, IProduct_ProductTag ppt) : base(repo, validator)
         {
-            _serviceProposal = serviceProposal;
-            _serviceProductTag = serviceProductTag;
+            _pp = pp;
+            _ppt = ppt;
         }
 
         public List<Product> GetLatest(int max = 10)
@@ -53,12 +53,12 @@ namespace VS_SLG6.Services.Services
         public List<Product> GetProductsByInterest(int id)
         {
             // Get all accepted proposals from user
-            var listProposalAccepted = _serviceProposal.GetAcceptedProposalByUser(id);
+            var listProposalAccepted = _pp.GetAcceptedProposalByUser(id);
             if (listProposalAccepted.Count == 0) return new List<Product>();
             // Count tags occurence from those proposals
             Dictionary<Tag, int> listTags = listProposalAccepted.Aggregate(new Dictionary<Tag, int>(), (acc, item) =>
             {
-                var tags = _serviceProductTag.GetByProductId(item.Product.Id);
+                var tags = _ppt.GetByProductId(item.Product.Id);
                 for (int i = 0; i < tags.Count; i++)
                 {
                     if (acc.ContainsKey(tags[i].Tag)) acc[tags[i].Tag] += 1;
@@ -75,7 +75,7 @@ namespace VS_SLG6.Services.Services
                 listMostUsed.Add(t.First().Key);
             }
             // Get all ProductTags which have those tags
-            List<Product> listProducts = _serviceProductTag.List().Where(productTag =>
+            List<Product> listProducts = _ppt.List().Where(productTag =>
             {
                 for (int i = 0; i < listMostUsed.Count; i++)
                 {

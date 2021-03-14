@@ -57,8 +57,8 @@ namespace Services.Tester
                 return _workingObjects.Find(m => m.Id == Int32.Parse(x[0].ToString()));
             });
 
-            var propService = new Mock<IProposalService>(); /*new Mock<IRepository<Proposal>>().Object, new Mock<IValidator<Proposal>>().Object*/
-            var ptService = new Mock<IProductTagService>(); /*new Mock<IRepository<ProductTag>>().Object, new Mock<IValidator<ProductTag>>().Object*/
+            var prodProp = new Mock<IProduct_Proposal>();
+            var prodProdTag = new Mock<IProduct_ProductTag>();
 
             var listProductTags = new List<ProductTag>();
             var tag1 = new Tag();
@@ -76,7 +76,7 @@ namespace Services.Tester
             listProductTags.Add(pt3); listProductTags.Add(pt4);
             listProductTags.Add(pt5);
 
-            propService.Setup(x => x.GetAcceptedProposalByUser(It.IsAny<int>())).Returns<int>(x =>
+            prodProp.Setup(x => x.GetAcceptedProposalByUser(It.IsAny<int>())).Returns<int>(x =>
             {
                 var res = new List<Proposal>();
                 var proposal = new Proposal();
@@ -90,16 +90,16 @@ namespace Services.Tester
                 }
                 return res;
             });
-            ptService.Setup(x => x.GetByProductId(It.IsAny<int>())).Returns<int>(x =>
+            prodProdTag.Setup(x => x.GetByProductId(It.IsAny<int>())).Returns<int>(x =>
             {
                 return listProductTags.Where(pt => x == pt.Product.Id).ToList();
             });
-            ptService.Setup(x => x.List()).Returns(() =>
+            prodProdTag.Setup(x => x.List()).Returns(() =>
             {
                 return listProductTags;
             });
 
-            _service = new ProductService(_repo.Object, _validator, propService.Object, ptService.Object);
+            _service = new ProductService(_repo.Object, _validator, prodProp.Object, prodProdTag.Object);
             nullFields = new List<string> { "Name", "Description", "Owner", "Price" };
         }
 
