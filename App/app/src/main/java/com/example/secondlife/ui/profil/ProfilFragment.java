@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -51,6 +53,16 @@ public class ProfilFragment extends Fragment {
         binding = FragmentProfilBinding.inflate(inflater, container, false);
         view = binding.getRoot();
 
+        int idButton = getResources().getIdentifier("editButton", "id", getActivity().getPackageName());
+        Button editButton = view.findViewById(idButton);
+        editButton.setOnClickListener( new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                setEnabled(new String[]{"editTextPersonName"});
+            }
+        });
+
+
         UserService apiService = retrofit.create(UserService.class);
         int id = 1;
         apiService.getUser(id).enqueue(new Callback<User>() {
@@ -60,8 +72,8 @@ public class ProfilFragment extends Fragment {
                 Log.v("test user" , "test");
                 Log.v("Name Profil: ",user.getName());
                 Log.v("Login Profil:",user.getLogin());
-                setText("TextViewName", user.getName());
-
+                setTextTextView("TextViewName", user.getName());
+                setTextEditText("editTextPersonName", user.getName());
 
             }
 
@@ -76,12 +88,29 @@ public class ProfilFragment extends Fragment {
         return view;
     }
 
-    public void setText(String idTextView, String text) {
+    public void setTextTextView(String idTextView, String text) {
 
         int id = getResources().getIdentifier(idTextView, "id", getActivity().getPackageName());
-        TextView myAwesomeTextView = view.findViewById(id);
+        TextView myTextView = view.findViewById(id);
 
-        myAwesomeTextView.setText(text);
+        myTextView.setText(text);
+    }
+
+    public void setTextEditText(String idTextView, String text) {
+
+        int id = getResources().getIdentifier(idTextView, "id", getActivity().getPackageName());
+        EditText myEditText = view.findViewById(id);
+
+        myEditText.setText(text);
+    }
+
+    public void setEnabled(String[] listId){
+        for (int i = 0; i < listId.length; i++) {
+            int id = getResources().getIdentifier(listId[i], "id", getActivity().getPackageName());
+            View myEditText = view.findViewById(id);
+
+            myEditText.setEnabled(!myEditText.isEnabled());
+        }
     }
 
     @Override
