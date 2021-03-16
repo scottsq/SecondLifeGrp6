@@ -12,6 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.secondlife.R;
 import com.example.secondlife.databinding.FragmentHomeBinding;
@@ -24,6 +26,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -35,8 +38,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class HomeFragment extends Fragment {
 
+    private ProductRecyclerViewAdapter adapter;
+    private List<Product> products = new ArrayList<>();
+
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
+
 
     Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
@@ -51,22 +58,27 @@ public class HomeFragment extends Fragment {
     public View onCreateView (LayoutInflater inflater,
                               ViewGroup container,
                               Bundle savedInstanceState) {
+        //Initialisation
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        binding = FragmentHomeBinding.inflate(inflater, container, false);
 
+
+
+        // Pour les info du User
         UserService apiService = retrofit.create(UserService.class);
-
         int id = 1;
         apiService.getUser(id).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 // int statusCode = response.code();
                 User user = response.body();
-                Log.v("test user" , "test");
+                //Log.v("test user" , "test");
 //                try {
 //                    Log.v("test user" , response.errorBody().string());
 //                }
 //                catch (IOException e){};
-                Log.v("Name: ",user.getName());
-                Log.v("Login :",user.getLogin());
+                //Log.v("Name: ",user.getName());
+                //Log.v("Login :",user.getLogin());
 
                 //getResources().getResourceEntryName(user.getId())
                 //localhost:61169/api/user/1
@@ -87,11 +99,19 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 Log.v("test","ok product");
-                List<Product> product = response.body();
-                for (int i = 0; i < product.size(); i++) {
-                    Log.v("Name: ", product.get(i).getName());
+                products = response.body();
+                for (int i = 0; i < products.size(); i++) {
+                    Log.v("Name: ", products.get(i).getName());
                 }
 
+                //Pour le recyclerViewProduct
+                adapter = new ProductRecyclerViewAdapter(products);
+                Log.v("Product list: ", products.toString());
+                RecyclerView recyclerview = binding.recyclerViewProduct;
+                recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
+                recyclerview.setAdapter(adapter);
+
+                adapter.notifyDataSetChanged(); // this refresh the list, only call it in ui thread
 
             }
 
@@ -103,9 +123,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
         return view;
 
