@@ -40,7 +40,7 @@ namespace VS_SLG6.Services.Validators
             if (p == null) _validationModel.Errors.Add("Unknown product.");
             else obj.Product = p;
             // check if already exists
-            if (_repo.FindAll(x => x.Product.Id == obj.Product.Id && x.Url == obj.Url).Count > 0)
+            if (_repo.All(x => x.Product.Id == obj.Product.Id && x.Url == obj.Url).Count > 0)
             {
                 _validationModel.Errors.Add("A Photo with this url already exists for this product.");
             }

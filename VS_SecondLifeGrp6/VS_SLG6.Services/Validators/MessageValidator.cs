@@ -50,7 +50,7 @@ namespace VS_SLG6.Services.Validators
             if (obj.CreationDate == DateTime.MinValue) obj.CreationDate = DateTime.Now;
 
             // check if message exist for same receipt at same datetime
-            var m = _repo.FindAll(x => x.CreationDate == obj.CreationDate && x.Receipt.Id == obj.Receipt.Id);
+            var m = _repo.All(x => x.CreationDate == obj.CreationDate && x.Receipt.Id == obj.Receipt.Id);
             if (m.Count > 0) _validationModel.Errors.Add("Message already exists.");
 
             _validationModel.Value = _validationModel.Errors.Count == 0;

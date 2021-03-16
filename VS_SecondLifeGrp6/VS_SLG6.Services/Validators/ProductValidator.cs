@@ -43,7 +43,7 @@ namespace VS_SLG6.Services.Validators
             // Format date
             if (obj.CreationDate == DateTime.MinValue) obj.CreationDate = DateTime.Now;
             // Check if already exists
-            if (_repo.FindAll(x => x.Name == obj.Name && x.Price == obj.Price && x.Owner.Id == obj.Owner.Id).Count > 0)
+            if (_repo.All(x => x.Name == obj.Name && x.Price == obj.Price && x.Owner.Id == obj.Owner.Id).Count > 0)
             {
                 _validationModel.Errors.Add("This user already saved a similar product.");
             }

@@ -17,12 +17,12 @@ namespace VS_SLG6.Services.Services
 
         public List<Message> GetConversation(int idOrigin, int idDest)
         {
-            return _repo.FindAll(x => (x.Sender.Id == idOrigin && x.Receipt.Id == idDest) || (x.Sender.Id == idDest && x.Receipt.Id == idOrigin));
+            return _repo.All(x => (x.Sender.Id == idOrigin && x.Receipt.Id == idDest) || (x.Sender.Id == idDest && x.Receipt.Id == idOrigin));
         }
 
         public List<Message> GetConversations(int idOrigin)
         {
-            var list = _repo.FindAll(x => x.Sender.Id == idOrigin || x.Receipt.Id == idOrigin);
+            var list = _repo.All(x => x.Sender.Id == idOrigin || x.Receipt.Id == idOrigin);
             Func<Message, List<Message>, bool> contains = (Message item, List<Message> list) => {
                 return list.Find(x => (x.Receipt.Id == item.Receipt.Id && x.Sender.Id == item.Sender.Id) || (x.Receipt.Id == item.Sender.Id && x.Sender.Id == item.Receipt.Id)) != null;
             };

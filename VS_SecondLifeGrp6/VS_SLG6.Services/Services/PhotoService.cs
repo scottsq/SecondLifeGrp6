@@ -15,7 +15,7 @@ namespace VS_SLG6.Services.Services
         }
         public List<Photo> GetByProduct(int id)
         {
-            return _repo.FindAll(x => x.Product.Id == id);
+            return _repo.All(x => x.Product.Id == id);
         }
     }
 }

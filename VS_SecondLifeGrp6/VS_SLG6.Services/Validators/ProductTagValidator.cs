@@ -42,7 +42,7 @@ namespace VS_SLG6.Services.Validators
             if (p == null) _validationModel.Errors.Add("ProductTag Product doesn't exist.");
             else obj.Product = p;
             // Check if already exists
-            if (_repo.FindAll(x => x.Tag.Id == obj.Tag.Id && x.Product.Id == obj.Product.Id).Count > 0)
+            if (_repo.All(x => x.Tag.Id == obj.Tag.Id && x.Product.Id == obj.Product.Id).Count > 0)
             {
                 _validationModel.Errors.Add("ProductTag with similar Product and Tag already exists");
             }

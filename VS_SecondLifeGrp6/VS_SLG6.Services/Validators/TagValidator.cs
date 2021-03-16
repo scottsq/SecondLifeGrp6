@@ -25,7 +25,7 @@ namespace VS_SLG6.Services.Validators
             var check = StringIsEmptyOrBlank(obj, "Name");
             if (!check.Value) AppendFormattedErrors(check.Errors, "Tag {0} cannot be blank.");
             // Check if already exists
-            if (_repo.FindAll(x => x.Name == obj.Name).Count > 0) _validationModel.Errors.Add("Tag with similar name already exists.");
+            if (_repo.All(x => x.Name == obj.Name).Count > 0) _validationModel.Errors.Add("Tag with similar name already exists.");
             _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;
         }

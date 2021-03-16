@@ -33,7 +33,7 @@ namespace VS_SLG6.Services.Services
 
         public List<Product> GetUserProducts(int id)
         {
-            return _repo.FindAll(x => x.Owner.Id == id);
+            return _repo.All(x => x.Owner.Id == id);
         }
 
         public List<Product> GetProductsByKeys(params string[] keys)
@@ -50,48 +50,54 @@ namespace VS_SLG6.Services.Services
             }).ToList();
         }
 
-        // Try redo it better
-        public List<Product> GetProductsByInterest(int id)
+        private List<Tag> GetProductTags(int id)
         {
-            // Get all accepted proposals from user
-            var listProposalAccepted = _repoProposal.FindAll(x => x.State == State.ACCEPTED && (x.Target.Id == id || x.Origin.Id == id));
-            if (listProposalAccepted.Count == 0) return new List<Product>();
-            // Count tags occurence from those proposals
-            Dictionary<Tag, int> listTags = listProposalAccepted.Aggregate(new Dictionary<Tag, int>(), (acc, item) =>
+            var list = _repoProductTag.All(x => x.Product.Id == id);
+            return list.Aggregate(new List<Tag>(), (acc, item) =>
             {
-                var tags = _repoProductTag.FindAll(x => x.Product.Id == item.Product.Id);
-                for (int i = 0; i < tags.Count; i++)
-                {
-                    if (acc.ContainsKey(tags[i].Tag)) acc[tags[i].Tag] += 1;
-                    else acc.Add(tags[i].Tag, 1);
-                }                
+                acc.Add(item.Tag);
                 return acc;
             });
-            // Get the 3 most used tags
-            var listMostUsed = new List<Tag>();
-            for (int i = 0; i < Math.Min(3, listTags.Count); i++)
+        }
+
+        public List<Product> GetByTag(int id)
+        {
+            var list = _repoProductTag.All(x => x.Tag.Id == id);
+
+            // keep duplicates
+            return list.Aggregate(new List<Product>(), (acc, item) =>
             {
-                var t = listTags.Where(x => x.Value == listTags.Max(x => x.Value)).ToDictionary(x => x.Key, y => y.Value);
-                listTags.Remove(t.First().Key);
-                listMostUsed.Add(t.First().Key);
-            }
-            // Get all ProductTags which have those tags
-            List<Product> listProducts = _repoProductTag.All().Where(productTag =>
-            {
-                for (int i = 0; i < listMostUsed.Count; i++)
-                {
-                    if (listMostUsed.Contains(productTag.Tag)) return true;
-                }
-                return false;
-            }).ToList().Aggregate(new List<Product>(), (acc, item) =>
-            {
-                // Get every products matching this ProductTag
                 acc.Add(item.Product);
                 return acc;
             });
+        }
 
-            // Remove doublons
-            return _repo.All().Where(x => listProducts.Contains(x)).ToList();
+        public List<T> OrderByOccurence<T>(List<T> list)
+        {
+            var orderedList = list.GroupBy(x => x).OrderByDescending(x => x.Count());
+
+            // Need to convert IOrderedEnumerable<IGrouping<>> into List<Product>
+            return orderedList.Aggregate(new List<T>(), (acc, item) => {
+                acc.Add(item.Key);
+                return acc;
+            });
+        }
+
+        public List<Product> GetProductsByInterest(int id)
+        {
+            // Get all accepted proposals from user
+            var listProposalAccepted = _repoProposal.All(x => x.State == State.ACCEPTED && (x.Target.Id == id || x.Origin.Id == id));
+            if (listProposalAccepted.Count == 0) return new List<Product>(); // to not have empty list
+
+            // Get tags from products of those proposals
+            var tags = new List<Tag>();
+            foreach (var proposal in listProposalAccepted) tags = tags.Concat(GetProductTags(proposal.Product.Id)).ToList();
+            tags = OrderByOccurence(tags);
+
+            // Get all Products which have those tags
+            var listProducts = new List<Product>();
+            foreach (var t in tags) listProducts = listProducts.Concat(GetByTag(t.Id)).ToList();
+            return OrderByOccurence(listProducts);
         }
     }
 }

@@ -16,17 +16,17 @@ namespace VS_SLG6.Services.Services
 
         public List<Proposal> GetAcceptedProposalByUser(int id)
         {
-            return _repo.FindAll(x => x.State == State.ACCEPTED && (x.Target.Id == id || x.Origin.Id == id));
+            return _repo.All(x => x.State == State.ACCEPTED && (x.Target.Id == id || x.Origin.Id == id));
         }
 
         public List<Proposal> ListByUserId(int id)
         {
-            return _repo.FindAll(x => x.Target.Id == id || x.Origin.Id == id);
+            return _repo.All(x => x.Target.Id == id || x.Origin.Id == id);
         }
 
         public List<Proposal> ListByUserIdAndActive(int id)
         {
-            return _repo.FindAll(x => (x.Target.Id == id || x.Origin.Id == id) && x.State == State.ACTIVE);
+            return _repo.All(x => (x.Target.Id == id || x.Origin.Id == id) && x.State == State.ACTIVE);
         }
 
         public ValidationModel<Proposal> UpdateProposal(int id, State state)

@@ -42,7 +42,7 @@ namespace VS_SLG6.Services.Validators
             if (t == null) _validationModel.Errors.Add("Rating Target doesn't exist.");
             else obj.Target = t;
             // Check if Rating already exists
-            if (_repo.FindAll(x => x.Origin.Id == obj.Origin.Id && x.Target.Id == obj.Target.Id).Count > 0)
+            if (_repo.All(x => x.Origin.Id == obj.Origin.Id && x.Target.Id == obj.Target.Id).Count > 0)
             {
                 _validationModel.Errors.Add("Rating on this Target already exists for this Origin.");
             }

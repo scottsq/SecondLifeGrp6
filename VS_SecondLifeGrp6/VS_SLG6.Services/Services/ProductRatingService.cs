@@ -16,19 +16,19 @@ namespace VS_SLG6.Services.Services
 
         public double GetProductRating(int id)
         {
-            var res = _repo.FindAll(x => x.Product.Id == id);
+            var res = _repo.All(x => x.Product.Id == id);
             if (res.Count == 0) return 0;
             return res.Average(x => x.Stars);
         }
 
         public List<ProductRating> GetRatings(int id)
         {
-            return _repo.FindAll(x => x.Product.Id == id);
+            return _repo.All(x => x.Product.Id == id);
         }
 
         public List<ProductRating> GetUserRatings(int id)
         {
-            return _repo.FindAll(x => x.User.Id == id);
+            return _repo.All(x => x.User.Id == id);
         }
     }
 }

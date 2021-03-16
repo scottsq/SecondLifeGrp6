@@ -54,7 +54,7 @@ namespace VS_SLG6.Services.Validators
             }
 
             // Check if exists
-            if (_repo.FindAll(x => x.Login == obj.Login).Count > 0)
+            if (_repo.All(x => x.Login == obj.Login).Count > 0)
             {
                 _validationModel.Errors.Add("User with this login already exists");
             }

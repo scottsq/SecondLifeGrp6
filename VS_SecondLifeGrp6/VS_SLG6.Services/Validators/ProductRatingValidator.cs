@@ -44,7 +44,7 @@ namespace VS_SLG6.Services.Validators
             if (p == null) _validationModel.Errors.Add("Rating Product doesn't exist.");
             else obj.Product = p;
             // Check if Rating already exists
-            if (_repo.FindAll(x => x.Product.Id == obj.Product.Id && x.User.Id == obj.User.Id).Count > 0)
+            if (_repo.All(x => x.Product.Id == obj.Product.Id && x.User.Id == obj.User.Id).Count > 0)
             {
                 _validationModel.Errors.Add("Rating on this Product already exists for this User.");
             }
