@@ -56,8 +56,7 @@ public class ProfilFragment extends Fragment {
         view = binding.getRoot();
         int id = 1;
 
-
-        // Edit buttuon
+        // Edit button
         int idEditButton = getResources().getIdentifier("editButton", "id", getActivity().getPackageName());
         Button editButton = view.findViewById(idEditButton);
         editButton.setOnClickListener( new View.OnClickListener(){
@@ -96,9 +95,6 @@ public class ProfilFragment extends Fragment {
             }
         });
 
-
-
-
         apiService.getUser(id).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
@@ -111,7 +107,6 @@ public class ProfilFragment extends Fragment {
                 setTextEditText("editTextPersonName", user.getName() == null?"":user.getName());
                 setTextEditText("editTextEmail",user.getEmail() == null?"":user.getEmail());
                 setTextEditText("editTextAvatarUrl",user.getAvatarUrl() == null?"":user.getAvatarUrl());
-
             }
 
             @Override
@@ -121,8 +116,6 @@ public class ProfilFragment extends Fragment {
 
             }
         });
-
-
 
         return view;
     }
