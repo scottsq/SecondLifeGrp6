@@ -46,7 +46,7 @@ namespace VS_SLG6.Api.Controllers
             return _service.GetUserProducts(id);
         }
 
-        [HttpGet("user/search?keys={keys}")]
+        [HttpGet("user/search/keys/{keys}")]
         public ActionResult<List<Product>> GetProductsByTags(string[] keys)
         {
             return _service.GetProductsByKeys(keys);
