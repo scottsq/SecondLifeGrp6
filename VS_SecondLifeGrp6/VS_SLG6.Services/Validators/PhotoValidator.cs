@@ -36,7 +36,9 @@ namespace VS_SLG6.Services.Validators
             var check = StringIsEmptyOrBlank(obj, "Url");
             if (check.Value) AppendFormattedErrors(check.Errors, "Photo {0} cannot be empty.");
             // check product
-            if (_repoProduct.FindOne(obj.Product.Id) == null) _validationModel.Errors.Add("Unknown product.");
+            var p = _repoProduct.FindOne(obj.Product.Id);
+            if (p == null) _validationModel.Errors.Add("Unknown product.");
+            else obj.Product = p;
             // check if already exists
             if (_repo.FindAll(x => x.Product.Id == obj.Product.Id && x.Url == obj.Url).Count > 0)
             {

@@ -34,9 +34,13 @@ namespace VS_SLG6.Services.Validators
                 return _validationModel;
             }
             // Check if Tag exists
-            if (_repoTag.FindOne(obj.Tag.Id) == null) _validationModel.Errors.Add("ProductTag Tag doesn't exist.");
+            var t = _repoTag.FindOne(obj.Tag.Id);
+            if (t == null) _validationModel.Errors.Add("ProductTag Tag doesn't exist.");
+            else obj.Tag = t;
             // Check if Product exists
-            if (_repoProduct.FindOne(obj.Product.Id) == null) _validationModel.Errors.Add("ProductTag Product doesn't exist.");
+            var p = _repoProduct.FindOne(obj.Product.Id);
+            if (p == null) _validationModel.Errors.Add("ProductTag Product doesn't exist.");
+            else obj.Product = p;
             // Check if already exists
             if (_repo.FindAll(x => x.Tag.Id == obj.Tag.Id && x.Product.Id == obj.Product.Id).Count > 0)
             {

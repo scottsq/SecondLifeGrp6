@@ -37,7 +37,9 @@ namespace VS_SLG6.Services.Validators
             // Check negative price
             if (obj.Price < 0) _validationModel.Errors.Add("Product price cannot be negative.");
             // Check if owner exists
-            if (_repoUser.FindOne(obj.Owner.Id) == null) _validationModel.Errors.Add("Product Owner doesn't exist.");
+            var u = _repoUser.FindOne(obj.Owner.Id);
+            if (u == null) _validationModel.Errors.Add("Product Owner doesn't exist.");
+            else obj.Owner = u;
             // Format date
             if (obj.CreationDate == DateTime.MinValue) obj.CreationDate = DateTime.Now;
             // Check if already exists

@@ -34,9 +34,13 @@ namespace VS_SLG6.Services.Validators
             // Check stars between 1 and 5
             if (obj.Stars < 1 || obj.Stars > 5) _validationModel.Errors.Add("Rating Stars must be between 1 and 5.");
             // Check if Origin exists
-            if (_repoUser.FindOne(obj.Origin.Id) == null) _validationModel.Errors.Add("Rating Origin doesn't exist.");
+            var o = _repoUser.FindOne(obj.Origin.Id);
+            if (o == null) _validationModel.Errors.Add("Rating Origin doesn't exist.");
+            else obj.Origin = o;
             // Check if Product exists
-            if (_repoUser.FindOne(obj.Target.Id) == null) _validationModel.Errors.Add("Rating Target doesn't exist.");
+            var t = _repoUser.FindOne(obj.Target.Id);
+            if (t == null) _validationModel.Errors.Add("Rating Target doesn't exist.");
+            else obj.Target = t;
             // Check if Rating already exists
             if (_repo.FindAll(x => x.Origin.Id == obj.Origin.Id && x.Target.Id == obj.Target.Id).Count > 0)
             {

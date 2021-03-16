@@ -36,11 +36,17 @@ namespace VS_SLG6.Services.Validators
             // Check negative price
             if (obj.Price < 0) _validationModel.Errors.Add("Proposal Price cannot be negative.");
             // Check if Origin exists
-            if (_repoUser.FindOne(obj.Origin.Id) == null) _validationModel.Errors.Add("Proposal Origin doesn't exist.");
+            var o = _repoUser.FindOne(obj.Origin.Id);
+            if (o == null) _validationModel.Errors.Add("Proposal Origin doesn't exist.");
+            else obj.Origin = o;
             // Check if Target exists
-            if (_repoUser.FindOne(obj.Target.Id) == null) _validationModel.Errors.Add("Proposal Target doesn't exist.");
+            var t = _repoUser.FindOne(obj.Target.Id);
+            if (t == null) _validationModel.Errors.Add("Proposal Target doesn't exist.");
+            else obj.Target = t;
             // Check if Product exists
-            if (_repoProduct.FindOne(obj.Product.Id) == null) _validationModel.Errors.Add("Proposal Product doesn't exist.");
+            var p = _repoProduct.FindOne(obj.Product.Id);
+            if (p == null) _validationModel.Errors.Add("Proposal Product doesn't exist.");
+            else obj.Product = p;
             // Init state as ACTIVE
             obj.State = State.ACTIVE;
             _validationModel.Value = _validationModel.Errors.Count == 0;

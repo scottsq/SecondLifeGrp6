@@ -40,6 +40,11 @@ namespace VS_SLG6.Services.Validators
             var sender = _repoUser.FindOne(obj.Sender.Id);
             var receipt = _repoUser.FindOne(obj.Receipt.Id);
             if (sender == null || receipt == null) _validationModel.Errors.Add("Cannot send message with invalid User(s).");
+            else
+            {
+                obj.Sender = sender;
+                obj.Receipt = receipt;
+            }
 
             // check time / not an error but more a formatting task
             if (obj.CreationDate == DateTime.MinValue) obj.CreationDate = DateTime.Now;
