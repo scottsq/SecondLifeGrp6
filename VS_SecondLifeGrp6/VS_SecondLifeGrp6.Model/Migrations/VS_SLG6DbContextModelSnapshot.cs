@@ -29,13 +29,17 @@ namespace VS_SLG6.Model.Migrations
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<int>("ReceiptId")
+                    b.Property<int?>("ReceiptId")
                         .HasColumnType("int");
 
-                    b.Property<int>("SenderId")
+                    b.Property<int?>("SenderId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ReceiptId");
+
+                    b.HasIndex("SenderId");
 
                     b.ToTable("Message");
                 });
@@ -46,13 +50,15 @@ namespace VS_SLG6.Model.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("Product_Id")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<string>("Url")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Photo");
                 });
@@ -72,7 +78,7 @@ namespace VS_SLG6.Model.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<int>("OwnerId")
+                    b.Property<int?>("OwnerId")
                         .HasColumnType("int");
 
                     b.Property<double>("Price")
@@ -80,7 +86,33 @@ namespace VS_SLG6.Model.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OwnerId");
+
                     b.ToTable("Product");
+                });
+
+            modelBuilder.Entity("VS_SLG6.Model.Entities.ProductRating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ProductRating");
                 });
 
             modelBuilder.Entity("VS_SLG6.Model.Entities.ProductTag", b =>
@@ -89,13 +121,17 @@ namespace VS_SLG6.Model.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("TagId")
+                    b.Property<int?>("TagId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("TagId");
 
                     b.ToTable("ProductTag");
                 });
@@ -106,7 +142,7 @@ namespace VS_SLG6.Model.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("OriginId")
+                    b.Property<int?>("OriginId")
                         .HasColumnType("int");
 
                     b.Property<TimeSpan>("Period")
@@ -115,38 +151,24 @@ namespace VS_SLG6.Model.Migrations
                     b.Property<double>("Price")
                         .HasColumnType("double");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<string>("State")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+                    b.Property<int>("State")
+                        .HasColumnType("int");
 
-                    b.Property<int>("TargetId")
+                    b.Property<int?>("TargetId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OriginId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("TargetId");
 
                     b.ToTable("Proposal");
-                });
-
-            modelBuilder.Entity("VS_SLG6.Model.Entities.Rating", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("ProductId")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("Stars")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Rating");
                 });
 
             modelBuilder.Entity("VS_SLG6.Model.Entities.Tag", b =>
@@ -172,6 +194,9 @@ namespace VS_SLG6.Model.Migrations
                     b.Property<string>("AvatarURL")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
+                    b.Property<string>("Email")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
                     b.Property<string>("Login")
                         .HasColumnType("longtext CHARACTER SET utf8mb4");
 
@@ -184,6 +209,103 @@ namespace VS_SLG6.Model.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("VS_SLG6.Model.Entities.UserRating", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OriginId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Stars")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TargetId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OriginId");
+
+                    b.HasIndex("TargetId");
+
+                    b.ToTable("UserRating");
+                });
+
+            modelBuilder.Entity("VS_SLG6.Model.Entities.Message", b =>
+                {
+                    b.HasOne("VS_SLG6.Model.Entities.User", "Receipt")
+                        .WithMany()
+                        .HasForeignKey("ReceiptId");
+
+                    b.HasOne("VS_SLG6.Model.Entities.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderId");
+                });
+
+            modelBuilder.Entity("VS_SLG6.Model.Entities.Photo", b =>
+                {
+                    b.HasOne("VS_SLG6.Model.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+                });
+
+            modelBuilder.Entity("VS_SLG6.Model.Entities.Product", b =>
+                {
+                    b.HasOne("VS_SLG6.Model.Entities.User", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId");
+                });
+
+            modelBuilder.Entity("VS_SLG6.Model.Entities.ProductRating", b =>
+                {
+                    b.HasOne("VS_SLG6.Model.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("VS_SLG6.Model.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("VS_SLG6.Model.Entities.ProductTag", b =>
+                {
+                    b.HasOne("VS_SLG6.Model.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("VS_SLG6.Model.Entities.Tag", "Tag")
+                        .WithMany()
+                        .HasForeignKey("TagId");
+                });
+
+            modelBuilder.Entity("VS_SLG6.Model.Entities.Proposal", b =>
+                {
+                    b.HasOne("VS_SLG6.Model.Entities.User", "Origin")
+                        .WithMany()
+                        .HasForeignKey("OriginId");
+
+                    b.HasOne("VS_SLG6.Model.Entities.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId");
+
+                    b.HasOne("VS_SLG6.Model.Entities.User", "Target")
+                        .WithMany()
+                        .HasForeignKey("TargetId");
+                });
+
+            modelBuilder.Entity("VS_SLG6.Model.Entities.UserRating", b =>
+                {
+                    b.HasOne("VS_SLG6.Model.Entities.User", "Origin")
+                        .WithMany()
+                        .HasForeignKey("OriginId");
+
+                    b.HasOne("VS_SLG6.Model.Entities.User", "Target")
+                        .WithMany()
+                        .HasForeignKey("TargetId");
                 });
 #pragma warning restore 612, 618
         }
