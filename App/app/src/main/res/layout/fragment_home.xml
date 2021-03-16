@@ -14,11 +14,11 @@
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="32dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="413dp"
-        android:layout_height="687dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textTitle" />
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:layout_width="413dp"-->
+<!--        android:layout_height="687dp"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/textTitle" />-->
 </androidx.constraintlayout.widget.ConstraintLayout>
