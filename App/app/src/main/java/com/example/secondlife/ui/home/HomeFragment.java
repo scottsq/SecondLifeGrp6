@@ -15,13 +15,16 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.secondlife.R;
 import com.example.secondlife.databinding.FragmentHomeBinding;
+import com.example.secondlife.model.Product;
 import com.example.secondlife.model.User;
 import com.example.secondlife.network.OkHttpClass;
+import com.example.secondlife.network.ProductService;
 import com.example.secondlife.network.UserService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,12 +39,12 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
 
     Gson gson = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
             .create();
     private final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://10.0.2.2:61169/api/")
             .client(OkHttpClass.getUnsafeOkHttpClient())
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build();
 
     @Override
@@ -50,6 +53,7 @@ public class HomeFragment extends Fragment {
                               Bundle savedInstanceState) {
 
         UserService apiService = retrofit.create(UserService.class);
+
         int id = 1;
         apiService.getUser(id).enqueue(new Callback<User>() {
             @Override
@@ -74,6 +78,28 @@ public class HomeFragment extends Fragment {
                 Log.i("test","fail");
                 t.printStackTrace();
 
+            }
+        });
+
+        //Product
+        ProductService apiServiceProduct = retrofit.create(ProductService.class);
+        apiServiceProduct.getAllProduct().enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                Log.v("test","ok product");
+                List<Product> product = response.body();
+                for (int i = 0; i < product.size(); i++) {
+                    Log.v("Name: ", product.get(i).getName());
+                }
+
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                // Log error here since request failed
+                Log.i("test","fail product");
+                t.printStackTrace();
             }
         });
 
