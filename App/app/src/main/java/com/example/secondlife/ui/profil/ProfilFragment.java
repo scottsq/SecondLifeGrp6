@@ -58,7 +58,7 @@ public class ProfilFragment extends Fragment {
         editButton.setOnClickListener( new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                setEnabled(new String[]{"editTextPersonName"});
+                setEnabled(new String[]{"editTextPersonName","editTextEmail","editTextAvatarUrl"});
             }
         });
 
@@ -71,9 +71,12 @@ public class ProfilFragment extends Fragment {
                 User user = response.body();
                 Log.v("test user" , "test");
                 Log.v("Name Profil: ",user.getName());
+                //Log.v("Name Email: ",user.getEmail());
                 Log.v("Login Profil:",user.getLogin());
                 setTextTextView("TextViewName", user.getName());
-                setTextEditText("editTextPersonName", user.getName());
+                setTextEditText("editTextPersonName", user.getName() == null?"":user.getName());
+                setTextEditText("editTextEmail",user.getEmail() == null?"":user.getEmail());
+                setTextEditText("editTextAvatarUrl",user.getAvatarUrl() == null?"":user.getAvatarUrl());
 
             }
 
