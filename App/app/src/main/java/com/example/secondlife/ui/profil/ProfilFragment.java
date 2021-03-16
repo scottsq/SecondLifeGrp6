@@ -44,6 +44,8 @@ public class ProfilFragment extends Fragment {
             .addConverterFactory(GsonConverterFactory.create())
             .build();
 
+    UserService apiService = retrofit.create(UserService.class);
+    private User user = null;
 
     @Override
     public View onCreateView (LayoutInflater inflater,
@@ -52,9 +54,12 @@ public class ProfilFragment extends Fragment {
 
         binding = FragmentProfilBinding.inflate(inflater, container, false);
         view = binding.getRoot();
+        int id = 1;
 
-        int idButton = getResources().getIdentifier("editButton", "id", getActivity().getPackageName());
-        Button editButton = view.findViewById(idButton);
+
+        // Edit buttuon
+        int idEditButton = getResources().getIdentifier("editButton", "id", getActivity().getPackageName());
+        Button editButton = view.findViewById(idEditButton);
         editButton.setOnClickListener( new View.OnClickListener(){
             @Override
             public void onClick(View view){
@@ -62,18 +67,47 @@ public class ProfilFragment extends Fragment {
             }
         });
 
+        // Save button
+        int idSaveButton = getResources().getIdentifier("saveButton", "id", getActivity().getPackageName());
+        Button saveButton = view.findViewById(idSaveButton);
+        saveButton.setOnClickListener( new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                user.setName(((EditText) getViewById("editTextPersonName")).getText().toString());
+                user.setEmail(((EditText) getViewById("editTextEmail")).getText().toString());
+                user.setAvatarUrl(((EditText) getViewById("editTextAvatarUrl")).getText().toString());
 
-        UserService apiService = retrofit.create(UserService.class);
-        int id = 1;
+                apiService.updateUser(id, user).enqueue(new Callback<User>() {
+                    @Override
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        user = response.body();
+                        Log.v("test user update" , "test update");
+                        //Log.v("test user update" , user.getEmail());
+                    }
+
+                    @Override
+                    public void onFailure(Call<User> call, Throwable t) {
+                        Log.i("test","fail");
+                        t.printStackTrace();
+
+                    }
+                });
+
+            }
+        });
+
+
+
+
         apiService.getUser(id).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                User user = response.body();
+                user = response.body();
                 Log.v("test user" , "test");
                 Log.v("Name Profil: ",user.getName());
                 //Log.v("Name Email: ",user.getEmail());
                 Log.v("Login Profil:",user.getLogin());
-                setTextTextView("TextViewName", user.getName());
+                setTextView("TextViewName", user.getName());
                 setTextEditText("editTextPersonName", user.getName() == null?"":user.getName());
                 setTextEditText("editTextEmail",user.getEmail() == null?"":user.getEmail());
                 setTextEditText("editTextAvatarUrl",user.getAvatarUrl() == null?"":user.getAvatarUrl());
@@ -88,32 +122,34 @@ public class ProfilFragment extends Fragment {
             }
         });
 
+
+
         return view;
     }
 
-    public void setTextTextView(String idTextView, String text) {
+    public void setTextView(String idTextView, String text) {
 
-        int id = getResources().getIdentifier(idTextView, "id", getActivity().getPackageName());
-        TextView myTextView = view.findViewById(id);
-
-        myTextView.setText(text);
+        View view = getViewById(idTextView);
+        ((TextView) view).setText(text);
     }
 
-    public void setTextEditText(String idTextView, String text) {
+    public void setTextEditText(String idEditView, String text) {
 
-        int id = getResources().getIdentifier(idTextView, "id", getActivity().getPackageName());
-        EditText myEditText = view.findViewById(id);
-
-        myEditText.setText(text);
+        View view = getViewById(idEditView);
+        ((EditText) view).setText(text);
     }
 
     public void setEnabled(String[] listId){
         for (int i = 0; i < listId.length; i++) {
-            int id = getResources().getIdentifier(listId[i], "id", getActivity().getPackageName());
-            View myEditText = view.findViewById(id);
-
-            myEditText.setEnabled(!myEditText.isEnabled());
+            View view = getViewById(listId[i]);
+            view.setEnabled(!view.isEnabled());
         }
+    }
+
+    public View getViewById(String idView) {
+        int id = getResources().getIdentifier(idView, "id", getActivity().getPackageName());
+
+        return view.findViewById(id);
     }
 
     @Override
