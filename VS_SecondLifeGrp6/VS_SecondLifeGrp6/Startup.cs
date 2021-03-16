@@ -66,8 +66,6 @@ namespace VS_SecondLifeGrp6
         private void InjectServices(IServiceCollection services)
         {
             services.AddScoped(typeof(ValidationModel<>));
-            services.AddScoped<IProduct_ProductTag, Product_ProductTag>();
-            services.AddScoped<IProduct_Proposal, Product_Proposal>();
             services.AddScoped(typeof(IService<>), typeof(GenericService<>));
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IPhotoService, PhotoService>();

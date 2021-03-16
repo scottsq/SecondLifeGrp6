@@ -10,11 +10,11 @@ namespace VS_SLG6.Services.Validators
 {
     public class UserRatingValidator : GenericValidator<UserRating>, IValidator<UserRating>
     {
-        private IService<User> _serviceUser;
+        private IRepository<User> _repoUser;
 
-        public UserRatingValidator(IRepository<UserRating> repo, ValidationModel<bool> validationModel, IService<User> serviceUser) : base(repo, validationModel) 
+        public UserRatingValidator(IRepository<UserRating> repo, ValidationModel<bool> validationModel, IRepository<User> repoUser) : base(repo, validationModel) 
         {
-            _serviceUser = serviceUser;
+            _repoUser = repoUser;
         }
 
         public override ValidationModel<bool> CanAdd(UserRating obj)
@@ -34,9 +34,9 @@ namespace VS_SLG6.Services.Validators
             // Check stars between 1 and 5
             if (obj.Stars < 1 || obj.Stars > 5) _validationModel.Errors.Add("Rating Stars must be between 1 and 5.");
             // Check if Origin exists
-            if (_serviceUser.Get(obj.Origin.Id) == null) _validationModel.Errors.Add("Rating Origin doesn't exist.");
+            if (_repoUser.FindOne(obj.Origin.Id) == null) _validationModel.Errors.Add("Rating Origin doesn't exist.");
             // Check if Product exists
-            if (_serviceUser.Get(obj.Target.Id) == null) _validationModel.Errors.Add("Rating Target doesn't exist.");
+            if (_repoUser.FindOne(obj.Target.Id) == null) _validationModel.Errors.Add("Rating Target doesn't exist.");
             // Check if Rating already exists
             if (_repo.FindAll(x => x.Origin.Id == obj.Origin.Id && x.Target.Id == obj.Target.Id).Count > 0)
             {

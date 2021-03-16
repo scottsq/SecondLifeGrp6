@@ -3,6 +3,7 @@ using Moq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
@@ -44,21 +45,21 @@ namespace Services.Tester
 
         private void InitTests()
         {
-            var uService = new Mock<UserService>(new Mock<IRepository<User>>().Object, new Mock<IValidator<User>>().Object);
-            uService.Setup(x => x.Get(It.IsAny<int>())).Returns<int>(x =>
+            var uRepo = new Mock<IRepository<User>>();
+            uRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
             {
                 if (x == u1.Id) return u1;
                 if (x == u2.Id) return u2;
                 return null;
             });
 
-            _validator = new ProductValidator(_repo.Object, new ValidationModel<bool>(), uService.Object);
+            _validator = new ProductValidator(_repo.Object, new ValidationModel<bool>(), uRepo.Object);
             _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x => {
                 return _workingObjects.Find(m => m.Id == Int32.Parse(x[0].ToString()));
             });
 
-            var prodProp = new Mock<IProduct_Proposal>();
-            var prodProdTag = new Mock<IProduct_ProductTag>();
+            var propRepo = new Mock<IRepository<Proposal>>();
+            var prodTagRepo = new Mock<IRepository<ProductTag>>();
 
             var listProductTags = new List<ProductTag>();
             var tag1 = new Tag();
@@ -76,30 +77,27 @@ namespace Services.Tester
             listProductTags.Add(pt3); listProductTags.Add(pt4);
             listProductTags.Add(pt5);
 
-            prodProp.Setup(x => x.GetAcceptedProposalByUser(It.IsAny<int>())).Returns<int>(x =>
+            propRepo.Setup(x => x.FindAll(It.IsAny<Expression<Func<Proposal, bool>>>())).Returns<Expression<Func<Proposal, bool>>>(x =>
             {
                 var res = new List<Proposal>();
                 var proposal = new Proposal();
                 proposal.Id = 0; proposal.Product = p1;
                 var proposal2 = new Proposal();
                 proposal2.Id = 1; proposal2.Product = p2;
-                if (x == u1.Id)
-                {
-                    res.Add(proposal);
-                    res.Add(proposal2);
-                }
-                return res;
+                res.Add(proposal);
+                res.Add(proposal2);
+                return res.Where(x.Compile()).ToList();
             });
-            prodProdTag.Setup(x => x.GetByProductId(It.IsAny<int>())).Returns<int>(x =>
+            prodTagRepo.Setup(x => x.FindAll(It.IsAny<Expression<Func<ProductTag, bool>>>())).Returns<Expression<Func<ProductTag, bool>>>(x =>
             {
-                return listProductTags.Where(pt => x == pt.Product.Id).ToList();
+                return listProductTags.Where(x.Compile()).ToList();
             });
-            prodProdTag.Setup(x => x.List()).Returns(() =>
+            prodTagRepo.Setup(x => x.All()).Returns(() =>
             {
                 return listProductTags;
             });
 
-            _service = new ProductService(_repo.Object, _validator, prodProp.Object, prodProdTag.Object);
+            _service = new ProductService(_repo.Object, _validator, propRepo.Object, prodTagRepo.Object);
             nullFields = new List<string> { "Name", "Description", "Owner", "Price" };
         }
 

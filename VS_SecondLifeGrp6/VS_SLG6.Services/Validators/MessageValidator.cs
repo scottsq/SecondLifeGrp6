@@ -10,11 +10,11 @@ namespace VS_SLG6.Services.Validators
 {
     public class MessageValidator : GenericValidator<Message>, IValidator<Message>
     {
-        private IService<User> _userService;
+        private IRepository<User> _repoUser;
 
-        public MessageValidator(IRepository<Message> repo, ValidationModel<bool> validationModel, IService<User> userService) : base(repo, validationModel) 
+        public MessageValidator(IRepository<Message> repo, ValidationModel<bool> validationModel, IRepository<User> repoUser) : base(repo, validationModel) 
         {
-            _userService = userService;
+            _repoUser = repoUser;
         }
 
         public override ValidationModel<bool> CanAdd(Message obj)
@@ -37,8 +37,8 @@ namespace VS_SLG6.Services.Validators
             if (check.Errors.Count > 0) AppendFormattedErrors(check.Errors, "Message {0} cannot be empty.");
 
             // check if Sender and Receipt exist
-            var sender = _userService.Get(obj.Sender.Id);
-            var receipt = _userService.Get(obj.Receipt.Id);
+            var sender = _repoUser.FindOne(obj.Sender.Id);
+            var receipt = _repoUser.FindOne(obj.Receipt.Id);
             if (sender == null || receipt == null) _validationModel.Errors.Add("Cannot send message with invalid User(s).");
 
             // check time / not an error but more a formatting task

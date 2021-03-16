@@ -10,13 +10,13 @@ namespace VS_SLG6.Services.Validators
 {
     public class ProductTagValidator : GenericValidator<ProductTag>, IValidator<ProductTag>
     {
-        private IService<Product> _serviceProduct;
-        private IService<Tag> _serviceTag;
+        private IRepository<Product> _repoProduct;
+        private IRepository<Tag> _repoTag;
 
-        public ProductTagValidator(IRepository<ProductTag> repo, ValidationModel<bool> validationModel, IService<Product> serviceProduct, IService<Tag> serviceTag) : base(repo, validationModel) 
+        public ProductTagValidator(IRepository<ProductTag> repo, ValidationModel<bool> validationModel, IRepository<Product> repoProduct, IRepository<Tag> repoTag) : base(repo, validationModel) 
         {
-            _serviceProduct = serviceProduct;
-            _serviceTag = serviceTag;
+            _repoProduct = repoProduct;
+            _repoTag = repoTag;
         }
 
         public override ValidationModel<bool> CanAdd(ProductTag obj)
@@ -34,9 +34,9 @@ namespace VS_SLG6.Services.Validators
                 return _validationModel;
             }
             // Check if Tag exists
-            if (_serviceTag.Get(obj.Tag.Id) == null) _validationModel.Errors.Add("ProductTag Tag doesn't exist.");
+            if (_repoTag.FindOne(obj.Tag.Id) == null) _validationModel.Errors.Add("ProductTag Tag doesn't exist.");
             // Check if Product exists
-            if (_serviceProduct.Get(obj.Product.Id) == null) _validationModel.Errors.Add("ProductTag Product doesn't exist.");
+            if (_repoProduct.FindOne(obj.Product.Id) == null) _validationModel.Errors.Add("ProductTag Product doesn't exist.");
             // Check if already exists
             if (_repo.FindAll(x => x.Tag.Id == obj.Tag.Id && x.Product.Id == obj.Product.Id).Count > 0)
             {

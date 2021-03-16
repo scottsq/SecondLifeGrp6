@@ -48,22 +48,22 @@ namespace Services.Tester
 
         private void InitTests()
         {
-            var pService = new Mock<ProductService>(new Mock<IRepository<Product>>().Object, new Mock<IValidator<Product>>().Object, null, null);
-            pService.Setup(x => x.Get(It.IsAny<int>())).Returns<int>(x =>
+            var pRepo = new Mock<IRepository<Product>>();
+            pRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
             {
                 if (x == p1.Id) return p1;
                 if (x == p2.Id) return p2;
                 return null;
             });
-            var uService = new Mock<UserService>(new Mock<IRepository<User>>().Object, new Mock<IValidator<User>>().Object);
-            uService.Setup(x => x.Get(It.IsAny<int>())).Returns<int>(x =>
+            var uRepo = new Mock<IRepository<User>>();
+            uRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
             {
                 if (x == u1.Id) return u1;
                 if (x == u2.Id) return u2;
                 return null;
             });
 
-            _validator = new ProductRatingValidator(_repo.Object, new ValidationModel<bool>(), pService.Object, uService.Object);
+            _validator = new ProductRatingValidator(_repo.Object, new ValidationModel<bool>(), pRepo.Object, uRepo.Object);
             _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x => {
                 return _workingObjects.Find(m => m.Id == Int32.Parse(x[0].ToString()));
             });

@@ -10,11 +10,11 @@ namespace VS_SLG6.Services.Validators
 {
     public class ProductValidator : GenericValidator<Product>, IValidator<Product>
     {
-        private IService<User> _serviceUser;
+        private IRepository<User> _repoUser;
 
-        public ProductValidator(IRepository<Product> repo, ValidationModel<bool> validationModel, IService<User> serviceUser) : base(repo, validationModel) 
+        public ProductValidator(IRepository<Product> repo, ValidationModel<bool> validationModel, IRepository<User> repoUser) : base(repo, validationModel) 
         {
-            _serviceUser = serviceUser;
+            _repoUser = repoUser;
         }
 
         public override ValidationModel<bool> CanAdd(Product obj)
@@ -37,7 +37,7 @@ namespace VS_SLG6.Services.Validators
             // Check negative price
             if (obj.Price < 0) _validationModel.Errors.Add("Product price cannot be negative.");
             // Check if owner exists
-            if (_serviceUser.Get(obj.Owner.Id) == null) _validationModel.Errors.Add("Product Owner doesn't exist.");
+            if (_repoUser.FindOne(obj.Owner.Id) == null) _validationModel.Errors.Add("Product Owner doesn't exist.");
             // Format date
             if (obj.CreationDate == DateTime.MinValue) obj.CreationDate = DateTime.Now;
             // Check if already exists

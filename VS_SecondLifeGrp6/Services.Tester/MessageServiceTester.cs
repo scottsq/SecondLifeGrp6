@@ -49,8 +49,8 @@ namespace Services.Tester
 
         private void InitTests()
         {
-            var uService = new Mock<UserService>(new Mock<IRepository<User>>().Object, new Mock<IValidator<User>>().Object);
-            uService.Setup(x => x.Get(It.IsAny<int>())).Returns<int>(x =>
+            var uRepo = new Mock<IRepository<User>>();
+            uRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
             {
                 if (x == us1.Id) return us1;
                 if (x == ur1.Id) return ur1;
@@ -58,7 +58,7 @@ namespace Services.Tester
                 return null;
             });
 
-            _validator = new MessageValidator(_repo.Object, new ValidationModel<bool>(), uService.Object);
+            _validator = new MessageValidator(_repo.Object, new ValidationModel<bool>(), uRepo.Object);
             _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x => {
                 return _workingObjects.Find(m => m.Id == Int32.Parse(x[0].ToString()));
             });

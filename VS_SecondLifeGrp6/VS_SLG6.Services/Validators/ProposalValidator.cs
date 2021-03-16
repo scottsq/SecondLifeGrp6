@@ -10,13 +10,13 @@ namespace VS_SLG6.Services.Validators
 {
     public class ProposalValidator : GenericValidator<Proposal>, IValidator<Proposal>
     {
-        private IService<Product> _serviceProduct;
-        private IService<User> _serviceUser;
+        private IRepository<Product> _repoProduct;
+        private IRepository<User> _repoUser;
 
-        public ProposalValidator(IRepository<Proposal> repo, ValidationModel<bool> validationModel, IService<Product> serviceProduct, IService<User> serviceUser) : base(repo, validationModel) 
+        public ProposalValidator(IRepository<Proposal> repo, ValidationModel<bool> validationModel, IRepository<Product> repoProduct, IRepository<User> repoUser) : base(repo, validationModel) 
         {
-            _serviceProduct = serviceProduct;
-            _serviceUser = serviceUser;
+            _repoProduct = repoProduct;
+            _repoUser = repoUser;
         }
 
         public override ValidationModel<bool> CanAdd(Proposal obj)
@@ -36,11 +36,11 @@ namespace VS_SLG6.Services.Validators
             // Check negative price
             if (obj.Price < 0) _validationModel.Errors.Add("Proposal Price cannot be negative.");
             // Check if Origin exists
-            if (_serviceUser.Get(obj.Origin.Id) == null) _validationModel.Errors.Add("Proposal Origin doesn't exist.");
+            if (_repoUser.FindOne(obj.Origin.Id) == null) _validationModel.Errors.Add("Proposal Origin doesn't exist.");
             // Check if Target exists
-            if (_serviceUser.Get(obj.Target.Id) == null) _validationModel.Errors.Add("Proposal Target doesn't exist.");
+            if (_repoUser.FindOne(obj.Target.Id) == null) _validationModel.Errors.Add("Proposal Target doesn't exist.");
             // Check if Product exists
-            if (_serviceProduct.Get(obj.Product.Id) == null) _validationModel.Errors.Add("Proposal Product doesn't exist.");
+            if (_repoProduct.FindOne(obj.Product.Id) == null) _validationModel.Errors.Add("Proposal Product doesn't exist.");
             // Init state as ACTIVE
             obj.State = State.ACTIVE;
             _validationModel.Value = _validationModel.Errors.Count == 0;

@@ -40,22 +40,22 @@ namespace Services.Tester
 
         private void InitTests()
         {
-            var pService = new Mock<ProductService>(new Mock<IRepository<Product>>().Object, new Mock<IValidator<Product>>().Object, null, null);
-            pService.Setup(x => x.Get(It.IsAny<int>())).Returns<int>(x =>
+            var pRepo = new Mock<IRepository<Product>>();
+            pRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
             {
                 if (x == p1.Id) return p1;
                 if (x == p2.Id) return p2;
                 return null;
             });
-            var tService = new Mock<GenericService<Tag>>(new Mock<IRepository<Tag>>().Object, new Mock<IValidator<Tag>>().Object);
-            tService.Setup(x => x.Get(It.IsAny<int>())).Returns<int>(x =>
+            var tRepo = new Mock<IRepository<Tag>>();
+            tRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
             {
                 if (x == t1.Id) return t1;
                 if (x == t2.Id) return t2;
                 return null;
             });
 
-            _validator = new ProductTagValidator(_repo.Object, new ValidationModel<bool>(), pService.Object, tService.Object);
+            _validator = new ProductTagValidator(_repo.Object, new ValidationModel<bool>(), pRepo.Object, tRepo.Object);
             _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x => {
                 return _workingObjects.Find(m => m.Id == Int32.Parse(x[0].ToString()));
             });

@@ -10,11 +10,11 @@ namespace VS_SLG6.Services.Validators
 {
     public class PhotoValidator : GenericValidator<Photo>, IValidator<Photo>
     {
-        private IService<Product> _serviceProduct;
+        private IRepository<Product> _repoProduct;
 
-        public PhotoValidator(IRepository<Photo> repo, ValidationModel<bool> validationModel, IService<Product> serviceProduct): base(repo, validationModel)
+        public PhotoValidator(IRepository<Photo> repo, ValidationModel<bool> validationModel, IRepository<Product> repoProduct): base(repo, validationModel)
         {
-            _serviceProduct = serviceProduct;
+            _repoProduct = repoProduct;
         }
 
         public override ValidationModel<bool> CanAdd(Photo obj)
@@ -36,7 +36,7 @@ namespace VS_SLG6.Services.Validators
             var check = StringIsEmptyOrBlank(obj, "Url");
             if (check.Value) AppendFormattedErrors(check.Errors, "Photo {0} cannot be empty.");
             // check product
-            if (_serviceProduct.Get(obj.Product.Id) == null) _validationModel.Errors.Add("Unknown product.");
+            if (_repoProduct.FindOne(obj.Product.Id) == null) _validationModel.Errors.Add("Unknown product.");
             // check if already exists
             if (_repo.FindAll(x => x.Product.Id == obj.Product.Id && x.Url == obj.Url).Count > 0)
             {

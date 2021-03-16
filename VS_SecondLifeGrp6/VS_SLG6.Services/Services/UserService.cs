@@ -25,5 +25,24 @@ namespace VS_SLG6.Services.Services
             else _validationModel.Value = user;
             return _validationModel;
         }
+
+        public string ResetEmail(string email)
+        {
+            if (FindByMail(email).Value != null) return GenerateCode();
+            else return null;
+        }
+
+        private string GenerateCode()
+        {
+            var length = 6;
+            var code = "";
+            var charArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
+            var r = new Random();
+            for (int i = 0; i < length; i++)
+            {
+                code += charArray[r.Next(0, charArray.Length)];
+            }
+            return code;
+        }
     }
 }

@@ -47,8 +47,9 @@ namespace VS_SLG6.Controllers
         }
 
         [HttpPost("reset")]
-        public ActionResult<string> Reset(string login)
+        public ActionResult<string> Reset(string email)
         {
+            var res = _service.ResetEmail(email);
             return BadRequest("Not implemented, to do!");
         }
 
@@ -63,6 +64,7 @@ namespace VS_SLG6.Controllers
         [HttpPatch("{id}")]
         public ActionResult<User> Patch(int id, [FromBody] JsonPatchDocument<User> patchDoc)
         {
+            System.Console.WriteLine(patchDoc.Operations[0].op);
             if (patchDoc == null) return BadRequest(ModelState);
             var user = _service.Patch(id, patchDoc);
             return user;
