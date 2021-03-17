@@ -7,12 +7,11 @@ namespace VS_SLG6.Repositories.Repositories
 {
     public interface IRepository<T> where T : class
     {
-        List<T> All();
         T Add(T obj);
         T Update(T obj);
         T Remove(T obj);
         bool Exists(T obj);
-        T FindOne(params object[] keys);
-        List<T> FindAll(Expression<Func<T, bool>> condition);
+        T FindOne(int id);
+        List<T> All(Expression<Func<T, bool>> condition = null);
     }
 }

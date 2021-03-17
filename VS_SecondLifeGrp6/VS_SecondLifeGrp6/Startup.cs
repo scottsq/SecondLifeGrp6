@@ -102,6 +102,13 @@ namespace VS_SecondLifeGrp6
         private void InjectRepositories(IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IRepository<Message>, MessageRepository>();
+            services.AddScoped<IRepository<Photo>, PhotoRepository>();
+            services.AddScoped<IRepository<ProductRating>, ProductRatingRepository>();
+            services.AddScoped<IRepository<Product>, ProductRepository>();
+            services.AddScoped<IRepository<ProductTag>, ProductTagRepository>();
+            services.AddScoped<IRepository<Proposal>, ProposalRepository>();
+            services.AddScoped<IRepository<UserRating>, UserRatingRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

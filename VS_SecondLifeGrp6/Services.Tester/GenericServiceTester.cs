@@ -6,6 +6,7 @@ using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
@@ -34,14 +35,15 @@ namespace Services.Tester
         {
             _defaultObjects = objs.ToList();
             _workingObjects = _defaultObjects.GetRange(0, 1);
-            _repo.Setup(x => x.All()).Returns(_workingObjects);
+            _repo.Setup(x => x.All(It.IsAny<Expression<Func<T, bool>>>())).Returns(_workingObjects);
             _repo.Setup(x => x.Add(It.IsAny<T>())).Returns<T>(x => {
                 _workingObjects.Add(x);
                 return x;
             });
             _repo.Setup(x => x.Remove(It.IsAny<T>())).Callback<T>(x => { _workingObjects.Remove(x); });
-            _repo.Setup(x => x.FindAll(It.IsAny<System.Linq.Expressions.Expression<Func<T, bool>>>())).Returns<System.Linq.Expressions.Expression<Func<T, bool>>>(x =>
+            _repo.Setup(x => x.All(It.IsAny<Expression<Func<T, bool>>>())).Returns<Expression<Func<T, bool>>>(x =>
             {
+                if (x == null) x = t => true;
                 return _workingObjects.Where(x.Compile()).ToList();
             });
         }

@@ -15,36 +15,44 @@ namespace Services.Tester
     [TestClass]
     public class MessageServiceTester : GenericServiceTester<Message>
     {
-        private Message message = new Message();
-        private const string BlankString = "     ";
-        private User us1;
-        private User ur1;
-        private User ur2;
+        private const string BLANK_STRING = "     ";
+        private Message _message = new Message();
+        private Message _m1 = new Message();
+        private Message _m2 = new Message();
+        private User _uSender1 = new User();
+        private User _uReceipt = new User();
+        private User _uSender2 = new User();
 
         public MessageServiceTester()
         {
-            us1 = new User(); us1.Id = 0;
-            ur1 = new User(); ur1.Id = 1;
-            ur2 = new User(); ur2.Id = 2;
-            var m1 = new Message();
-            m1.Id = 0;
-            m1.Content = "Test";
-            m1.CreationDate = DateTime.Now;
-            m1.Receipt = ur1;
-            m1.Sender = us1;
-            var m2 = new Message();
-            m2.Id = 1;
-            m2.Content = "Test 2";
-            m2.CreationDate = DateTime.Now.AddDays(1);
-            m2.Receipt = ur2;
-            m2.Sender = us1;
-            message.Id = 2;
-            message.Content = "Hello World!";
-            message.CreationDate = DateTime.Now;
-            message.Receipt = ur1;
-            message.Sender = us1;
-            InitBehavior(m1, m2);
+            CreateInstances();
+            InitBehavior(_m1, _m2);
             InitTests();
+        }
+
+        private void CreateInstances()
+        {
+            _uSender1.Id = 0;
+            _uReceipt.Id = 1;
+            _uSender2.Id = 2;
+
+            _m1.Id = 0;
+            _m1.Content = "Test";
+            _m1.CreationDate = DateTime.Now;
+            _m1.Receipt = _uReceipt;
+            _m1.Sender = _uSender1;
+
+            _m2.Id = 1;
+            _m2.Content = "Test 2";
+            _m2.CreationDate = DateTime.Now.AddDays(1);
+            _m2.Receipt = _uSender2;
+            _m2.Sender = _uSender1;
+
+            _message.Id = 2;
+            _message.Content = "Hello World!";
+            _message.CreationDate = DateTime.Now;
+            _message.Receipt = _uReceipt;
+            _message.Sender = _uSender1;
         }
 
         private void InitTests()
@@ -52,15 +60,15 @@ namespace Services.Tester
             var uRepo = new Mock<IRepository<User>>();
             uRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
             {
-                if (x == us1.Id) return us1;
-                if (x == ur1.Id) return ur1;
-                if (x == ur2.Id) return ur2;
+                if (x == _uSender1.Id) return _uSender1;
+                if (x == _uReceipt.Id) return _uReceipt;
+                if (x == _uSender2.Id) return _uSender2;
                 return null;
             });
 
             _validator = new MessageValidator(_repo.Object, new ValidationModel<bool>(), uRepo.Object);
-            _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x => {
-                return _workingObjects.Find(m => m.Id == Int32.Parse(x[0].ToString()));
+            _repo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x => {
+                return _workingObjects.Find(m => m.Id == x);
             });
 
             _service = new MessageService(_repo.Object, _validator);
@@ -70,34 +78,34 @@ namespace Services.Tester
         [TestMethod]
         public void Add_WithNoContent_ThenError()
         {
-            message.Content = BlankString;
-            var res = _service.Add(message);
+            _message.Content = BLANK_STRING;
+            var res = _service.Add(_message);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
         public void Add_WithNoReceipt_ThenError()
         {
-            message.Receipt = null;
-            var res = _service.Add(message);
+            _message.Receipt = null;
+            var res = _service.Add(_message);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
         public void Add_WithNoSender_ThenError()
         {
-            message.Sender = null;
-            var res = _service.Add(message);
+            _message.Sender = null;
+            var res = _service.Add(_message);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
         public void Add_WithMinCreationDate_ThenNow()
         {
-            message.CreationDate = DateTime.Now;
-            _defaultObjects.Add(message);
-            message.CreationDate = DateTime.MinValue;
-            var res = _service.Add(message);
+            _message.CreationDate = DateTime.Now;
+            _defaultObjects.Add(_message);
+            _message.CreationDate = DateTime.MinValue;
+            var res = _service.Add(_message);
             var d = res.Value.CreationDate;
             Assert.AreEqual(DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day, d.Year + d.Month + d.Day);
         }

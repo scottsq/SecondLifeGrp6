@@ -14,27 +14,27 @@ namespace Services.Tester
     [TestClass]
     public class PhotoServiceTester : GenericServiceTester<Photo>
     {
-        private Photo photo = new Photo();
-        private Product p1;
-        private Product p2;
+        private Photo _photo = new Photo();
+        private Photo _photo1 = new Photo();
+        private Photo _photo2 = new Photo();
+        private Product _p1 = new Product();
+        private Product _p2 = new Product();
 
         public PhotoServiceTester()
         {
-            p1 = new Product(); p1.Id = 0;
-            p2 = new Product(); p2.Id = 1;
-
-            photo.Id = 2;
-            photo.Product = p1;
-            photo.Url = "url1";
-
-            var ph1 = new Photo();
-            ph1.Id = 0; ph1.Product = p1; ph1.Url = "url2";
-
-            var ph2 = new Photo();
-            ph2.Id = 1; ph2.Product = p2; ph2.Url = "url3";
-
-            InitBehavior(ph1, ph2);
+            CreateInstances();
+            InitBehavior(_photo1, _photo2);
             InitTests();
+        }
+
+        private void CreateInstances()
+        {
+            _p1.Id = 0;
+            _p2.Id = 1;
+
+            _photo.Id  = 2; _photo.Product  = _p1; _photo.Url  = "url1";
+            _photo1.Id = 0; _photo1.Product = _p1; _photo1.Url = "url2";
+            _photo2.Id = 1; _photo2.Product = _p2; _photo2.Url = "url3";
         }
 
         private void InitTests()
@@ -42,14 +42,14 @@ namespace Services.Tester
             var pRepo = new Mock<IRepository<Product>>();
             pRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
             {
-                if (x == p1.Id) return p1;
-                if (x == p2.Id) return p2;
+                if (x == _p1.Id) return _p1;
+                if (x == _p2.Id) return _p2;
                 return null;
             });
 
             _validator = new PhotoValidator(_repo.Object, new ValidationModel<bool>(), pRepo.Object);
-            _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x => {
-                return _workingObjects.Find(m => m.Id == Int32.Parse(x[0].ToString()));
+            _repo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x => {
+                return _workingObjects.Find(m => m.Id == x);
             });
 
             _service = new PhotoService(_repo.Object, _validator);
@@ -59,20 +59,20 @@ namespace Services.Tester
         [TestMethod]
         public void GetByProduct_WithP1_ThenNotEmpty()
         {
-            Assert.AreNotEqual(0, ((PhotoService)_service).GetByProduct(p1.Id));
+            Assert.AreNotEqual(0, ((PhotoService)_service).GetByProduct(_p1.Id));
         }
 
         [TestMethod]
         public void GetByProduct_WithP2_ThenEmpty()
         {
-            Assert.AreNotEqual(0, ((PhotoService)_service).GetByProduct(p2.Id));
+            Assert.AreNotEqual(0, ((PhotoService)_service).GetByProduct(_p2.Id));
         }
 
         [TestMethod]
         public void Add_WithBlankUrl_ThenValidationError()
         {
-            photo.Url = "    ";
-            Assert.AreNotEqual(0, _service.Add(photo));
+            _photo.Url = "    ";
+            Assert.AreNotEqual(0, _service.Add(_photo));
         }
     }
 }

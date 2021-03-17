@@ -14,28 +14,29 @@ namespace Services.Tester
     [TestClass]
     public class ProductTagServiceTester : GenericServiceTester<ProductTag>
     {
-        private ProductTag productTag = new ProductTag();
-        private ProductTag pt1 = new ProductTag();
-        private ProductTag pt2 = new ProductTag();
-        private Product p1 = new Product();
-        private Product p2 = new Product();
-        private Tag t1 = new Tag();
-        private Tag t2 = new Tag();
+        private ProductTag _productTag = new ProductTag();
+        private ProductTag _productTag1 = new ProductTag();
+        private ProductTag _productTag2 = new ProductTag();
+        private Product _p1 = new Product();
+        private Product _p2 = new Product();
+        private Tag _t1 = new Tag();
+        private Tag _t2 = new Tag();
 
         public ProductTagServiceTester()
         {
-            p1.Id = 0; p2.Id = 1;
-            t1.Id = 0; t2.Id = 1;
-
-            productTag.Id = 2;
-            productTag.Product = p1;
-            productTag.Tag = t2;
-
-            pt1.Id = 0; pt1.Product = p1; pt1.Tag = t1;
-            pt2.Id = 1; pt2.Product = p2; pt2.Tag = t2;
-
-            InitBehavior(pt1, pt2);
+            CreateInstances();
+            InitBehavior(_productTag1, _productTag2);
             InitTests();
+        }
+
+        private void CreateInstances()
+        {
+            _p1.Id = 0; _p2.Id = 1;
+            _t1.Id = 0; _t2.Id = 1;
+
+            _productTag.Id  = 2; _productTag.Product  = _p1; _productTag.Tag  = _t2;
+            _productTag1.Id = 0; _productTag1.Product = _p1; _productTag1.Tag = _t1;
+            _productTag2.Id = 1; _productTag2.Product = _p2; _productTag2.Tag = _t2;
         }
 
         private void InitTests()
@@ -43,21 +44,23 @@ namespace Services.Tester
             var pRepo = new Mock<IRepository<Product>>();
             pRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
             {
-                if (x == p1.Id) return p1;
-                if (x == p2.Id) return p2;
+                if (x == _p1.Id) return _p1;
+                if (x == _p2.Id) return _p2;
                 return null;
             });
+
             var tRepo = new Mock<IRepository<Tag>>();
             tRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
             {
-                if (x == t1.Id) return t1;
-                if (x == t2.Id) return t2;
+                if (x == _t1.Id) return _t1;
+                if (x == _t2.Id) return _t2;
                 return null;
             });
 
             _validator = new ProductTagValidator(_repo.Object, new ValidationModel<bool>(), pRepo.Object, tRepo.Object);
-            _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x => {
-                return _workingObjects.Find(m => m.Id == Int32.Parse(x[0].ToString()));
+
+            _repo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x => {
+                return _workingObjects.Find(m => m.Id == x);
             });
 
             _service = new ProductTagService(_repo.Object, _validator);
@@ -67,14 +70,14 @@ namespace Services.Tester
         [TestMethod]
         public void GetByProductId_WithP1_ThenNotEmpty()
         {
-            var res = ((ProductTagService)_service).GetByProductId(p1.Id);
+            var res = ((ProductTagService)_service).GetByProductId(_p1.Id);
             Assert.AreNotEqual(0, res.Count);
         }
 
         [TestMethod]
         public void GetByProductId_WithP2_ThenEmpty()
         {
-            var res = ((ProductTagService)_service).GetByProductId(p2.Id);
+            var res = ((ProductTagService)_service).GetByProductId(_p2.Id);
             Assert.AreEqual(0, res.Count);
         }
     }

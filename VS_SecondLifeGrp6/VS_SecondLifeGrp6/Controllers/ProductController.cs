@@ -20,6 +20,7 @@ namespace VS_SLG6.Api.Controllers
         public ActionResult<List<Product>> List()
         {
             var res = _service.List();
+            for (var i = 0; i < res.Count; i++) System.Console.WriteLine(res[i].ToString());
             if (res.Count == 0) return NoContent();
             return res;
         }

@@ -16,30 +16,45 @@ namespace Services.Tester
     [TestClass]
     public class UserServiceTester : GenericServiceTester<User>
     {
-        private const string TooLongString = "aaabbbcccdddeeefffggghhhiiijjjkkk";
-        private const string BlankString = "     ";
-        private User user = new User();
+        private const string TOO_LONG_STRING = "aaabbbcccdddeeefffggghhhiiijjjkkk";
+        private const string BLANCK_STRING = "     ";
+        private User _user = new User();
+        private User _user1 = new User();
+        private User _user2 = new User();
 
         public UserServiceTester()
         {
-            user.Login = "John";
-            user.Password = "Smith";
-            user.Email = "john.smith@lecnam.net";
-            user.Name = "John Smith";
-            user.Id = 2;
-            var u = new User();
-            u.Id = 0; u.Login = "test"; u.Password = "test"; u.Email = "test@test.test"; u.Name = "test";
-            var u2 = new User();
-            u2.Id = 1; u2.Login = "test2"; u2.Password = "test2"; u2.Email = "test@test.test"; u2.Name = "test2";
-            InitBehavior(u, u2, user);
+            CreateInstances();
+            InitBehavior(_user1, _user2, _user);
             InitTests();
+        }
+
+        private void CreateInstances()
+        {
+            _user.Id = 2;
+            _user.Login = "John";
+            _user.Password = "Smith";
+            _user.Email = "john.smith@lecnam.net";
+            _user.Name = "John Smith";
+
+            _user1.Id = 0; 
+            _user1.Login = "test"; 
+            _user1.Password = "test"; 
+            _user1.Email = "test@test.test"; 
+            _user1.Name = "test";
+
+            _user2.Id = 1; 
+            _user2.Login = "test2"; 
+            _user2.Password = "test2"; 
+            _user2.Email = "test@test.test";
+            _user2.Name = "test2";
         }
 
         public void InitTests()
         {
             _validator = new UserValidator(_repo.Object, new ValidationModel<bool>());
-            _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x => { 
-                return _workingObjects.Find(u => u.Id == Int32.Parse(x[0].ToString()));
+            _repo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x => { 
+                return _workingObjects.Find(u => u.Id == x);
             });
 
             _service = new UserService(_repo.Object, _validator);
@@ -49,64 +64,64 @@ namespace Services.Tester
         [TestMethod]
         public void Add_WithEmptyLogin_ThenError()
         {
-            user.Login = null;
-            var res = _service.Add(user);
+            _user.Login = null;
+            var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
         public void Add_WithBlankLogin_ThenError()
         {
-            user.Login = BlankString;
-            var res = _service.Add(user);
+            _user.Login = BLANCK_STRING;
+            var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
         public void Add_WithTooLongLogin_ThenError()
         {
-            user.Login = TooLongString;
-            var res = _service.Add(user);
+            _user.Login = TOO_LONG_STRING;
+            var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
         public void Add_WithBlankPassword_ThenError()
         {
-            user.Password = BlankString;
-            var res = _service.Add(user);
+            _user.Password = BLANCK_STRING;
+            var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
         public void Add_WithEmptyPassword_ThenError()
         {
-            user.Password = null;
-            var res = _service.Add(user);
+            _user.Password = null;
+            var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
         public void Add_WithTooLongPassword_ThenError()
         {
-            user.Password = TooLongString;
-            var res = _service.Add(user);
+            _user.Password = TOO_LONG_STRING;
+            var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
         public void Add_WithEmptydMail_ThenError()
         {
-            user.Email = null;
-            var res = _service.Add(user);
+            _user.Email = null;
+            var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
         public void Add_WithInvalidMail_ThenError()
         {
-            user.Email = TooLongString;
-            var res = _service.Add(user);
+            _user.Email = TOO_LONG_STRING;
+            var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
@@ -132,9 +147,9 @@ namespace Services.Tester
         [TestMethod]
         public void FindByMail_WithUser_ThenUser()
         {
-            _service.Add(user);
-            var res = ((UserService)_service).FindByMail(user.Email);
-            Assert.AreEqual(user, res.Value);
+            _service.Add(_user);
+            var res = ((UserService)_service).FindByMail(_user.Email);
+            Assert.AreEqual(_user, res.Value);
         }
     }
 }
