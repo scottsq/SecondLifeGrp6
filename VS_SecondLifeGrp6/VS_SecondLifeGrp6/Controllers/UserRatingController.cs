@@ -33,10 +33,10 @@ namespace VS_SLG6.Controllers
             return rating;
         }
 
-        [HttpGet("origin/{id}")]
-        public ActionResult<List<UserRating>> GetUserRating(int id)
+        [HttpGet("origin/{idOrigin}/target/{idTarget}")]
+        public ActionResult<UserRating> GetUserRating(int idOrigin, int idTarget)
         {
-            return _service.GetUserRatings(id);
+            return _service.GetUserRating(idOrigin, idTarget);
         }
        
         [HttpGet("target/{id}")]

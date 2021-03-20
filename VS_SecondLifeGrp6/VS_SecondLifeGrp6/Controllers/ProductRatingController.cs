@@ -33,10 +33,10 @@ namespace VS_SLG6.Controllers
             return rating;
         }
 
-        [HttpGet("user/{id}")]
-        public ActionResult<List<ProductRating>> GetUserRating(int id)
+        [HttpGet("{idProduct}/user/{idUser}")]
+        public ActionResult<ProductRating> GetUserRating(int idProduct, int idUser)
         {
-            return _service.GetUserRatings(id);
+            return _service.GetUserRating(idProduct, idUser);
         }
        
         [HttpGet("product/{id}")]
@@ -48,7 +48,7 @@ namespace VS_SLG6.Controllers
         [HttpGet("product/{id}/average")]
         public ActionResult<double> GetAverageProductRating(int id)
         {
-            return _service.GetProductRating(id);
+            return _service.GetAverageRating(id);
         }
         #endregion
 

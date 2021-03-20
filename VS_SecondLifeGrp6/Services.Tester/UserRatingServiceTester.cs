@@ -69,6 +69,24 @@ namespace Services.Tester
         }
 
         [TestMethod]
+        public void Add_WithUnknownOrigin_ThenError()
+        {
+            var o = new User(); o.Id = -1;
+            _rating.Origin = o;
+            var res = _service.Add(_rating);
+            Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
+        public void Add_WithUnknownTarget_ThenError()
+        {
+            var t = new User(); t.Id = -1;
+            _rating.Target = t;
+            var res = _service.Add(_rating);
+            Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
         public void GetAverageRating_WithU1_Then0()
         {
             var res = ((UserRatingService)_service).GetAverageRating(_u1.Id);
@@ -83,17 +101,17 @@ namespace Services.Tester
         }
 
         [TestMethod]
-        public void GetUserRatings_WithU1_ThenNotEmpty()
+        public void GetUserRatings_WithU1AndU2_ThenNotNull()
         {
-            var res = ((UserRatingService)_service).GetUserRatings(_u1.Id);
-            Assert.AreNotEqual(0, res.Count);
+            var res = ((UserRatingService)_service).GetUserRating(_u1.Id, _u2.Id);
+            Assert.AreNotEqual(null, res);
         }
 
         [TestMethod]
-        public void GetUserRatings_WithU2_ThenEmpty()
+        public void GetUserRatings_WithU2AndU3_ThenEmpty()
         {
-            var res = ((UserRatingService)_service).GetUserRatings(_u2.Id);
-            Assert.AreEqual(0, res.Count);
+            var res = ((UserRatingService)_service).GetUserRating(_u2.Id, _u3.Id);
+            Assert.AreEqual(null, res);
         }
 
         [TestMethod]

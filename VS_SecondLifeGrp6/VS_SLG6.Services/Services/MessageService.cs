@@ -20,7 +20,7 @@ namespace VS_SLG6.Services.Services
             return _repo.All(x => (x.Sender.Id == idOrigin && x.Receipt.Id == idDest) || (x.Sender.Id == idDest && x.Receipt.Id == idOrigin));
         }
 
-        public List<Message> GetConversations(int idOrigin)
+        public List<Message> ListConversations(int idOrigin)
         {
             var list = _repo.All(x => x.Sender.Id == idOrigin || x.Receipt.Id == idOrigin);
             Func<Message, List<Message>, bool> contains = (Message item, List<Message> list) => {

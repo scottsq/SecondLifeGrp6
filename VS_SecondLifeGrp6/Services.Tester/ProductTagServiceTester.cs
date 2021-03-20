@@ -68,6 +68,24 @@ namespace Services.Tester
         }
 
         [TestMethod]
+        public void Add_WithUnknownProduct_ThenError()
+        {
+            var p = new Product(); p.Id = -1;
+            _productTag.Product = p;
+            var res = _service.Add(_productTag);
+            Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
+        public void Add_WithUnknownTag_ThenError()
+        {
+            var t = new Tag(); t.Id = -1;
+            _productTag.Tag = t;
+            var res = _service.Add(_productTag);
+            Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
         public void GetByProductId_WithP1_ThenNotEmpty()
         {
             var res = ((ProductTagService)_service).GetByProductId(_p1.Id);

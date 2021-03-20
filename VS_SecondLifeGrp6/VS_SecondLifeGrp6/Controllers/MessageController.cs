@@ -39,7 +39,7 @@ namespace VS_SLG6.Api.Controllers
         [HttpGet("{idOrigin}")]
         public ActionResult<List<Message>> GetConversations(int idOrigin)
         {
-            return _service.GetConversations(idOrigin);
+            return _service.ListConversations(idOrigin);
         }
 
         [HttpGet("{idOrigin}/{idDest}")]

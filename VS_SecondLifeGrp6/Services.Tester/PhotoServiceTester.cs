@@ -57,6 +57,15 @@ namespace Services.Tester
         }
 
         [TestMethod]
+        public void Add_WithUnknownProduct_ThenError()
+        {
+            var p = new Product(); p.Id = -1;
+            _photo.Product = p;
+            var res = _service.Add(_photo);
+            Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
         public void GetByProduct_WithP1_ThenNotEmpty()
         {
             Assert.AreNotEqual(0, ((PhotoService)_service).GetByProduct(_p1.Id));

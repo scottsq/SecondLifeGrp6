@@ -47,8 +47,8 @@ namespace VS_SLG6.Services.Validators
             var p = _repoProduct.FindOne(obj.Product.Id);
             if (p == null) _validationModel.Errors.Add("Proposal Product doesn't exist.");
             else obj.Product = p;
-            // Init state as ACTIVE
-            obj.State = State.ACTIVE;
+            // Check state
+            if (!Enum.IsDefined(typeof(State), obj.State)) _validationModel.Errors.Add("Proposal State doesn't exist.");
             _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;
         }

@@ -7,7 +7,7 @@ namespace VS_SLG6.Services.Services
 {
     public interface IUserRatingService : IService<UserRating>
     {
-        public List<UserRating> GetUserRatings(int id);
+        public UserRating GetUserRating(int idOrigin, int idTarget);
         public double GetAverageRating(int id);
         public List<UserRating> GetRatings(int id);
     }

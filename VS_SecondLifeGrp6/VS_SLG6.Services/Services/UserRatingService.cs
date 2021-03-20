@@ -26,9 +26,9 @@ namespace VS_SLG6.Services.Services
             return _repo.All(x => x.Target.Id == id);
         }
 
-        public List<UserRating> GetUserRatings(int id)
+        public UserRating GetUserRating(int idOrigin, int idTarget)
         {
-            return _repo.All(x => x.Origin.Id == id);
+            return _repo.All(x => x.Origin.Id == idOrigin && x.Target.Id == idTarget).FirstOrDefault();
         }
     }
 }

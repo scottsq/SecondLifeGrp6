@@ -15,7 +15,6 @@ namespace Services.Tester
     [TestClass]
     public class MessageServiceTester : GenericServiceTester<Message>
     {
-        private const string BLANK_STRING = "     ";
         private Message _message = new Message();
         private Message _m1 = new Message();
         private Message _m2 = new Message();
@@ -76,25 +75,9 @@ namespace Services.Tester
         }
 
         [TestMethod]
-        public void Add_WithNoContent_ThenError()
+        public void Add_WithBlankContent_ThenError()
         {
             _message.Content = BLANK_STRING;
-            var res = _service.Add(_message);
-            Assert.AreNotEqual(0, res.Errors.Count);
-        }
-
-        [TestMethod]
-        public void Add_WithNoReceipt_ThenError()
-        {
-            _message.Receipt = null;
-            var res = _service.Add(_message);
-            Assert.AreNotEqual(0, res.Errors.Count);
-        }
-
-        [TestMethod]
-        public void Add_WithNoSender_ThenError()
-        {
-            _message.Sender = null;
             var res = _service.Add(_message);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
@@ -108,6 +91,24 @@ namespace Services.Tester
             var res = _service.Add(_message);
             var d = res.Value.CreationDate;
             Assert.AreEqual(DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day, d.Year + d.Month + d.Day);
+        }
+
+        [TestMethod]
+        public void Add_WithUnknownSender_ThenError()
+        {
+            var u = new User(); u.Id = -1;
+            _message.Sender = u;
+            var res = _service.Add(_message);
+            Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
+        public void Add_WithUnknownReceipt_ThenError()
+        {
+            var u = new User(); u.Id = -1;
+            _message.Receipt = u;
+            var res = _service.Add(_message);
+            Assert.AreNotEqual(0, res.Errors.Count);
         }
 
         [TestMethod]
@@ -134,23 +135,23 @@ namespace Services.Tester
         }
 
         [TestMethod]
-        public void GetConversations_WithSender1_ThenListNotEmpty()
+        public void ListConversations_WithSender1_ThenListNotEmpty()
         {
-            var res = ((MessageService)_service).GetConversations(_service.Get(0).Sender.Id);
+            var res = ((MessageService)_service).ListConversations(_service.Get(0).Sender.Id);
             Assert.AreNotEqual(0, res.Count);
         }
 
         [TestMethod]
-        public void GetConversations_WithReceipt1_ThenListNotEmpty()
+        public void ListConversations_WithReceipt1_ThenListNotEmpty()
         {
-            var res = ((MessageService)_service).GetConversations(_service.Get(0).Receipt.Id);
+            var res = ((MessageService)_service).ListConversations(_service.Get(0).Receipt.Id);
             Assert.AreNotEqual(0, res.Count);
         }
 
         [TestMethod]
-        public void GetConversations_WithReceipt2_ThenListEmpty()
+        public void ListConversations_WithReceipt2_ThenListEmpty()
         {
-            var res = ((MessageService)_service).GetConversations(_defaultObjects[1].Receipt.Id);
+            var res = ((MessageService)_service).ListConversations(_defaultObjects[1].Receipt.Id);
             Assert.AreEqual(0, res.Count);
         }
 

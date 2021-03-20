@@ -17,7 +17,6 @@ namespace Services.Tester
     public class UserServiceTester : GenericServiceTester<User>
     {
         private const string TOO_LONG_STRING = "aaabbbcccdddeeefffggghhhiiijjjkkk";
-        private const string BLANCK_STRING = "     ";
         private User _user = new User();
         private User _user1 = new User();
         private User _user2 = new User();
@@ -62,9 +61,17 @@ namespace Services.Tester
         }
 
         [TestMethod]
-        public void Add_WithEmptyLogin_ThenError()
+        public void Add_WithBlankName_ThenError()
         {
-            _user.Login = null;
+            _user.Name = BLANK_STRING;
+            var res = _service.Add(_user);
+            Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
+        public void Add_WithTooLongName_ThenError()
+        {
+            _user.Name = TOO_LONG_STRING;
             var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
@@ -72,7 +79,7 @@ namespace Services.Tester
         [TestMethod]
         public void Add_WithBlankLogin_ThenError()
         {
-            _user.Login = BLANCK_STRING;
+            _user.Login = BLANK_STRING;
             var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
@@ -88,15 +95,7 @@ namespace Services.Tester
         [TestMethod]
         public void Add_WithBlankPassword_ThenError()
         {
-            _user.Password = BLANCK_STRING;
-            var res = _service.Add(_user);
-            Assert.AreNotEqual(0, res.Errors.Count);
-        }
-
-        [TestMethod]
-        public void Add_WithEmptyPassword_ThenError()
-        {
-            _user.Password = null;
+            _user.Password = BLANK_STRING;
             var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
@@ -105,14 +104,6 @@ namespace Services.Tester
         public void Add_WithTooLongPassword_ThenError()
         {
             _user.Password = TOO_LONG_STRING;
-            var res = _service.Add(_user);
-            Assert.AreNotEqual(0, res.Errors.Count);
-        }
-
-        [TestMethod]
-        public void Add_WithEmptydMail_ThenError()
-        {
-            _user.Email = null;
             var res = _service.Add(_user);
             Assert.AreNotEqual(0, res.Errors.Count);
         }

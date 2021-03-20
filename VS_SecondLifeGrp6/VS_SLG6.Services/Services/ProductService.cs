@@ -44,13 +44,13 @@ namespace VS_SLG6.Services.Services
             {
                 for (int i = 0; i < keys.Length; i++)
                 {
-                    if (x.Name.Contains(keys[i])) return true;
+                    if (x.Name.Contains(keys[i].Trim())) return true;
                 }
                 return false;
             }).ToList();
         }
 
-        private List<Tag> GetProductTags(int id)
+        public List<Tag> GetProductTags(int id)
         {
             var list = _repoProductTag.All(x => x.Product.Id == id);
             return list.Aggregate(new List<Tag>(), (acc, item) =>
@@ -74,6 +74,7 @@ namespace VS_SLG6.Services.Services
 
         public List<T> OrderByOccurence<T>(List<T> list)
         {
+            if (list == null) return null;
             var orderedList = list.GroupBy(x => x).OrderByDescending(x => x.Count());
 
             // Need to convert IOrderedEnumerable<IGrouping<>> into List<Product>

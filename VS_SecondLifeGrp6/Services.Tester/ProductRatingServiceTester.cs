@@ -77,31 +77,56 @@ namespace Services.Tester
         }
 
         [TestMethod]
-        public void GetProductRating_WithP1_ThenNot0()
+        public void Add_WithUnknownProduct_ThenError()
         {
-            var res = ((ProductRatingService)_service).GetProductRating(_p1.Id);
+            var p = new Product(); p.Id = -1;
+            _rating.Product = p;
+            var res = _service.Add(_rating);
+            Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
+        public void Add_WithUnknownUser_ThenError()
+        {
+            var u = new User(); u.Id = -1;
+            _rating.User = u;
+            var res = _service.Add(_rating);
+            Assert.AreNotEqual(0, res.Errors.Count);
+        }
+
+        [TestMethod]
+        public void GetAverageRating_WithP1_ThenNot0()
+        {
+            var res = ((ProductRatingService)_service).GetAverageRating(_p1.Id);
             Assert.AreNotEqual(0, res);
         }
 
         [TestMethod]
-        public void GetProductRating_WithP2_Then0()
+        public void GetAverageRating_WithP2_Then0()
         {
-            var res = ((ProductRatingService)_service).GetProductRating(_p2.Id);
+            var res = ((ProductRatingService)_service).GetAverageRating(_p2.Id);
             Assert.AreEqual(0, res);
         }
 
         [TestMethod]
-        public void GetUserRatings_WithU1_ThenNotEmpty()
+        public void GetUserRatings_WithP1AndU1_ThenNotNull()
         {
-            var res = ((ProductRatingService)_service).GetUserRatings(_u1.Id);
-            Assert.AreNotEqual(0, res.Count);
+            var res = ((ProductRatingService)_service).GetUserRating(_p1.Id, _u1.Id);
+            Assert.AreNotEqual(null, res);
         }
 
         [TestMethod]
-        public void GetUserRatings_WithU2_ThenEmpty()
+        public void GetUserRatings_WithP2AndU1_ThenNull()
         {
-            var res = ((ProductRatingService)_service).GetUserRatings(_u2.Id);
-            Assert.AreEqual(0, res.Count);
+            var res = ((ProductRatingService)_service).GetUserRating(_p2.Id, _u1.Id);
+            Assert.AreEqual(null, res);
+        }
+
+        [TestMethod]
+        public void GetUserRatings_WithP1AndU2_ThenNull()
+        {
+            var res = ((ProductRatingService)_service).GetUserRating(_p1.Id, _u2.Id);
+            Assert.AreEqual(null, res);
         }
 
         [TestMethod]

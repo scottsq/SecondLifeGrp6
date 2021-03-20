@@ -18,12 +18,21 @@ namespace Services.Tester
     [TestClass]
     public class GenericServiceTester<T> where T : class
     {
+        protected const string BLANK_STRING = "      ";
+
         protected Mock<IRepository<T>> _repo;
         protected IValidator<T> _validator;
         protected IService<T> _service;
+
+        /// <summary>
+        /// List containing untouched objects, used to be compared with the working list or reset it
+        /// </summary>
         protected List<T> _defaultObjects;
+        /// <summary>
+        /// List containing objects subject to modifications depending on tests
+        /// </summary>
         protected List<T> _workingObjects;
-        protected List<string> nullFields;
+        protected List<string> nullFields = new List<string>();
         
         public GenericServiceTester()
         {
@@ -34,7 +43,9 @@ namespace Services.Tester
         public void InitBehavior(params T[] objs)
         {
             _defaultObjects = objs.ToList();
-            _workingObjects = _defaultObjects.GetRange(0, 1);
+            // Adding only the first one so we can test adding the second one without doing it in children service testers
+            _workingObjects = new List<T> { objs[0] };
+
             _repo.Setup(x => x.All(It.IsAny<Expression<Func<T, bool>>>())).Returns(_workingObjects);
             _repo.Setup(x => x.Add(It.IsAny<T>())).Returns<T>(x => {
                 _workingObjects.Add(x);
@@ -75,7 +86,6 @@ namespace Services.Tester
         {
             Assert.AreEqual(null, _service.Get(-1));
         }
-
 
         [TestMethod]
         public virtual void Add_WithObject0_ThenValidationError()
