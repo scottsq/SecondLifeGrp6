@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.secondlife.R;
 import com.example.secondlife.databinding.FragmentHomeBinding;
+import com.example.secondlife.model.Photo;
 import com.example.secondlife.model.Product;
 import com.example.secondlife.model.User;
 import com.example.secondlife.network.OkHttpClass;
@@ -27,7 +28,9 @@ import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -40,6 +43,7 @@ public class HomeFragment extends Fragment {
 
     private ProductRecyclerViewAdapter adapter;
     private List<Product> products = new ArrayList<>();
+    private List<Photo> photos = new ArrayList<>();
 
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
@@ -105,7 +109,7 @@ public class HomeFragment extends Fragment {
                 }
 
                 //Pour le recyclerViewProduct
-                adapter = new ProductRecyclerViewAdapter(products);
+                adapter = new ProductRecyclerViewAdapter(products, photos, getContext());
                 Log.v("Product list: ", products.toString());
                 RecyclerView recyclerview = binding.recyclerViewProduct;
                 recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -120,6 +124,21 @@ public class HomeFragment extends Fragment {
                 // Log error here since request failed
                 Log.i("test","fail product");
                 t.printStackTrace();
+                Random r = new Random();
+                for (int i=0; i<5; i++) {
+                    Product p = new Product();
+                    p.setId(i); p.setName("Product " + i); p.setPrice(r.nextInt(50));
+                    products.add(p);
+                    Photo ph = new Photo();
+                    ph.setId(i);
+                    ph.setUrl("https://images-na.ssl-images-amazon.com/images/I/51XVjiMwr2L._AC_.jpg");
+                    photos.add(ph);
+                }
+
+                adapter = new ProductRecyclerViewAdapter(products, photos, getContext());
+                RecyclerView recyclerview = binding.recyclerViewProduct;
+                recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
+                recyclerview.setAdapter(adapter);
             }
         });
 
