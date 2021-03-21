@@ -3,6 +3,7 @@ package com.example.secondlife.ui.home;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,17 +23,23 @@ import com.example.secondlife.model.Product;
 import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRecyclerViewAdapter.ProdcutViewHolder>{
     private List<Product> dataSetProduct;
     private List<Photo> dataSetPhoto;
     private Context context;
+    private List<ProdcutViewHolder> dataSetHolder = new ArrayList<>();
 
     public ProductRecyclerViewAdapter(List<Product> products, List<Photo> photos, Context context) {
         this.dataSetProduct = products;
         this.dataSetPhoto = photos;
         this.context = context;
+    }
+
+    public ProdcutViewHolder getHolder(int position) {
+        return dataSetHolder.get(position);
     }
 
     @NonNull
@@ -45,7 +52,8 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
 
     @Override
     public void onBindViewHolder(@NonNull ProdcutViewHolder holder, final int position) {
-        Picasso.get().load(dataSetPhoto.get(position).getUrl()).placeholder(R.drawable.ic_baseline_image_search_24).into(holder.getImageView());
+        String url = dataSetPhoto.get(position).getUrl();
+        Picasso.get().load(url).placeholder(R.drawable.ic_baseline_image_search_24).into(holder.getImageView());
         holder.getNameView().setText(dataSetProduct.get(position).getName());
         holder.getPriceView().setText(dataSetProduct.get(position).getPrice() + "€");
         holder.getBtnView().setOnClickListener(new View.OnClickListener() {
@@ -54,11 +62,16 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
                 Toast.makeText(context, "Clicked on " + dataSetProduct.get(position).getName(), Toast.LENGTH_SHORT).show();
             }
         });
+        dataSetHolder.add(holder);
     }
 
     @Override
     public int getItemCount() {
         return dataSetProduct.size();
+    }
+
+    public int GetHoldersCount() {
+        return dataSetHolder.size();
     }
 
     public static class ProdcutViewHolder extends RecyclerView.ViewHolder {

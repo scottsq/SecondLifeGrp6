@@ -25,6 +25,7 @@ import com.example.secondlife.network.ProductService;
 import com.example.secondlife.network.UserService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -125,13 +126,13 @@ public class HomeFragment extends Fragment {
                 Log.i("test","fail product");
                 t.printStackTrace();
                 Random r = new Random();
-                for (int i=0; i<5; i++) {
+                for (int i=0; i<15; i++) {
                     Product p = new Product();
                     p.setId(i); p.setName("Product " + i); p.setPrice(r.nextInt(50));
                     products.add(p);
                     Photo ph = new Photo();
                     ph.setId(i);
-                    ph.setUrl("https://images-na.ssl-images-amazon.com/images/I/51XVjiMwr2L._AC_.jpg");
+                    ph.setUrl("https://whatflower.net/imgmini/" + (i+1) + ".png");
                     photos.add(ph);
                 }
 
@@ -139,6 +140,7 @@ public class HomeFragment extends Fragment {
                 RecyclerView recyclerview = binding.recyclerViewProduct;
                 recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerview.setAdapter(adapter);
+                adapter.notifyDataSetChanged(); // this refresh the list, only call it in ui thread
             }
         });
 
