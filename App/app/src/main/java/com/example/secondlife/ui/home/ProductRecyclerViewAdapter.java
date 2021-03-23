@@ -1,10 +1,12 @@
 package com.example.secondlife.ui.home;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,24 +17,35 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.secondlife.MainActivity;
 import com.example.secondlife.R;
 import com.example.secondlife.model.Photo;
 import com.example.secondlife.model.Product;
+import com.example.secondlife.ui.ProductDetails;
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
+
+import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 
 public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRecyclerViewAdapter.ProdcutViewHolder>{
     private List<Product> dataSetProduct;
     private List<Photo> dataSetPhoto;
     private Context context;
     private List<ProdcutViewHolder> dataSetHolder = new ArrayList<>();
+    private FragmentActivity fragmentActivity;
+    private ViewGroup parent;
 
-    public ProductRecyclerViewAdapter(List<Product> products, List<Photo> photos, Context context) {
+    public ProductRecyclerViewAdapter(FragmentActivity f, List<Product> products, List<Photo> photos, Context context) {
+        this.fragmentActivity = f;
         this.dataSetProduct = products;
         this.dataSetPhoto = photos;
         this.context = context;
@@ -47,6 +60,7 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
     public ProdcutViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_product_item, parent, false);
         ProdcutViewHolder holder = new ProdcutViewHolder(itemView);
+        this.parent = parent;
         return holder;
     }
 
@@ -59,7 +73,13 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
         holder.getBtnView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, "Clicked on " + dataSetProduct.get(position).getName(), Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(parent.getContext(), ProductDetails.class);
+                Gson gson = new Gson();
+                String product = gson.toJson(dataSetProduct.get(position));
+                String photo = gson.toJson(dataSetPhoto.get(position));
+                i.putExtra("product", product);
+                i.putExtra("photo", photo);
+                parent.getContext().startActivity(i);
             }
         });
         dataSetHolder.add(holder);
@@ -73,6 +93,10 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
     public int GetHoldersCount() {
         return dataSetHolder.size();
     }
+
+
+
+
 
     public static class ProdcutViewHolder extends RecyclerView.ViewHolder {
 
@@ -92,39 +116,17 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
         public TextView getNameView() {
             return name;
         }
+
         public TextView getPriceView() {
             return price;
         }
+
         public Button getBtnView() {
             return btn;
         }
+
         public ImageView getImageView() {
             return img;
-        }
-    }
-
-    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
-
-        public DownloadImageTask(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-
-        protected Bitmap doInBackground(String... urls) {
-            String urldisplay = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urldisplay).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
         }
     }
 }

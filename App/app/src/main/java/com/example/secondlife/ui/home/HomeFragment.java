@@ -75,18 +75,7 @@ public class HomeFragment extends Fragment {
         apiService.getUser(id).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                // int statusCode = response.code();
                 User user = response.body();
-                //Log.v("test user" , "test");
-//                try {
-//                    Log.v("test user" , response.errorBody().string());
-//                }
-//                catch (IOException e){};
-                //Log.v("Name: ",user.getName());
-                //Log.v("Login :",user.getLogin());
-
-                //getResources().getResourceEntryName(user.getId())
-                //localhost:61169/api/user/1
             }
 
             @Override
@@ -110,7 +99,7 @@ public class HomeFragment extends Fragment {
                 }
 
                 //Pour le recyclerViewProduct
-                adapter = new ProductRecyclerViewAdapter(products, photos, getContext());
+                adapter = new ProductRecyclerViewAdapter(getActivity(), products, photos, getContext());
                 Log.v("Product list: ", products.toString());
                 RecyclerView recyclerview = binding.recyclerViewProduct;
                 recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -136,7 +125,7 @@ public class HomeFragment extends Fragment {
                     photos.add(ph);
                 }
 
-                adapter = new ProductRecyclerViewAdapter(products, photos, getContext());
+                adapter = new ProductRecyclerViewAdapter(getActivity(), products, photos, getContext());
                 RecyclerView recyclerview = binding.recyclerViewProduct;
                 recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerview.setAdapter(adapter);
