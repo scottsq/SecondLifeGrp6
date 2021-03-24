@@ -6,5 +6,6 @@
         public User Origin{ get; set; }
         public User Target { get; set; }
         public int Stars { get; set; }
+        public string Comment { get; set; }
     }
 }

@@ -48,6 +48,10 @@ namespace VS_SLG6.Services.Validators
             {
                 _validationModel.Errors.Add("Rating on this Product already exists for this User.");
             }
+            // Format Comment
+            if (obj.Comment != null && StringIsEmptyOrBlank(obj, "Comment").Value) obj.Comment = null;
+            else if (obj.Comment != null) obj.Comment = obj.Comment.Trim();
+
             _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;
         }

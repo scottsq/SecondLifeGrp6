@@ -36,16 +36,19 @@ namespace Services.Tester
             _rating.Origin = _u1;
             _rating.Target = _u3;
             _rating.Stars = 5;
-
+            _rating.Comment = "Wow trop bien!";
+                
             _rating1.Id = 0;
             _rating1.Origin = _u1;
             _rating1.Target = _u2;
             _rating1.Stars = 1;
+            _rating1.Comment = null;
 
             _rating2.Id = 1;
             _rating2.Origin = _u2;
             _rating2.Target = _u1;
             _rating2.Stars = 3;
+            _rating2.Comment = BLANK_STRING;
         }
 
         private void InitTests()
@@ -66,6 +69,13 @@ namespace Services.Tester
 
             _service = new UserRatingService(_repo.Object, _validator);
             nullFields = new List<string> { "Origin", "Target" };
+        }
+
+        [TestMethod]
+        public void Add_WithRating2_ThenCommentIsNull()
+        {
+            _service.Add(_rating2);
+            Assert.AreEqual(null, _workingObjects[_workingObjects.Count - 1].Comment);
         }
 
         [TestMethod]

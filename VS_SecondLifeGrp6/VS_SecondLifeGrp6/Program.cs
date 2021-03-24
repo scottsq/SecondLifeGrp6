@@ -15,11 +15,11 @@ namespace VS_SecondLifeGrp6
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Run();
+            CreateHostBuilder(args).Build().Run();
         }
 
-        public static IWebHost CreateHostBuilder(string[] args)
-        {
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        /*{
             var config = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddCommandLine(args)
@@ -29,12 +29,12 @@ namespace VS_SecondLifeGrp6
                     .UseConfiguration(config)
                     .UseStartup<Startup>()
                     .Build();
-        }
-       /* =>
+        }*/
+        =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                });*/
+                });
     }
 }
