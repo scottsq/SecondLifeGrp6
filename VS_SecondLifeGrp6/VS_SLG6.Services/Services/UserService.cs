@@ -26,9 +26,10 @@ namespace VS_SLG6.Services.Services
             return _validationModel;
         }
 
-        public bool Login(User u)
+        public int Login(User u)
         {
-            return _repo.All(user => u.Login == user.Login && u.Password == user.Password).Count > 0;
+            var res = _repo.All(user => u.Login == user.Login && u.Password == user.Password);
+            return res.Count > 0 ? res[0].Id : -1;
         }
 
         public string ResetEmail(string email)

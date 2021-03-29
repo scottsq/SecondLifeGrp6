@@ -41,7 +41,7 @@ namespace VS_SLG6.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult<bool> Login(User u)
+        public ActionResult<int> Login(User u)
         {
             return _service.Login(u);
         }
