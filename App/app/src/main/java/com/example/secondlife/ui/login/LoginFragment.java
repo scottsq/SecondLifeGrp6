@@ -30,6 +30,7 @@ import com.google.gson.GsonBuilder;
 
 import java.util.Map;
 
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,13 +41,18 @@ public class LoginFragment extends Fragment {
 
     private LoginViewModel loginViewModel;
     private FragmentLoginBinding binding;
+//    private OkHttpClient testClient = OkHttpClass.getUnsafeOkHttpClient();
+//    testClient
+//    OkHttpClient.Builder builder = new OkHttpClient.Builder();
+//    builder.
+//    OkHttpClient httpClient = builder.build();
 
     Gson gson = new GsonBuilder()
             .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
             .create();
     private final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://10.0.2.2:61169/api/")
-            .client(OkHttpClass.getUnsafeOkHttpClient())
+            .client(OkHttpClass.getUnsafeOkHttpClient().newBuilder().followRedirects(false).build())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build();
 
@@ -72,27 +78,27 @@ public class LoginFragment extends Fragment {
                 u.setLogin(binding.editTextName.getText().toString());
                 u.setPassword(binding.editTextPassword.getText().toString());
 
-                apiService.loginUser(u).enqueue(new Callback<LoginResponse>() {
+                apiService.loginUser(u).enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
-                        LoginResponse check = response.body();
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        String check = response.body();
 
-                        if (check.getToken() != null)
-                        {
-                            ((View)(getActivity().findViewById(R.id.navigation_profil))).setVisibility(View.VISIBLE);
-                            ((View)(getActivity().findViewById(R.id.navigation_login))).setVisibility(View.INVISIBLE);
-
-                            ((LocalData)(getActivity().getApplication())).setUserId(check.getId());
-                            //Log.v("tamer",check.get("id"));
-                        }
-                        else
-                        {
-                            Log.v("test1","tamer");
-                        }
+//                        if (check.getToken() != null)
+//                        {
+//                            ((View)(getActivity().findViewById(R.id.navigation_profil))).setVisibility(View.VISIBLE);
+//                            ((View)(getActivity().findViewById(R.id.navigation_login))).setVisibility(View.INVISIBLE);
+//
+//                            ((LocalData)(getActivity().getApplication())).setUserId(check.getId());
+//                            //Log.v("tamer",check.get("id"));
+//                        }
+//                        else
+//                        {
+//                            Log.v("test1","tamer");
+//                        }
                     }
 
                     @Override
-                    public void onFailure(Call<LoginResponse> call, Throwable t) {
+                    public void onFailure(Call<String> call, Throwable t) {
                         // Log error here since request failed
                         Log.i("test","fail");
                         t.printStackTrace();
