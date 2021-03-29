@@ -22,4 +22,10 @@
         android:name="com.example.secondlife.ui.profil.ProfilFragment"
         android:label="@string/title_profil"
         tools:layout="@layout/fragment_profil" />
+
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="com.example.secondlife.ui.login.LoginFragment"
+        android:label="@string/connexion"
+        tools:layout="@layout/fragment_login" />
 </navigation>

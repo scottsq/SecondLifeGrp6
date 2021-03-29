@@ -32,7 +32,8 @@ public class ProductDetails extends AppCompatActivity {
 
         // Pour les info du Product
 
-        Picasso.get().load(photo.getUrl()).into((ImageView)findViewById(R.id.product_img));
+        //Picasso.get().load(photo.getUrl()).into((ImageView)findViewById(R.id.product_img));
+        Picasso.get().load(R.drawable.ic_baseline_image_search_24).into((ImageView)findViewById(R.id.product_img));
         ((TextView)findViewById(R.id.product_name)).setText(product.getName());
         ((TextView)findViewById(R.id.product_desc)).setText(product.getDescription());
         Log.d("product", product.getName());

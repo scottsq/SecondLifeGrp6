@@ -4,4 +4,5 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_profil">Profil</string>
     <string name="last_offers">Dernières offres</string>
+    <string name="connexion">Connexion</string>
 </resources>

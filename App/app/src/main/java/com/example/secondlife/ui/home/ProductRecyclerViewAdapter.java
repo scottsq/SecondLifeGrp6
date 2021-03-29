@@ -66,8 +66,9 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
 
     @Override
     public void onBindViewHolder(@NonNull ProdcutViewHolder holder, final int position) {
-        String url = dataSetPhoto.get(position).getUrl();
-        Picasso.get().load(url).placeholder(R.drawable.ic_baseline_image_search_24).into(holder.getImageView());
+        //String url = dataSetPhoto.get(position).getUrl();
+        //Picasso.get().load(url).placeholder(R.drawable.ic_baseline_image_search_24).into(holder.getImageView());
+        Picasso.get().load(R.drawable.ic_baseline_image_search_24).placeholder(R.drawable.ic_baseline_image_search_24).into(holder.getImageView());
         holder.getNameView().setText(dataSetProduct.get(position).getName());
         holder.getPriceView().setText(dataSetProduct.get(position).getPrice() + "€");
         holder.getBtnView().setOnClickListener(new View.OnClickListener() {
@@ -76,7 +77,10 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
                 Intent i = new Intent(parent.getContext(), ProductDetails.class);
                 Gson gson = new Gson();
                 String product = gson.toJson(dataSetProduct.get(position));
-                String photo = gson.toJson(dataSetPhoto.get(position));
+                //String photo = gson.toJson(dataSetPhoto.get(position));
+                Photo photoTest = new Photo();
+                photoTest.setUrl("");
+                String photo = gson.toJson(photoTest);
                 i.putExtra("product", product);
                 i.putExtra("photo", photo);
                 parent.getContext().startActivity(i);
