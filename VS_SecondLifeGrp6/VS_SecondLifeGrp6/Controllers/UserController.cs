@@ -41,9 +41,13 @@ namespace VS_SLG6.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult<int> Login(User u)
+        public ActionResult<Dictionary<string,string>> Login(User u)
         {
-            return _service.Login(u);
+            var dico = new Dictionary<string, string>();            
+            var res = _service.Login(u);
+            dico.Add("id", res.ToString());
+            if (res >= 0) dico.Add("token", "WOOOOOOOOOW TOKAN!!!");
+            return dico;
         }
 
         [HttpPost("reset")]
