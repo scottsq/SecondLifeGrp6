@@ -79,27 +79,29 @@ public class LoginFragment extends Fragment {
                 u.setLogin(binding.editTextName.getText().toString());
                 u.setPassword(binding.editTextPassword.getText().toString());
 
-                apiService.loginUser(u).enqueue(new Callback<String>() {
+                apiService.loginUser(u).enqueue(new Callback<LoginResponse>() {
                     @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        String check = response.body();
+                    public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                        LoginResponse check = response.body();
+                        //Log.v("testcheck",check.getToken());
 
-//                        if (check.getToken() != null)
-//                        {
-//                            ((View)(getActivity().findViewById(R.id.navigation_profil))).setVisibility(View.VISIBLE);
-//                            ((View)(getActivity().findViewById(R.id.navigation_login))).setVisibility(View.INVISIBLE);
-//
-//                            ((LocalData)(getActivity().getApplication())).setUserId(check.getId());
-//                            //Log.v("tamer",check.get("id"));
-//                        }
-//                        else
-//                        {
-//                            Log.v("test1","tamer");
-//                        }
+                        if (check.getToken() != null)
+                        {
+                            ((View)(getActivity().findViewById(R.id.navigation_profil))).setVisibility(View.VISIBLE);
+                            ((View)(getActivity().findViewById(R.id.navigation_login))).setVisibility(View.INVISIBLE);
+
+                            ((LocalData)(getActivity().getApplication())).setUserId(check.getId());
+                            //marche
+                            //Log.v("tamer",String.valueOf(((LocalData)(getActivity().getApplication())).getUserId()));
+                        }
+                        else
+                        {
+                            Log.v("test1","tamer");
+                        }
                     }
 
                     @Override
-                    public void onFailure(Call<String> call, Throwable t) {
+                    public void onFailure(Call<LoginResponse> call, Throwable t) {
                         // Log error here since request failed
                         Log.i("test","fail");
                         t.printStackTrace();
