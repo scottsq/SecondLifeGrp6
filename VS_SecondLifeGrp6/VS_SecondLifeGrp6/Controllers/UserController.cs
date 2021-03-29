@@ -41,9 +41,9 @@ namespace VS_SLG6.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult<string> Login(string login)
+        public ActionResult<bool> Login(User u)
         {
-            return BadRequest("Not implemented, to do!");
+            return _service.Login(u);
         }
 
         [HttpPost("reset")]
