@@ -119,7 +119,7 @@ namespace VS_SecondLifeGrp6
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
