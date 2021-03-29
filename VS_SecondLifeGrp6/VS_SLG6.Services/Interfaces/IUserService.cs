@@ -10,6 +10,6 @@ namespace VS_SLG6.Services.Services
     {
         public ValidationModel<User> FindByMail(string email);
         public string ResetEmail(string email);
-        public int Login(User u);
+        public LoginResponse Login(User u);
     }
 }
