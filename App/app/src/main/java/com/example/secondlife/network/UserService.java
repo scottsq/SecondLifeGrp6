@@ -3,6 +3,7 @@ package com.example.secondlife.network;
 import com.example.secondlife.model.User;
 
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -22,7 +23,7 @@ public interface UserService {
     Call<User> createUser(@Body User user);
 
     @POST("login")
-    Call<Integer> loginUser(@Body User user);
+    Call<Map<String, String>> loginUser(@Body User user);
 
     @PATCH("user/{id}")
     Call<User> updateUser(@Path("id") int id, @Body User user);

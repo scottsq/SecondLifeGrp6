@@ -18,6 +18,7 @@ import com.example.secondlife.LocalData;
 import com.example.secondlife.R;
 import com.example.secondlife.databinding.FragmentHomeBinding;
 import com.example.secondlife.databinding.FragmentLoginBinding;
+import com.example.secondlife.model.LoginResponse;
 import com.example.secondlife.model.Photo;
 import com.example.secondlife.model.User;
 import com.example.secondlife.network.OkHttpClass;
@@ -26,6 +27,8 @@ import com.example.secondlife.ui.ProductDetails;
 import com.example.secondlife.ui.home.HomeViewModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,17 +72,18 @@ public class LoginFragment extends Fragment {
                 u.setLogin(binding.editTextName.getText().toString());
                 u.setPassword(binding.editTextPassword.getText().toString());
 
-                apiService.loginUser(u).enqueue(new Callback<Integer>() {
+                apiService.loginUser(u).enqueue(new Callback<LoginResponse>() {
                     @Override
-                    public void onResponse(Call<Integer> call, Response<Integer> response) {
-                        int check = response.body();
+                    public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                        LoginResponse check = response.body();
 
-                        if (check >= 0)
+                        if (check.containsKey("token"))
                         {
                             ((View)(getActivity().findViewById(R.id.navigation_profil))).setVisibility(View.VISIBLE);
                             ((View)(getActivity().findViewById(R.id.navigation_login))).setVisibility(View.INVISIBLE);
 
-                            ((LocalData)(getActivity().getApplication())).setUserId(check);
+                            ((LocalData)(getActivity().getApplication())).setUserId(Integer.parseInt(check.get("id")));
+                            Log.v("tamer",check.get("id"));
                         }
                         else
                         {
@@ -88,7 +92,7 @@ public class LoginFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(Call<Integer> call, Throwable t) {
+                    public void onFailure(Call<LoginResponse> call, Throwable t) {
                         // Log error here since request failed
                         Log.i("test","fail");
                         t.printStackTrace();
