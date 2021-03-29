@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.ProductDetails">
+    tools:context=".ui.ProductDetails"
+    android:background="#ffffff">
 
     <ImageView
         android:id="@+id/product_img"
@@ -12,7 +13,8 @@
         android:layout_height="125dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_image_search_24" />
+        app:srcCompat="@drawable/ic_baseline_image_search_24"
+        tools:srcCompat="@drawable/ic_baseline_image_search_24" />
 
     <TextView
         android:id="@+id/product_name"
@@ -32,4 +34,15 @@
         android:layout_margin="16dp"
         app:layout_constraintStart_toEndOf="@+id/product_img"
         app:layout_constraintTop_toBottomOf="@+id/product_name" />
+
+    <Button
+        android:id="@+id/btn_buy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Négocier"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/product_img" />
 </androidx.constraintlayout.widget.ConstraintLayout>

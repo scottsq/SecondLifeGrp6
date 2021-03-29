@@ -3,7 +3,7 @@ package com.example.secondlife;
 import android.app.Application;
 
 public class LocalData extends Application {
-    private int userId;
+    private int userId = -1;
 
     public int getUserId(){
         return userId;

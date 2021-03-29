@@ -1,5 +1,6 @@
 package com.example.secondlife.ui.login;
 
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
@@ -9,8 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,6 +28,8 @@ import com.example.secondlife.network.OkHttpClass;
 import com.example.secondlife.network.UserService;
 import com.example.secondlife.ui.ProductDetails;
 import com.example.secondlife.ui.home.HomeViewModel;
+import com.example.secondlife.ui.profil.ProfilFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -87,10 +92,10 @@ public class LoginFragment extends Fragment {
 
                         if (check.getToken() != null)
                         {
-                            ((View)(getActivity().findViewById(R.id.navigation_profil))).setVisibility(View.VISIBLE);
-                            ((View)(getActivity().findViewById(R.id.navigation_login))).setVisibility(View.INVISIBLE);
+                            getActivity().findViewById(R.id.navigation_login).setVisibility(View.INVISIBLE);
+                            getActivity().findViewById(R.id.navigation_profil).setVisibility(View.VISIBLE);
 
-                            ((LocalData)(getActivity().getApplication())).setUserId(check.getId());
+                            ((LocalData)getActivity().getApplication()).setUserId(check.getId());
                             //marche
                             //Log.v("tamer",String.valueOf(((LocalData)(getActivity().getApplication())).getUserId()));
                         }
@@ -102,6 +107,18 @@ public class LoginFragment extends Fragment {
 
                     @Override
                     public void onFailure(Call<LoginResponse> call, Throwable t) {
+                        ((LocalData)(getActivity().getApplication())).setUserId(0);
+
+                        BottomNavigationView navigation = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
+                        navigation.getMenu().clear();
+                        navigation.inflateMenu(R.menu.bottom_nav_menu_2);
+
+                        Fragment f = getParentFragmentManager().findFragmentById(R.id.navigation_profil);
+                        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                        ft.setReorderingAllowed(true);
+                        ft.replace(R.id.nav_host_fragment, ProfilFragment.class, null);
+                        ft.commit();
+                        
                         // Log error here since request failed
                         Log.i("test","fail");
                         t.printStackTrace();
