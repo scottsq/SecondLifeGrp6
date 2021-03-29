@@ -52,7 +52,8 @@ public class LoginFragment extends Fragment {
             .create();
     private final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://10.0.2.2:61169/api/")
-            .client(OkHttpClass.getUnsafeOkHttpClient().newBuilder().followRedirects(false).build())
+           // .baseUrl("https://10.0.2.2:44359/api/")
+            .client(OkHttpClass.getUnsafeOkHttpClient().newBuilder().followRedirects(false).followSslRedirects(false).build())
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build();
 
