@@ -72,13 +72,18 @@ public class LoginFragment extends Fragment {
                 apiService.loginUser(u).enqueue(new Callback<Integer>() {
                     @Override
                     public void onResponse(Call<Integer> call, Response<Integer> response) {
-                        Integer check = response.body();
-                        if (check > 0)
+                        int check = response.body();
+
+                        if (check >= 0)
                         {
                             ((View)(getActivity().findViewById(R.id.navigation_profil))).setVisibility(View.VISIBLE);
                             ((View)(getActivity().findViewById(R.id.navigation_login))).setVisibility(View.INVISIBLE);
 
                             ((LocalData)(getActivity().getApplication())).setUserId(check);
+                        }
+                        else
+                        {
+                            Log.v("test1","tamer");
                         }
                     }
 
