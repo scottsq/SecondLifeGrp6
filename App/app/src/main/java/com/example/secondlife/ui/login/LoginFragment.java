@@ -77,13 +77,13 @@ public class LoginFragment extends Fragment {
                     public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
                         LoginResponse check = response.body();
 
-                        if (check.containsKey("token"))
+                        if (check.getToken() != null)
                         {
                             ((View)(getActivity().findViewById(R.id.navigation_profil))).setVisibility(View.VISIBLE);
                             ((View)(getActivity().findViewById(R.id.navigation_login))).setVisibility(View.INVISIBLE);
 
-                            ((LocalData)(getActivity().getApplication())).setUserId(Integer.parseInt(check.get("id")));
-                            Log.v("tamer",check.get("id"));
+                            ((LocalData)(getActivity().getApplication())).setUserId(check.getId());
+                            //Log.v("tamer",check.get("id"));
                         }
                         else
                         {

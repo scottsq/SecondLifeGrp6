@@ -1,5 +1,6 @@
 package com.example.secondlife.network;
 
+import com.example.secondlife.model.LoginResponse;
 import com.example.secondlife.model.User;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public interface UserService {
     Call<User> createUser(@Body User user);
 
     @POST("login")
-    Call<Map<String, String>> loginUser(@Body User user);
+    Call<LoginResponse> loginUser(@Body User user);
 
     @PATCH("user/{id}")
     Call<User> updateUser(@Path("id") int id, @Body User user);
