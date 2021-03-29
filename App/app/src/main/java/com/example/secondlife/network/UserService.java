@@ -21,6 +21,9 @@ public interface UserService {
     @POST("user")
     Call<User> createUser(@Body User user);
 
+    @POST("login")
+    Call<Integer> loginUser(@Body User user);
+
     @PATCH("user/{id}")
     Call<User> updateUser(@Path("id") int id, @Body User user);
 

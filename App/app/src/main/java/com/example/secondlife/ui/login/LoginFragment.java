@@ -2,24 +2,34 @@ package com.example.secondlife.ui.login;
 
 import androidx.lifecycle.ViewModelProvider;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.secondlife.LocalData;
 import com.example.secondlife.R;
 import com.example.secondlife.databinding.FragmentHomeBinding;
 import com.example.secondlife.databinding.FragmentLoginBinding;
+import com.example.secondlife.model.Photo;
+import com.example.secondlife.model.User;
 import com.example.secondlife.network.OkHttpClass;
+import com.example.secondlife.network.UserService;
+import com.example.secondlife.ui.ProductDetails;
 import com.example.secondlife.ui.home.HomeViewModel;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -49,7 +59,39 @@ public class LoginFragment extends Fragment {
         loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         binding = FragmentLoginBinding.inflate(inflater, container, false);
 
+        // clique sur le boutton
+        binding.button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Pour les info du User
+                UserService apiService = retrofit.create(UserService.class);
+                User u = new User();
+                u.setLogin(binding.editTextName.getText().toString());
+                u.setPassword(binding.editTextPassword.getText().toString());
 
+                apiService.loginUser(u).enqueue(new Callback<Integer>() {
+                    @Override
+                    public void onResponse(Call<Integer> call, Response<Integer> response) {
+                        Integer check = response.body();
+                        if (check > 0)
+                        {
+                            ((View)(getActivity().findViewById(R.id.navigation_profil))).setVisibility(View.VISIBLE);
+                            ((View)(getActivity().findViewById(R.id.navigation_login))).setVisibility(View.INVISIBLE);
+
+                            ((LocalData)(getActivity().getApplication())).setUserId(check);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Integer> call, Throwable t) {
+                        // Log error here since request failed
+                        Log.i("test","fail");
+                        t.printStackTrace();
+
+                    }
+                });
+            }
+        });
 
         View view = binding.getRoot();
         return view;
