@@ -6,13 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using VS_SLG6.Model.Entities;
-using VS_SLG6.Services.Authentication.Managers;
-using VS_SLG6.Services.Authentication.Models;
 using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Controllers
 {
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController, Route("api/[controller]")]
     public class UserController : ControllerBase
     {
