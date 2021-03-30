@@ -1,11 +1,18 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
 using VS_SLG6.Model.Entities;
+using VS_SLG6.Services.Authentication.Managers;
+using VS_SLG6.Services.Authentication.Models;
 using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Controllers
 {
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController, Route("api/[controller]")]
     public class UserController : ControllerBase
     {
@@ -43,7 +50,6 @@ namespace VS_SLG6.Controllers
         [HttpPost("login")]
         public ActionResult<LoginResponse> Login(User u)
         {
-            System.IO.File.WriteAllText("./MONSTRE.txt", string.Format("Login: [{0}]\nPassword: [{1}]\n\n", u.Login, u.Password));
             return _service.Login(u);
         }
 
