@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -7,6 +9,7 @@ using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Api.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController, Route("api/[controller]")]
     public class ProductTagController : ControllerBase
     {
@@ -31,6 +34,13 @@ namespace VS_SLG6.Api.Controllers
             var productTag = _service.Get(id);
             if (productTag == null) return BadRequest();
             return productTag;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("product/{id}")]
+        public ActionResult<List<ProductTag>> GetProductTags(int id)
+        {
+            return ((ProductTagService)_service).GetByProductId(id);
         }
 
         [HttpPost]

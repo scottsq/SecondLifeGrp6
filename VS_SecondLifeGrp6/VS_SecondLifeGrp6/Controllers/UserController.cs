@@ -33,7 +33,7 @@ namespace VS_SLG6.Controllers
         public ActionResult<User> GetUser(int id)
         {
             var user = _service.Get(id);
-            if (user == null) return BadRequest();
+            if (user == null) return BadRequest("Unknown user");
             return user;
         }
 
@@ -45,10 +45,13 @@ namespace VS_SLG6.Controllers
             return res.Value;
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public ActionResult<LoginResponse> Login(User u)
         {
-            return _service.Login(u);
+            var res = _service.Login(u);
+            if (res.Token == null) return BadRequest();
+            return res;
         }
 
         [HttpPost("reset")]
