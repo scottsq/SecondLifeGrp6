@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/bottom_navigation_menu" >
-
+    android:id="@+id/bottom_navigation_menu_2">
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home_black_24dp"
@@ -13,8 +12,7 @@
         android:title="@string/title_dashboard" />
 
     <item
-        android:id="@+id/navigation_login"
+        android:id="@+id/navigation_profil"
         android:icon="@drawable/ic_profil_black_24dp"
-        android:title="@string/connexion"/>
-
+        android:title="@string/title_profil"/>
 </menu>

@@ -1,8 +1,10 @@
 package com.example.secondlife.network;
 
+import com.example.secondlife.model.LoginResponse;
 import com.example.secondlife.model.User;
 
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -20,6 +22,9 @@ public interface UserService {
 
     @POST("user")
     Call<User> createUser(@Body User user);
+
+    @POST("user/login")
+    Call<LoginResponse> loginUser(@Body User user);
 
     @PATCH("user/{id}")
     Call<User> updateUser(@Path("id") int id, @Body User user);
