@@ -14,8 +14,20 @@ public interface ProposalService {
     @GET("proposal/{id}")
     Call<Proposal> getProposal(@Path("id") Integer id);
 
+    @GET("proposal/user/{id}/active")
+    Call<Proposal> getActiveProposal(@Path("id") Integer id);
+
     @POST("proposal")
     Call<Proposal> createProposal(@Body Proposal proposal);
+
+    @POST("proposal/accept")
+    Call<Proposal> acceptProposal(@Body Proposal proposal);
+
+    @POST("proposal/refuse")
+    Call<Proposal> refuseProposal(@Body Proposal proposal);
+
+    @POST("proposal/close")
+    Call<Proposal> closeProposal(@Body Proposal proposal);
 
     @PATCH("proposal/{id}")
     Call<Proposal> updateProposal(@Path("id") Integer id, @Body Proposal proposal);

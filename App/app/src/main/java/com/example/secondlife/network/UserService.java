@@ -26,6 +26,9 @@ public interface UserService {
     @POST("user/login")
     Call<LoginResponse> loginUser(@Body User user);
 
+    @POST("user/reset")
+    Call<User> resetPassword(@Body User user); // TODO: Changer type de retour
+
     @PATCH("user/{id}")
     Call<User> updateUser(@Path("id") int id, @Body User user);
 

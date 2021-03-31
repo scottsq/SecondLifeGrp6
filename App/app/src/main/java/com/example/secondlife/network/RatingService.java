@@ -12,15 +12,18 @@ import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 public interface RatingService {
-    @GET("rating/{id}")
-    Call<Rating> getRating(@Path("id") Integer id);
+    @GET("rating/product/{id}")
+    Call<Rating> getProductRating(@Path("id") int id);
+
+    @GET("rating/user/{id}")
+    Call<Rating> getUserRating(@Path("id") int id);
 
     @POST("rating")
     Call<Rating> createRating(@Body Rating rating);
 
     @PATCH("rating/{id}")
-    Call<Rating> updateRating(@Path("id") Integer id, @Body Rating rating);
+    Call<Rating> updateRating(@Path("id") int id, @Body Rating rating);
 
     @DELETE("rating")
-    Call<Rating> deleteRating(@Path("id") Integer id);
+    Call<Rating> deleteRating(@Path("id") int id);
 }

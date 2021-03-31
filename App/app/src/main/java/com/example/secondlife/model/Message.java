@@ -3,17 +3,17 @@ package com.example.secondlife.model;
 import java.time.LocalDateTime;
 
 public class Message {
-    private Integer id;
+    private int id;
     private String content;
-    private Integer senderId;
-    private Integer receiptId;
-    private LocalDateTime creationDate;
+    private int senderId;
+    private int receiptId;
+    private String creationDate;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -25,27 +25,27 @@ public class Message {
         this.content = content;
     }
 
-    public Integer getSenderId() {
+    public int getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(Integer senderId) {
+    public void setSenderId(int senderId) {
         this.senderId = senderId;
     }
 
-    public Integer getReceiptId() {
+    public int getReceiptId() {
         return receiptId;
     }
 
-    public void setReceiptId(Integer receiptId) {
+    public void setReceiptId(int receiptId) {
         this.receiptId = receiptId;
     }
 
-    public LocalDateTime getCreationDate() {
+    public String getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(LocalDateTime creationDate) {
+    public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
     }
 }
