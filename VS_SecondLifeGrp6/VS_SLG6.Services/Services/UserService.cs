@@ -54,25 +54,13 @@ namespace VS_SLG6.Services.Services
                         new Claim(ClaimTypes.Role,"user"),
                         new Claim(ClaimTypes.Version,"v2.1")
                     }),
-                    Expires = DateTime.UtcNow.AddHours(3),
+                    Expires = DateTime.UtcNow.AddMinutes(5),
                     SigningCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(keys), Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256Signature)
 
                 };
                 var tokens = tokenhandler.CreateToken(tokendescriptor);
 
                 loginResponse.Token = tokenhandler.WriteToken(tokens);
-
-                /*
-                IAuthContainerModel model = new JWTContainerModel()
-                {
-                    Claims = new Claim[] {
-                        new Claim(ClaimTypes.Name, u.Login)
-                    }
-                };
-                IAuthService authService = new JWTService(model.SecretKey);
-                string token = authService.GenerateToken(model);
-                if (!authService.isTokenValid(token)) loginResponse.Token = null;
-                else loginResponse.Token = token;*/
             }
             return loginResponse;
         }
