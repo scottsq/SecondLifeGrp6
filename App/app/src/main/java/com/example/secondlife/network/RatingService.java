@@ -24,6 +24,6 @@ public interface RatingService {
     @PATCH("rating/{id}")
     Call<Rating> updateRating(@Path("id") int id, @Body Rating rating);
 
-    @DELETE("rating")
+    @DELETE("rating/{id}")
     Call<Rating> deleteRating(@Path("id") int id);
 }

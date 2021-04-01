@@ -20,6 +20,6 @@ public interface PhotoService {
     @PATCH("photo/{id}")
     Call<Photo> updatePhoto(@Path("id") Integer id, @Body Photo photo);
 
-    @DELETE("photo")
+    @DELETE("photo/{id}")
     Call<Photo> deletePhoto(@Path("id") Integer id);
 }

@@ -21,6 +21,6 @@ public interface ProductTagService {
     @PATCH("producttag/{id}")
     Call<ProductTag> updateProductTag(@Path("id") Integer id, @Body ProductTag productTag);
 
-    @DELETE("producttag")
+    @DELETE("producttag/{id}")
     Call<ProductTag> deleteProductTag(@Path("id") Integer id);
 }

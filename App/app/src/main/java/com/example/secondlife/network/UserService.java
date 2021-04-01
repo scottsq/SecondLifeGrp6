@@ -32,6 +32,6 @@ public interface UserService {
     @PATCH("user/{id}")
     Call<User> updateUser(@Path("id") int id, @Body User user);
 
-    @DELETE("user")
+    @DELETE("user/{id}")
     Call<User> deleteUser(@Path("id") int id);
 }

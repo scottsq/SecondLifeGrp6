@@ -35,6 +35,6 @@ public interface ProductService {
     @PATCH("product/{id}")
     Call<Product> updateProduct(@Path("id") int id, @Body Product product);
 
-    @DELETE("product")
+    @DELETE("product/{id}")
     Call<Product> deleteProduct(@Path("id") int id);
 }

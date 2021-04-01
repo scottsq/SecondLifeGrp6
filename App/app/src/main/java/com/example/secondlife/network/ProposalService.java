@@ -32,6 +32,6 @@ public interface ProposalService {
     @PATCH("proposal/{id}")
     Call<Proposal> updateProposal(@Path("id") Integer id, @Body Proposal proposal);
 
-    @DELETE("proposal")
+    @DELETE("proposal/{id}")
     Call<Proposal> deleteProposal(@Path("id") Integer id);
 }
