@@ -92,12 +92,22 @@ public class LoginFragment extends Fragment {
 
                         if (check.getToken() != null)
                         {
-                            getActivity().findViewById(R.id.navigation_login).setVisibility(View.INVISIBLE);
-                            getActivity().findViewById(R.id.navigation_profil).setVisibility(View.VISIBLE);
+                            // Save values
+                            LocalData localData = (LocalData)(getActivity().getApplication());
+                            localData.setUserId(check.getId());
+                            localData.setToken(check.getToken());
 
-                            ((LocalData)getActivity().getApplication()).setUserId(check.getId());
-                            //marche
-                            //Log.v("tamer",String.valueOf(((LocalData)(getActivity().getApplication())).getUserId()));
+                            // Change bottom menu
+                            BottomNavigationView navigation = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
+                            navigation.getMenu().clear();
+                            navigation.inflateMenu(R.menu.bottom_nav_menu_2);
+
+                            // Change fragment
+                            Fragment f = getParentFragmentManager().findFragmentById(R.id.navigation_profil);
+                            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                            ft.setReorderingAllowed(true);
+                            ft.replace(R.id.nav_host_fragment, ProfilFragment.class, null);
+                            ft.commit();
                         }
                         else
                         {
