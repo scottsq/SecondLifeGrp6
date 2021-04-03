@@ -4,19 +4,19 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 public class Proposal {
-    private Integer id;
+    private int id;
     private float price;
     private LocalDateTime period;
     private String state;
-    private Integer productId;
-    private Integer targetId;
-    private Integer originId;
+    private int productId;
+    private int targetId;
+    private int originId;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -44,27 +44,27 @@ public class Proposal {
         this.state = state;
     }
 
-    public Integer getProductId() {
+    public int getProductId() {
         return productId;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(int productId) {
         this.productId = productId;
     }
 
-    public Integer getTargetId() {
+    public int getTargetId() {
         return targetId;
     }
 
-    public void setTargetId(Integer targetId) {
+    public void setTargetId(int targetId) {
         this.targetId = targetId;
     }
 
-    public Integer getOriginId() {
+    public int getOriginId() {
         return originId;
     }
 
-    public void setOriginId(Integer originId) {
+    public void setOriginId(int originId) {
         this.originId = originId;
     }
 }

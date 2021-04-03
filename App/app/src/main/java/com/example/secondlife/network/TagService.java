@@ -21,6 +21,6 @@ public interface TagService {
     @PATCH("tag/{id}")
     Call<Tag> updateTag(@Path("id") Integer id, @Body Tag tag);
 
-    @DELETE("tag")
+    @DELETE("tag/{id}")
     Call<Tag> deleteTag(@Path("id") Integer id);
 }
