@@ -19,6 +19,7 @@ import com.squareup.picasso.Picasso;
 public class ProductDetails extends AppCompatActivity {
 
     private ActivityProductDetailsBinding binding;
+    LocalData localData = LocalData.GetInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +38,7 @@ public class ProductDetails extends AppCompatActivity {
         Picasso.get().load(R.drawable.ic_baseline_image_search_24).into((ImageView)findViewById(R.id.product_img));
         ((TextView)findViewById(R.id.product_name)).setText(product.getName());
         ((TextView)findViewById(R.id.product_desc)).setText(product.getDescription());
-        if (((LocalData)getApplication()).getUserId() > -1) {
+        if (localData.getUserId() > -1) {
             findViewById(R.id.btn_buy).setVisibility(View.VISIBLE);
         }
         Log.d("product", product.getName());
