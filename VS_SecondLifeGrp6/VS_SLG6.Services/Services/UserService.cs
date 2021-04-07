@@ -2,7 +2,6 @@
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using System;
-using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Validators;
 using System.Linq;
 using System.Security.Claims;
@@ -50,11 +49,9 @@ namespace VS_SLG6.Services.Services
                 {
                     Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
                     {
-                        new Claim(ClaimTypes.Name,u.Login),
-                        new Claim(ClaimTypes.Role,"user"),
-                        new Claim(ClaimTypes.Version,"v2.1")
+                        new Claim("user_id", loginResponse.Id.ToString())
                     }),
-                    Expires = DateTime.UtcNow.AddMinutes(5),
+                    Expires = DateTime.UtcNow.AddMinutes(60),
                     SigningCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(keys), Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256Signature)
 
                 };

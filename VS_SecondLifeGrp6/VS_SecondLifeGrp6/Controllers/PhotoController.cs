@@ -13,11 +13,11 @@ namespace VS_SLG6.Api.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController, Route("api/[controller]")]
-    public class PhotoController : ControllerBase
+    public class PhotoController : ControllerBaseExtended
     {
         private IService<Photo> _service;
 
-        public PhotoController(IService<Photo> service)
+        public PhotoController(IService<Photo> service, IUserService serviceUser): base(serviceUser)
         {
             _service = service;
         }
@@ -47,9 +47,12 @@ namespace VS_SLG6.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Photo> Add(Photo u)
+        public ActionResult<Photo> Add(Photo p)
         {
-            var res = _service.Add(u);
+            var contextUser = GetUserFromContext(HttpContext);
+            if (contextUser.Id != p?.Product?.Owner?.Id) return Unauthorized();
+
+            var res = _service.Add(p);
             if (res.Errors.Count > 0) return BadRequest(res);
             return res.Value;
         }
@@ -58,6 +61,10 @@ namespace VS_SLG6.Api.Controllers
         public ActionResult<Photo> Patch(int id, [FromBody] JsonPatchDocument<Photo> patchDoc)
         {
             if (patchDoc == null) return BadRequest(ModelState);
+
+            var contextUser = GetUserFromContext(HttpContext);
+            if (contextUser.Id != _service.Get(id)?.Product.Owner.Id) return Unauthorized();
+
             var photo = _service.Patch(id, patchDoc);
             return photo;
         }
@@ -65,13 +72,15 @@ namespace VS_SLG6.Api.Controllers
         [HttpDelete]
         public ActionResult<Photo> Delete(int id)
         {
-            var Product = _service.Get(id);
-            if (Product != null)
-            {
-                _service.Remove(Product);
-                return Ok(Product);
-            }
-            else return BadRequest("Invalid Product");
+            var photo = _service.Get(id);
+            if (photo == null) BadRequest(string.Format(NOT_EXIST, nameof(Photo)));
+
+            var contextUser = GetUserFromContext(HttpContext);
+            if (contextUser.Id != photo.Product.Owner.Id) return Unauthorized();
+
+            _service.Remove(photo);
+            return Ok(photo);
+            
 
         }
     }

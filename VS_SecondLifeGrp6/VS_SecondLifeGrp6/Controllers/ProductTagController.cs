@@ -11,11 +11,11 @@ namespace VS_SLG6.Api.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController, Route("api/[controller]")]
-    public class ProductTagController : ControllerBase
+    public class ProductTagController : ControllerBaseExtended
     {
         private IService<ProductTag> _service;
 
-        public ProductTagController(IService<ProductTag> service)
+        public ProductTagController(IService<ProductTag> service, IUserService serviceUser): base(serviceUser)
         {
             _service = service;
         }
@@ -44,9 +44,12 @@ namespace VS_SLG6.Api.Controllers
         }
 
         [HttpPost]
-        public ActionResult<ProductTag> Add(ProductTag u)
+        public ActionResult<ProductTag> Add(ProductTag productTag)
         {
-            var res = _service.Add(u);
+            var contextUser = GetUserFromContext(HttpContext);
+            if (contextUser.Id != productTag.Product.Owner.Id) return Unauthorized();
+
+            var res = _service.Add(productTag);
             if (res.Errors.Count > 0) return BadRequest(res);
             return res.Value;
         }
@@ -55,6 +58,10 @@ namespace VS_SLG6.Api.Controllers
         public ActionResult<ProductTag> Patch(int id, [FromBody] JsonPatchDocument<ProductTag> patchDoc)
         {
             if (patchDoc == null) return BadRequest(ModelState);
+
+            var contextUser = GetUserFromContext(HttpContext);
+            if (contextUser.Id != _service.Get(id)?.Product.Owner.Id) return Unauthorized();
+
             var productTag = _service.Patch(id, patchDoc);
             return productTag;
         }
@@ -63,12 +70,13 @@ namespace VS_SLG6.Api.Controllers
         public ActionResult<ProductTag> Delete(int id)
         {
             var productTag = _service.Get(id);
-            if (productTag != null)
-            {
-                _service.Remove(productTag);
-                return Ok(productTag);
-            }
-            else return BadRequest("Invalid Product");
+            if (productTag == null) return BadRequest(string.Format(NOT_EXIST, nameof(ProductTag)));
+
+            var contextUser = GetUserFromContext(HttpContext);
+            if (contextUser.Id != productTag.Product.Owner.Id) return Unauthorized();
+
+            _service.Remove(productTag);
+            return Ok(productTag);
 
         }
     }

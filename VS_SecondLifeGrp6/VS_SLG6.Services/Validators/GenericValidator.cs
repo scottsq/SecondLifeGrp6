@@ -13,6 +13,12 @@ namespace VS_SLG6.Services.Validators
     {
         protected readonly IRepository<T> _repo;
         protected ValidationModel<bool> _validationModel;
+        protected ConstraintsObject _constraintsObject = new ConstraintsObject();
+
+        protected static String FieldNullError = "{0} {1} cannot be null";
+        protected static String FieldEmptyError = "{0} {1} cannot be empty.";
+        protected static int StringMaxLength = 32;
+        protected static String CharCountError = "{0} {1} exceeds limit of " + StringMaxLength.ToString() + " characters.";
 
         public GenericValidator(IRepository<T> repo, ValidationModel<bool> validationModel)
         {
@@ -22,15 +28,7 @@ namespace VS_SLG6.Services.Validators
 
         public virtual ValidationModel<bool> CanAdd(T obj)
         {
-            // A bit useless because never called for now but I'll see if I can refactor some stuff here or not
-            _validationModel.Value = false;
-            if (obj == null)
-            {
-                _validationModel.Errors.Add("Cannot add null object");
-                return _validationModel;
-            }
-            _validationModel.Value = _validationModel.Errors.Count == 0;
-            return _validationModel;
+            return IsObjectValid(obj);
         }
 
         public virtual ValidationModel<bool> CanDelete(T obj)
@@ -41,9 +39,49 @@ namespace VS_SLG6.Services.Validators
 
         public virtual ValidationModel<bool> CanEdit(T obj)
         {
-            _validationModel.Value = true;
+            return IsObjectValid(obj);
+        }
+
+        public virtual ValidationModel<bool> IsObjectValid(T obj)
+        {
+            _validationModel.Value = false;
+            // 1. Null case
+            if (obj == null)
+            {
+                _validationModel.Errors.Add("Cannot add null " + nameof(T));
+                return _validationModel;
+            }
+
+            var properties = new List<PropertyInfo>(obj.GetType().GetProperties());
+            // 2. Null fields
+            var errorList = new List<string>();
+            foreach (var field in _constraintsObject.PropsNonNull)
+            {
+                if (properties.FirstOrDefault(x => x.Name == field).GetValue(obj) == null) errorList.Add(field);
+
+            }
+            if (errorList.Count > 0)
+            {
+                AppendFormattedErrors(errorList, FieldNullError);
+                return _validationModel;
+            }
+
+            // 3.1 Empty strings
+            var check = StringIsEmptyOrBlank(obj, _constraintsObject.PropsStringNotBlank.ToArray());
+            if (check.Errors.Count > 0) AppendFormattedErrors(check.Errors, FieldEmptyError);
+
+            // 3.2 Too long strings
+            check = StringIsLongerThanMax(obj, StringMaxLength, _constraintsObject.PropsStringNotLongerThanMax.ToArray());
+            if (check.Errors.Count > 0) AppendFormattedErrors(check.Errors, CharCountError);
+
+
+            _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;
         }
+
+        
+
+
 
         public ValidationModel<bool> StringIsEmptyOrBlank(T obj, params string[] properties)
         {
@@ -60,6 +98,7 @@ namespace VS_SLG6.Services.Validators
             }
             return res;
         }
+
         public ValidationModel<bool> StringIsLongerThanMax(T obj, int max, params string[] properties)
         {
             var res = new ValidationModel<bool>();
@@ -80,7 +119,7 @@ namespace VS_SLG6.Services.Validators
         {
             for (int i = 0; i < list.Count; i++)
             {
-                _validationModel.Errors.Add(String.Format(error, list[i]));
+                _validationModel.Errors.Add(String.Format(error, nameof(T), list[i]));
             }
         }
 

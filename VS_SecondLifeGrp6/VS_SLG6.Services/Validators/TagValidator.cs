@@ -1,4 +1,6 @@
-﻿using VS_SLG6.Model.Entities;
+﻿using System.Collections.Generic;
+using System.Linq;
+using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
 
@@ -10,20 +12,16 @@ namespace VS_SLG6.Services.Validators
 
         public override ValidationModel<bool> CanAdd(Tag obj)
         {
-            _validationModel.Value = false;
-            if (obj == null)
+            var listProps = new List<string> { nameof(obj.Name) };
+            _constraintsObject = new ConstraintsObject
             {
-                _validationModel.Errors.Add("Cannot add null Tag.");
-                return _validationModel;
-            }
-            if (obj.Name == null)
-            {
-                _validationModel.Errors.Add("Tag object cannot have null fields.");
-                return _validationModel;
-            }
-            // Check Name
-            var check = StringIsEmptyOrBlank(obj, "Name");
-            if (!check.Value) AppendFormattedErrors(check.Errors, "Tag {0} cannot be blank.");
+                PropsNonNull = listProps,
+                PropsStringNotBlank = listProps
+            };
+            // Basic check on fields (null, blank, size)
+            _validationModel = base.CanAdd(obj);
+            if (!_validationModel.Value) return _validationModel;
+
             // Check if already exists
             if (_repo.All(x => x.Name == obj.Name).Count > 0) _validationModel.Errors.Add("Tag with similar name already exists.");
             _validationModel.Value = _validationModel.Errors.Count == 0;

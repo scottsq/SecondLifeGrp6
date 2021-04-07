@@ -1,11 +1,13 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using VS_SLG6.Api;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Services;
@@ -56,7 +58,8 @@ namespace Services.Tester
                 return _workingObjects.Find(u => u.Id == x);
             });
 
-            _service = new UserService(_repo.Object, _validator);
+            var appSettings = Options.Create(new AppSettings { Key = "TestKey" });
+            _service = new UserService(_repo.Object, _validator, appSettings);
             nullFields = new List<string> { "Login", "Name", "Password", "Email" };
         }
 

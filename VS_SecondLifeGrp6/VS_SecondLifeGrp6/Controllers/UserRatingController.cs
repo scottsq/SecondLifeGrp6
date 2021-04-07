@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using VS_SLG6.Api.Controllers;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Services.Services;
 
@@ -10,11 +11,11 @@ namespace VS_SLG6.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController, Route("api/[controller]")]
-    public class UserRatingController : ControllerBase
+    public class UserRatingController : ControllerBaseExtended
     {
         private IUserRatingService _service;
 
-        public UserRatingController(IUserRatingService service)
+        public UserRatingController(IUserRatingService service, IUserService serviceUser): base(serviceUser)
         {
             _service = service;
         }
@@ -61,6 +62,9 @@ namespace VS_SLG6.Controllers
         [HttpPost]
         public ActionResult<UserRating> Add(UserRating r)
         {
+            var contextUser = GetUserFromContext(HttpContext);
+            if (contextUser.Id != r?.Origin?.Id) return Unauthorized();
+
             var res = _service.Add(r);
             if (res.Errors.Count > 0) return BadRequest(res);
             return res.Value;
@@ -73,6 +77,10 @@ namespace VS_SLG6.Controllers
         public ActionResult<UserRating> Patch(int id, [FromBody] JsonPatchDocument<UserRating> patchDoc)
         {
             if (patchDoc == null) return BadRequest(ModelState);
+
+            var contextUser = GetUserFromContext(HttpContext);
+            if (contextUser.Id != _service.Get(id)?.Origin.Id) return Unauthorized();
+
             var user = _service.Patch(id, patchDoc);
             return user;
         }
@@ -84,12 +92,13 @@ namespace VS_SLG6.Controllers
         public ActionResult<UserRating> Delete(int id)
         {
             var rating = _service.Get(id);
-            if (rating != null)
-            {
-                _service.Remove(rating);
-                return Ok(rating);
-            }
-            else return BadRequest("Invalid rating");
+            if (rating == null) return BadRequest(string.Format(NOT_EXIST, nameof(UserRating)));
+
+            var contextUser = GetUserFromContext(HttpContext);
+            if (contextUser.Id != _service.Get(id)?.Origin.Id) return Unauthorized();
+
+            _service.Remove(rating);
+            return Ok(rating);
             
         }
         #endregion

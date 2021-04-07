@@ -10,11 +10,11 @@ namespace VS_SLG6.Api.Controllers
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController, Route("api/[controller]")]
-    public class TagController : ControllerBase
+    public class TagController : ControllerBaseExtended
     {
         private IService<Tag> _service;
 
-        public TagController(IService<Tag> service)
+        public TagController(IService<Tag> service, IUserService serviceUser): base(serviceUser)
         {
             _service = service;
         }
@@ -46,6 +46,10 @@ namespace VS_SLG6.Api.Controllers
         [HttpPatch("{id}")]
         public ActionResult<Tag> Patch(int id, [FromBody] JsonPatchDocument<Tag> patchDoc)
         {
+            // Devrait être accessible seulement à un admin par exemple
+            // Mais je n'ai pas mis en place de rôle donc par défaut on renvoie Unauthorized -> évolution possible
+            return Unauthorized();
+
             if (patchDoc == null) return BadRequest(ModelState);
             var tag = _service.Patch(id, patchDoc);
             return tag;
@@ -54,6 +58,10 @@ namespace VS_SLG6.Api.Controllers
         [HttpDelete]
         public ActionResult<Tag> Delete(int id)
         {
+            // Devrait être accessible seulement à un admin par exemple
+            // Mais je n'ai pas mis en place de rôle donc par défaut on renvoie Unauthorized -> évolution possible
+            return Unauthorized();
+
             var tag = _service.Get(id);
             if (tag != null)
             {

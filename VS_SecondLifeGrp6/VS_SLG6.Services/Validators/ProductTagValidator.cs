@@ -21,26 +21,25 @@ namespace VS_SLG6.Services.Validators
 
         public override ValidationModel<bool> CanAdd(ProductTag obj)
         {
-            _validationModel.Value = false;
-            if (obj == null)
+            _constraintsObject = new ConstraintsObject
             {
-                _validationModel.Errors.Add("Cannot add a null ProductTag");
-                return _validationModel;
-            }
-            // Check null fields
-            if (obj.Product == null || obj.Tag == null)
-            {
-                _validationModel.Errors.Add("ProductTag object cannot have empty fields.");
-                return _validationModel;
-            }
+                PropsNonNull = new List<string> { nameof(obj.Product), nameof(obj.Tag) }
+            };
+
+            // Basic check on fields (null, blank, size)
+            _validationModel = base.CanAdd(obj);
+            if (!_validationModel.Value) return _validationModel;
+
             // Check if Tag exists
             var t = _repoTag.FindOne(obj.Tag.Id);
             if (t == null) _validationModel.Errors.Add("ProductTag Tag doesn't exist.");
             else obj.Tag = t;
+
             // Check if Product exists
             var p = _repoProduct.FindOne(obj.Product.Id);
             if (p == null) _validationModel.Errors.Add("ProductTag Product doesn't exist.");
             else obj.Product = p;
+
             // Check if already exists
             if (_repo.All(x => x.Tag.Id == obj.Tag.Id && x.Product.Id == obj.Product.Id).Count > 0)
             {

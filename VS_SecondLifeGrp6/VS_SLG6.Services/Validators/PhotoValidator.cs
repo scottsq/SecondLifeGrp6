@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
@@ -19,25 +20,20 @@ namespace VS_SLG6.Services.Validators
 
         public override ValidationModel<bool> CanAdd(Photo obj)
         {
-            _validationModel.Value = false;
-            // check if null
-            if (obj == null)
+            var listProps = new List<string> { nameof(obj.Product), nameof(obj.Url) };
+            _constraintsObject = new ConstraintsObject
             {
-                _validationModel.Errors.Add("Cannot add null Photo.");
-                return _validationModel;
-            }
-            // check if fields are null
-            if (obj.Product == null || obj.Url == null)
-            {
-                _validationModel.Errors.Add("Cannot have null fields for Photo.");
-                return _validationModel;
-            }
-            // check url
-            var check = StringIsEmptyOrBlank(obj, "Url");
-            if (check.Value) AppendFormattedErrors(check.Errors, "Photo {0} cannot be empty.");
+                PropsNonNull = listProps,
+                PropsStringNotBlank = listProps.Where(x => x == nameof(obj.Url)).ToList()
+            };
+
+            // Basic check on fields (null, blank, size)
+            _validationModel = base.CanAdd(obj);
+            if (!_validationModel.Value) return _validationModel;
+
             // check product
             var p = _repoProduct.FindOne(obj.Product.Id);
-            if (p == null) _validationModel.Errors.Add("Unknown product.");
+            if (p == null) _validationModel.Errors.Add("Unknown Product.");
             else obj.Product = p;
             // check if already exists
             if (_repo.All(x => x.Product.Id == obj.Product.Id && x.Url == obj.Url).Count > 0)

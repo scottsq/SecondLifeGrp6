@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
@@ -19,22 +20,16 @@ namespace VS_SLG6.Services.Validators
 
         public override ValidationModel<bool> CanAdd(Message obj)
         {
-            _validationModel.Value = false;
-            // Check null values
-            if (obj == null)
+            var listProps = new List<string> { nameof(obj.Content), nameof(obj.Receipt), nameof(obj.Sender) };
+            _constraintsObject = new ConstraintsObject
             {
-                _validationModel.Errors.Add("Cannot add null message.");
-                return _validationModel;
-            }
-            if (obj.Content == null || obj.Receipt == null || obj.Sender == null)
-            {
-                _validationModel.Errors.Add("Message cannot have empty fields.");
-                return _validationModel;
-            }
+                PropsNonNull = listProps,
+                PropsStringNotBlank = listProps.Where(x => x == nameof(obj.Content)).ToList()
+            };
 
-            // check Content
-            var check = StringIsEmptyOrBlank(obj, "Content");
-            if (check.Errors.Count > 0) AppendFormattedErrors(check.Errors, "Message {0} cannot be empty.");
+            // Basic check on fields (null, blank, size)
+            _validationModel = base.CanAdd(obj);
+            if (!_validationModel.Value) return _validationModel;
 
             // check if Sender and Receipt exist
             var sender = _repoUser.FindOne(obj.Sender.Id);

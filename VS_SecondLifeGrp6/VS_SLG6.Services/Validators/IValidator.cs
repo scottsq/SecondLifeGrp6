@@ -10,5 +10,6 @@ namespace VS_SLG6.Services.Validators
         public ValidationModel<bool> CanAdd(T obj);
         public ValidationModel<bool> CanEdit(T obj);
         public ValidationModel<bool> CanDelete(T obj);
+        public ValidationModel<bool> IsObjectValid(T obj);
     }
 }

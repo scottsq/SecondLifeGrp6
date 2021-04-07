@@ -12,9 +12,7 @@ namespace VS_SLG6.Services.Validators
 {
     public class UserValidator : GenericValidator<User>, IValidator<User>
     {
-        private const int MaxLength = 32;
-        private const String FieldEmptyError = "User {0} cannot be empty.";
-        private String CharCountError = "User {0} exceeds limit of " + MaxLength.ToString() + " characters.";
+        
 
         public UserValidator(IRepository<User> repo, ValidationModel<bool> validationModel): base(repo, validationModel)
         {
@@ -22,41 +20,29 @@ namespace VS_SLG6.Services.Validators
 
         public override ValidationModel<bool> CanAdd(User obj)
         {
-            _validationModel.Value = false;
-            // Check null cases
-            if (obj == null) {
-                _validationModel.Errors.Add("Cannot add a null User.");
-                return _validationModel;
-            }
-            if (obj.Login == null || obj.Password == null || obj.Email == null || obj.Name == null)
+            var listProps = new List<string> { nameof(obj.Login), nameof(obj.Password), nameof(obj.Email), nameof(obj.Name) };
+            _constraintsObject = new ConstraintsObject
             {
-                _validationModel.Errors.Add("Cannot add User with null fields.");
-                return _validationModel;
-            }
+                PropsNonNull = listProps,
+                PropsStringNotBlank = listProps,
+                PropsStringNotLongerThanMax = listProps.Where(x => x != nameof(obj.Email)).ToList()
+            };
 
-            // Format fields
-            obj.Login = obj.Login.Trim();
-            obj.Password = obj.Password.Trim();
-            obj.Email = obj.Email.Trim();
-            obj.Name = obj.Name.Trim();
-
-            // Check Login, Password and Name as they have same constraints + Email for 
-            var check = StringIsEmptyOrBlank(obj, "Login", "Password", "Name", "Email");
-            if (check.Errors.Count > 0) AppendFormattedErrors(check.Errors, FieldEmptyError);
-            check = StringIsLongerThanMax(obj, MaxLength, "Login", "Password", "Name");
-            if (check.Errors.Count > 0) AppendFormattedErrors(check.Errors, CharCountError);
-
+            // Basic check on fields (null, blank, size)
+            _validationModel = base.CanAdd(obj);
+            if (!_validationModel.Value) return _validationModel;
+            
             // Check Email
             var splittedMail = obj.Email.Split('@');
             if (obj.Email.Contains("..") || splittedMail.Length < 2 || splittedMail[0].Trim().Length == 0 || splittedMail[1].Trim().Length == 0 || splittedMail[1].Trim().Split('.').Length < 2)
             {
-                _validationModel.Errors.Add("User email is invalid.");
+                _validationModel.Errors.Add("User Email is invalid.");
             }
 
             // Check if exists
             if (_repo.All(x => x.Login == obj.Login).Count > 0)
             {
-                _validationModel.Errors.Add("User with this login already exists");
+                _validationModel.Errors.Add("User with this Login already exists");
             }
             _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;
