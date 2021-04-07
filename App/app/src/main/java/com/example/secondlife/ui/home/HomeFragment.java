@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.secondlife.LocalData;
 import com.example.secondlife.R;
 import com.example.secondlife.databinding.FragmentHomeBinding;
 import com.example.secondlife.model.Photo;
@@ -70,9 +71,9 @@ public class HomeFragment extends Fragment {
 
 
         // Pour les info du User
+        LocalData localData = LocalData.GetInstance();
         UserService apiService = retrofit.create(UserService.class);
-        int id = 1;
-        apiService.getUser(id).enqueue(new Callback<User>() {
+        apiService.getUser(localData.getToken(),localData.getUserId()).enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 User user = response.body();

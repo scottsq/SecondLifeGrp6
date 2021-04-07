@@ -90,10 +90,11 @@ public class LoginFragment extends Fragment {
                         LoginResponse check = response.body();
                         //Log.v("testcheck",check.getToken());
 
-                        if (check.getToken() != null)
+                        if (response.isSuccessful())
                         {
                             // Save values
-                            LocalData localData = (LocalData)(getActivity().getApplication());
+                            //LocalData localData = (LocalData)(getActivity().getApplication());
+                            LocalData localData = LocalData.GetInstance();
                             localData.setUserId(check.getId());
                             localData.setToken(check.getToken());
 
@@ -101,13 +102,8 @@ public class LoginFragment extends Fragment {
                             BottomNavigationView navigation = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
                             navigation.getMenu().clear();
                             navigation.inflateMenu(R.menu.bottom_nav_menu_2);
+                            navigation.setSelectedItemId(R.id.navigation_profil);
 
-                            // Change fragment
-                            Fragment f = getParentFragmentManager().findFragmentById(R.id.navigation_profil);
-                            FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-                            ft.setReorderingAllowed(true);
-                            ft.replace(R.id.nav_host_fragment, ProfilFragment.class, null);
-                            ft.commit();
                         }
                         else
                         {
@@ -147,6 +143,12 @@ public class LoginFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         loginViewModel = new ViewModelProvider(this).get(LoginViewModel.class);
         // TODO: Use the ViewModel
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
 }

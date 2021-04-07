@@ -103,4 +103,13 @@
         android:text="AvatarUrl :"
         app:layout_constraintBottom_toTopOf="@+id/editTextAvatarUrl"
         app:layout_constraintStart_toStartOf="@+id/editTextAvatarUrl" />
+
+    <Button
+        android:id="@+id/ciaoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:text="Ciao"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editButton" />
 </androidx.constraintlayout.widget.ConstraintLayout>
