@@ -2,12 +2,15 @@ package com.example.secondlife.network;
 
 import com.example.secondlife.model.LoginResponse;
 import com.example.secondlife.model.User;
+import com.google.gson.JsonArray;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
@@ -31,7 +34,8 @@ public interface UserService {
     Call<User> resetPassword(@Header("Authorization") String authorization, @Body User user); // TODO: Changer type de retour
 
     @PATCH("user/{id}")
-    Call<User> updateUser(@Header("Authorization") String authorization, @Path("id") int id, @Body User user);
+    Call<User> updateUser(@Header("Authorization") String authorization, @Path("id") int id, @Body JsonArray user);
+    //void updateUser(@Body HashMap<String, Object> hashMap, Callback<User> callback);
 
     @DELETE("user/{id}")
     Call<User> deleteUser(@Header("Authorization") String authorization, @Path("id") int id);

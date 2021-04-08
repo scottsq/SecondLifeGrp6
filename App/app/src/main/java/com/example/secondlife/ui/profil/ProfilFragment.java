@@ -143,11 +143,12 @@ public class ProfilFragment extends Fragment {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view){
+
                 user.setName(((EditText) getViewById("editTextPersonName")).getText().toString());
                 user.setEmail(((EditText) getViewById("editTextEmail")).getText().toString());
                 user.setAvatarUrl(((EditText) getViewById("editTextAvatarUrl")).getText().toString());
-
-                apiService.updateUser(localData.getToken(),localData.getUserId(), user).enqueue(new Callback<User>() {
+                // METTRE LES CHAMPS EN PUBLIC
+                apiService.updateUser(localData.getToken(),localData.getUserId(), localData.ObjectToPatch(user)).enqueue(new Callback<User>() {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
                         user = response.body();
