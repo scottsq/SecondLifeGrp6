@@ -20,6 +20,36 @@ namespace VS_SLG6.Services.Validators
 
         public override ValidationModel<bool> CanAdd(User obj)
         {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+
+            // Check if exists
+            if (_repo.All(x => x.Login == obj.Login).Count > 0)
+            {
+                _validationModel.Errors.Add("User with this Login already exists");
+            }
+            _validationModel.Value = _validationModel.Errors.Count == 0;
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> CanEdit(User obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Id);
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> CanDelete(User obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Id);
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> IsObjectValid(User obj)
+        {
             var listProps = new List<string> { nameof(obj.Login), nameof(obj.Password), nameof(obj.Email), nameof(obj.Name) };
             _constraintsObject = new ConstraintsObject
             {
@@ -29,9 +59,9 @@ namespace VS_SLG6.Services.Validators
             };
 
             // Basic check on fields (null, blank, size)
-            _validationModel = base.CanAdd(obj);
+            _validationModel = base.IsObjectValid(obj);
             if (!_validationModel.Value) return _validationModel;
-            
+
             // Check Email
             var splittedMail = obj.Email.Split('@');
             if (obj.Email.Contains("..") || splittedMail.Length < 2 || splittedMail[0].Trim().Length == 0 || splittedMail[1].Trim().Length == 0 || splittedMail[1].Trim().Split('.').Length < 2)
@@ -39,11 +69,6 @@ namespace VS_SLG6.Services.Validators
                 _validationModel.Errors.Add("User Email is invalid.");
             }
 
-            // Check if exists
-            if (_repo.All(x => x.Login == obj.Login).Count > 0)
-            {
-                _validationModel.Errors.Add("User with this Login already exists");
-            }
             _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;
         }

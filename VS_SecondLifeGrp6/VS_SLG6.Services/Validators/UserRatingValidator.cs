@@ -19,6 +19,39 @@ namespace VS_SLG6.Services.Validators
 
         public override ValidationModel<bool> CanAdd(UserRating obj)
         {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Origin.Id);
+            if (!_validationModel.Value) return _validationModel;
+
+            // Check if Rating already exists
+            if (_repo.All(x => x.Origin.Id == obj.Origin.Id && x.Target.Id == obj.Target.Id).Count > 0)
+            {
+                _validationModel.Errors.Add("Rating on this Target already exists for this Origin.");
+            }
+
+            _validationModel.Value = _validationModel.Errors.Count == 0;
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> CanEdit(UserRating obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Origin.Id);
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> CanDelete(UserRating obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Origin.Id);
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> IsObjectValid(UserRating obj)
+        {
             var listProps = new List<string> { nameof(obj.Origin), nameof(obj.Target) };
             _constraintsObject = new ConstraintsObject
             {
@@ -35,18 +68,12 @@ namespace VS_SLG6.Services.Validators
             var o = _repoUser.FindOne(obj.Origin.Id);
             if (o == null) _validationModel.Errors.Add("Rating Origin doesn't exist.");
             else obj.Origin = o;
-            
+
             // Check if Product exists
             var t = _repoUser.FindOne(obj.Target.Id);
             if (t == null) _validationModel.Errors.Add("Rating Target doesn't exist.");
             else obj.Target = t;
-            
-            // Check if Rating already exists
-            if (_repo.All(x => x.Origin.Id == obj.Origin.Id && x.Target.Id == obj.Target.Id).Count > 0)
-            {
-                _validationModel.Errors.Add("Rating on this Target already exists for this Origin.");
-            }
-            
+
             // Format Comment (can be optional that's why we don't give it to parent function)
             if (obj.Comment != null && StringIsEmptyOrBlank(obj, "Comment").Value) obj.Comment = null;
             else if (obj.Comment != null) obj.Comment = obj.Comment.Trim();

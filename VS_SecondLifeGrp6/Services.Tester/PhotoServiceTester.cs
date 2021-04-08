@@ -29,8 +29,8 @@ namespace Services.Tester
 
         private void CreateInstances()
         {
-            _p1.Id = 0;
-            _p2.Id = 1;
+            _p1.Id = 0; _p1.Owner = new User(); _p1.Owner.Id = 0;
+            _p2.Id = 1; _p2.Owner = new User(); _p2.Owner.Id = 1;
 
             _photo.Id  = 2; _photo.Product  = _p1; _photo.Url  = "url1";
             _photo1.Id = 0; _photo1.Product = _p1; _photo1.Url = "url2";
@@ -81,7 +81,7 @@ namespace Services.Tester
         public void Add_WithBlankUrl_ThenValidationError()
         {
             _photo.Url = "    ";
-            Assert.AreNotEqual(0, _service.Add(_photo));
+            Assert.AreNotEqual(0, _service.Add(_photo).Errors.Count);
         }
     }
 }

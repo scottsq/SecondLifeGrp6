@@ -33,7 +33,8 @@ namespace Services.Tester
         private void CreateInstances()
         {
             _u1.Id = 0; _u2.Id = 1; _u3.Id = 2;
-            _p1.Id = 0; _p2.Id = 1;
+            _p1.Id = 0; _p1.Owner = _u1;
+            _p2.Id = 1; _p2.Owner = _u2;
 
             _proposal.Id = 2;
             _proposal.Origin = _u1;
@@ -130,14 +131,14 @@ namespace Services.Tester
         public void GetAcceptedProposalByUser_WithU1_ThenEmpty()
         {
             var res = ((ProposalService)_service).GetAcceptedProposalByUser(_u1.Id);
-            Assert.AreEqual(0, res.Count);
+            Assert.AreEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void GetAcceptedProposalByUser_WithU2_ThenEmpty()
         {
             var res = ((ProposalService)_service).GetAcceptedProposalByUser(_u2.Id);
-            Assert.AreEqual(0, res.Count);
+            Assert.AreEqual(0, res.Value.Count);
         }
 
         [TestMethod]
@@ -146,7 +147,7 @@ namespace Services.Tester
             _service.Add(_proposal2);
             ((ProposalService)_service).UpdateProposal(_proposal2.Id, State.ACCEPTED);
             var res = ((ProposalService)_service).GetAcceptedProposalByUser(_u3.Id);
-            Assert.AreNotEqual(0, res.Count);
+            Assert.AreNotEqual(0, res.Value.Count);
         }
 
         [TestMethod]
@@ -154,42 +155,42 @@ namespace Services.Tester
         {
             _service.Add(_proposal2);
             var res = ((ProposalService)_service).GetAcceptedProposalByUser(_u3.Id);
-            for (var i=0; i<res.Count; i++) Assert.AreEqual(State.ACCEPTED, res[i].State);
+            for (var i=0; i<res.Value.Count; i++) Assert.AreEqual(State.ACCEPTED, res.Value[i].State);
         }
 
         [TestMethod]
         public void ListByUserId_WithU1_ThenNotEmpty()
         {
             var res = ((ProposalService)_service).ListByUserId(_u1.Id);
-            Assert.AreNotEqual(0, res.Count);
+            Assert.AreNotEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void ListByUserId_WithU2_ThenNotEmpty()
         {
             var res = ((ProposalService)_service).ListByUserId(_u2.Id);
-            Assert.AreNotEqual(0, res.Count);
+            Assert.AreNotEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void ListByUserId_WithU3_ThenEmpty()
         {
             var res = ((ProposalService)_service).ListByUserId(_u3.Id);
-            Assert.AreEqual(0, res.Count);
+            Assert.AreEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void ListByUserIdAndActive_WithU1_ThenNotEmpty()
         {
             var res = ((ProposalService)_service).ListByUserIdAndActive(_u1.Id);
-            Assert.AreNotEqual(0, res.Count);
+            Assert.AreNotEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void ListByUserIdAndActive_WithU2_ThenNotEmpty()
         {
             var res = ((ProposalService)_service).ListByUserIdAndActive(_u2.Id);
-            Assert.AreNotEqual(0, res.Count);
+            Assert.AreNotEqual(0, res.Value.Count);
         }
 
         [TestMethod]
@@ -198,7 +199,7 @@ namespace Services.Tester
             _service.Add(_proposal2);
             ((ProposalService)_service).UpdateProposal(_proposal2.Id, State.ACCEPTED);
             var res = ((ProposalService)_service).ListByUserIdAndActive(_u3.Id);
-            Assert.AreEqual(0, res.Count);
+            Assert.AreEqual(0, res.Value.Count);
         }
 
         [TestMethod]

@@ -15,34 +15,38 @@ namespace VS_SLG6.Controllers
     {
         private IProductRatingService _service;
 
-        public ProductRatingController(IProductRatingService service, IUserService serviceUser): base(serviceUser)
+        public ProductRatingController(IProductRatingService service)
         {
             _service = service;
         }
 
         #region GET
+        [AllowAnonymous]
         [HttpGet]
         public ActionResult<List<ProductRating>> List()
         {
-            var res = _service.List();
-            if (res.Count == 0) return NoContent();
-            return res;
+            return _service.List().Value;
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public ActionResult<ProductRating> GetRating(int id)
         {
             var rating = _service.Get(id);
-            if (rating == null) return BadRequest();
-            return rating;
+            if (rating.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(ProductRating)));
+            return rating.Value;
         }
 
+        [AllowAnonymous]
         [HttpGet("{idProduct}/user/{idUser}")]
         public ActionResult<ProductRating> GetUserRating(int idProduct, int idUser)
         {
-            return _service.GetUserRating(idProduct, idUser);
+            var res = _service.GetUserRating(idProduct, idUser);
+            if (res == null) return BadRequest(string.Format(NOT_EXIST, nameof(ProductRating)));
+            return res;
         }
        
+        [AllowAnonymous]
         [HttpGet("product/{id}")]
         public ActionResult<List<ProductRating>> GetProductRatings(int id)
         {
@@ -62,12 +66,9 @@ namespace VS_SLG6.Controllers
         [HttpPost]
         public ActionResult<ProductRating> Add(ProductRating r)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != r?.User?.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var res = _service.Add(r);
-            if (res.Errors.Count > 0) return BadRequest(res);
-            return res.Value;
+            return ReturnResult(res);
         }
         #endregion
 
@@ -78,28 +79,23 @@ namespace VS_SLG6.Controllers
         {
             if (patchDoc == null) return BadRequest(ModelState);
 
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != _service.Get(id)?.User.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var user = _service.Patch(id, patchDoc);
-            return user;
+            return ReturnResult(user);
         }
         #endregion
 
 
         #region DELETE
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult<ProductRating> Delete(int id)
         {
             var rating = _service.Get(id);
             if (rating == null) return BadRequest(string.Format(NOT_EXIST, nameof(ProductRating)));
 
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != rating.User.Id) return Unauthorized();
-
-            _service.Remove(rating);
-            return Ok(rating);
-            
+            _service.SetContextUser(GetUserFromContext(HttpContext));
+            var check = _service.Remove(rating.Value);
+            return ReturnResult(check);            
         }
         #endregion
     }

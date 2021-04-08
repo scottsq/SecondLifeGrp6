@@ -17,25 +17,25 @@ namespace VS_SLG6.Api.Controllers
     {
         private IService<Photo> _service;
 
-        public PhotoController(IService<Photo> service, IUserService serviceUser): base(serviceUser)
+        public PhotoController(IService<Photo> service)
         {
             _service = service;
         }
 
+        [AllowAnonymous]
         [HttpGet]
         public ActionResult<List<Photo>> List()
         {
-            var res = _service.List();
-            if (res.Count == 0) return NoContent();
-            return res;
+            return _service.List().Value;
         }
 
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public ActionResult<Photo> GetPhoto(int id)
         {
             var photo = _service.Get(id);
-            if (photo == null) return BadRequest();
-            return photo;
+            if (photo.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Photo)));
+            return photo.Value;
         }
 
         [AllowAnonymous]
@@ -49,12 +49,9 @@ namespace VS_SLG6.Api.Controllers
         [HttpPost]
         public ActionResult<Photo> Add(Photo p)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != p?.Product?.Owner?.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var res = _service.Add(p);
-            if (res.Errors.Count > 0) return BadRequest(res);
-            return res.Value;
+            return ReturnResult(res);
         }
 
         [HttpPatch("{id}")]
@@ -62,26 +59,22 @@ namespace VS_SLG6.Api.Controllers
         {
             if (patchDoc == null) return BadRequest(ModelState);
 
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != _service.Get(id)?.Product.Owner.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var photo = _service.Patch(id, patchDoc);
-            return photo;
+            return ReturnResult(photo);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult<Photo> Delete(int id)
         {
-            var photo = _service.Get(id);
-            if (photo == null) BadRequest(string.Format(NOT_EXIST, nameof(Photo)));
-
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != photo.Product.Owner.Id) return Unauthorized();
-
-            _service.Remove(photo);
-            return Ok(photo);
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             
+            var photo = _service.Get(id);
+            if (photo.Errors.Count > 0) return Unauthorized(photo.Errors);
+            if (photo == null) return BadRequest(string.Format(NOT_EXIST, nameof(Photo)));
 
+            var check = _service.Remove(photo.Value);
+            return ReturnResult(check);
         }
     }
 }

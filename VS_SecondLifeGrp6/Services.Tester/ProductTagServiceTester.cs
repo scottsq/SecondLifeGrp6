@@ -31,7 +31,8 @@ namespace Services.Tester
 
         private void CreateInstances()
         {
-            _p1.Id = 0; _p2.Id = 1;
+            _p1.Id = 0; _p1.Owner = new User(); _p1.Owner.Id = 0;
+            _p2.Id = 1; _p2.Owner = new User(); _p2.Owner.Id = 1;
             _t1.Id = 0; _t2.Id = 1;
 
             _productTag.Id  = 2; _productTag.Product  = _p1; _productTag.Tag  = _t2;

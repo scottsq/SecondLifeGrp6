@@ -13,7 +13,7 @@ namespace VS_SLG6.Api.Controllers
     {
         private IProductService _service;
 
-        public ProductController(IProductService service, IUserService serviceUser): base(serviceUser)
+        public ProductController(IProductService service)
         {
             _service = service;
         }
@@ -21,18 +21,15 @@ namespace VS_SLG6.Api.Controllers
         [HttpGet]
         public ActionResult<List<Product>> List()
         {
-            var res = _service.List();
-            for (var i = 0; i < res.Count; i++) System.Console.WriteLine(res[i].ToString());
-            if (res.Count == 0) return NoContent();
-            return res;
+            return _service.List().Value;
         }
 
         [HttpGet("{id}")]
         public ActionResult<Product> GetProduct(int id)
         {
             var product = _service.Get(id);
-            if (product == null) return BadRequest();
-            return product;
+            if (product.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Product)));
+            return product.Value;
         }
 
         [HttpGet("latest")]
@@ -65,12 +62,9 @@ namespace VS_SLG6.Api.Controllers
         [HttpPost]
         public ActionResult<Product> Add(Product p)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != p?.Owner?.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var res = _service.Add(p);
-            if (res.Errors.Count > 0) return BadRequest(res);
-            return res.Value;
+            return ReturnResult(res);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -78,26 +72,22 @@ namespace VS_SLG6.Api.Controllers
         public ActionResult<Product> Patch(int id, [FromBody] JsonPatchDocument<Product> patchDoc)
         {
             if (patchDoc == null) return BadRequest(ModelState);
-
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != _service.Get(id)?.Owner.Id) return Unauthorized();
-            
-            var Product = _service.Patch(id, patchDoc);
-            return Product;
+            _service.SetContextUser(GetUserFromContext(HttpContext));
+            var product = _service.Patch(id, patchDoc);
+            return ReturnResult(product);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult<Product> Delete(int id)
         {
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var product = _service.Get(id);
-            if (product == null) return BadRequest(string.Format(NOT_EXIST, nameof(Product)));
+            if (product.Errors.Count > 0) return Unauthorized(product.Errors);
+            if (product.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Product)));
 
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != product.Owner.Id) return Unauthorized();
-
-            _service.Remove(product);
-            return Ok(product);
+            var check = _service.Remove(product.Value);
+            return ReturnResult(check);
         }
     }
 }

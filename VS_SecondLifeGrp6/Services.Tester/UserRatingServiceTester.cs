@@ -75,7 +75,8 @@ namespace Services.Tester
         public void Add_WithRating2_ThenCommentIsNull()
         {
             _service.Add(_rating2);
-            Assert.AreEqual(null, _workingObjects[_workingObjects.Count - 1].Comment);
+            var res = _service.Get(_rating2.Id);
+            Assert.AreEqual(null, res.Value.Comment);
         }
 
         [TestMethod]

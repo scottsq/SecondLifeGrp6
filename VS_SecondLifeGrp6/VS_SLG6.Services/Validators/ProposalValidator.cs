@@ -20,7 +20,47 @@ namespace VS_SLG6.Services.Validators
             _repoUser = repoUser;
         }
 
+        public override ValidationModel<bool> CanGet(Proposal obj)
+        {
+            CheckUserAuthorization(obj.Origin.Id);
+            CheckUserAuthorization(obj.Target.Id);
+            _validationModel.Value = _validationModel.Errors.Count < 2;
+            return _validationModel;
+        }
+
         public override ValidationModel<bool> CanAdd(Proposal obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Origin.Id);
+            if (!_validationModel.Value) return _validationModel;
+
+            // Check if Product exists
+            var p = _repoProduct.FindOne(obj.Product.Id);
+            if (p == null) _validationModel.Errors.Add("Proposal Product doesn't exist.");
+            else obj.Product = p;
+
+            _validationModel.Value = _validationModel.Errors.Count == 0;
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> CanEdit(Proposal obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Origin.Id);
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> CanDelete(Proposal obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Origin.Id);
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> IsObjectValid(Proposal obj)
         {
             var listProps = new List<string> { nameof(obj.Origin), nameof(obj.Product), nameof(obj.Target) };
             _constraintsObject = new ConstraintsObject
@@ -28,7 +68,7 @@ namespace VS_SLG6.Services.Validators
                 PropsNonNull = listProps
             };
             // Basic check on fields (null, blank, size)
-            _validationModel = base.CanAdd(obj);
+            _validationModel = base.IsObjectValid(obj);
             if (!_validationModel.Value) return _validationModel;
 
             // Check negative price
@@ -43,11 +83,6 @@ namespace VS_SLG6.Services.Validators
             var t = _repoUser.FindOne(obj.Target.Id);
             if (t == null) _validationModel.Errors.Add("Proposal Target doesn't exist.");
             else obj.Target = t;
-
-            // Check if Product exists
-            var p = _repoProduct.FindOne(obj.Product.Id);
-            if (p == null) _validationModel.Errors.Add("Proposal Product doesn't exist.");
-            else obj.Product = p;
 
             // Check state
             if (!Enum.IsDefined(typeof(State), obj.State)) _validationModel.Errors.Add("Proposal State doesn't exist.");

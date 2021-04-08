@@ -8,9 +8,9 @@ namespace VS_SLG6.Services.Services
 {
     public interface IProposalService : IService<Proposal>
     {
-        public List<Proposal> GetAcceptedProposalByUser(int id);
-        public List<Proposal> ListByUserId(int id);
-        public List<Proposal> ListByUserIdAndActive(int id);
+        public ValidationModel<List<Proposal>> GetAcceptedProposalByUser(int id);
+        public ValidationModel<List<Proposal>> ListByUserId(int id);
+        public ValidationModel<List<Proposal>> ListByUserIdAndActive(int id);
         public ValidationModel<Proposal> UpdateProposal(int id, State state);
     }
 }

@@ -19,7 +19,7 @@ namespace VS_SLG6.Controllers
     {
         private IUserService _service;
 
-        public UserController(IUserService service): base(service)
+        public UserController(IUserService service)
         {
             _service = service;
         }
@@ -27,17 +27,15 @@ namespace VS_SLG6.Controllers
         [HttpGet]
         public ActionResult<List<User>> List()
         {
-            var res = _service.List();
-            if (res.Count == 0) return NoContent();
-            return res;
+            return _service.List().Value;
         }
 
         [HttpGet("{id}")]
         public ActionResult<User> GetUser(int id)
         {
             var user = _service.Get(id);
-            if (user == null) return BadRequest();
-            return user;
+            if (user.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Model.Entities.User)));
+            return user.Value;
         }
 
         [AllowAnonymous]
@@ -45,7 +43,7 @@ namespace VS_SLG6.Controllers
         public ActionResult<User> Add(User u)
         {
             var res = _service.Add(u);
-            if (res.Errors.Count > 0) return BadRequest(res);
+            if (res.Errors.Count > 0) return BadRequest(res.Errors);
             return res.Value;
         }
 
@@ -62,6 +60,8 @@ namespace VS_SLG6.Controllers
         [HttpPost("reset")]
         public ActionResult<string> Reset(string email)
         {
+            // Euuuh spa une faille de sécurité IMMENSE ça ?
+            // Faudrait renvoyer un hash et envoyer le mail via l'api en vrai j'pense
             return _service.ResetEmail(email);
         }
 
@@ -69,6 +69,7 @@ namespace VS_SLG6.Controllers
         [HttpPost("senduser")]
         public ActionResult<string> SendUser(string mail)
         {
+            // Je sais pas si on est censé s'en servir de cette route, j'crois pas en tout cas
             var res = _service.FindByMail(mail);
             if (res.Errors.Count > 0) return BadRequest(res.Errors);
             return res.Value.Login;
@@ -78,25 +79,19 @@ namespace VS_SLG6.Controllers
         public ActionResult<User> Patch(int id, [FromBody] JsonPatchDocument<User> patchDoc)
         {
             if (patchDoc == null) return BadRequest(ModelState);
-
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var user = _service.Patch(id, patchDoc);
-            return user;
+            return ReturnResult(user);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult<User> Delete(int id)
         {
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var user = _service.Get(id);
             if (user == null) return BadRequest(string.Format(NOT_EXIST, nameof(Model.Entities.User)));
-
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != id) return Unauthorized();
-            
-            _service.Remove(user);
-            return Ok(user);            
+            var check = _service.Remove(user.Value);
+            return ReturnResult(check);       
         }
     }
 }

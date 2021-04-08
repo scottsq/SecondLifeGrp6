@@ -17,7 +17,7 @@ namespace VS_SLG6.Api.Controllers
     {
         private IMessageService _service;
 
-        public MessageController(IMessageService service, IUserService userService): base(userService)
+        public MessageController(IMessageService service)
         {
             _service = service;
         }
@@ -26,42 +26,37 @@ namespace VS_SLG6.Api.Controllers
         [HttpGet]
         public ActionResult<List<Message>> List()
         {
-            // Devrait être accessible seulement à un admin par exemple
-            // Mais je n'ai pas mis en place de rôle donc par défaut on renvoie Unauthorized -> évolution possible
-            return Unauthorized();
             var res = _service.List();
-            if (res.Count == 0) return NoContent();
-            return res;
+            if (res.Value == null) return Unauthorized(res.Errors);
+            return res.Value;
         }
 
         [HttpGet("{id}")]
         public ActionResult<Message> GetMessage(int id)
         {
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var message = _service.Get(id);
-            if (message == null) return BadRequest();
-
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != message.Sender.Id) return Unauthorized();
-
-            return message;
+            if (message.Errors.Count > 0) return Unauthorized(message.Errors);
+            if (message.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Message)));
+            return message.Value;
         }
         
         [HttpGet("{idOrigin}")]
         public ActionResult<List<Message>> GetConversations(int idOrigin)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != idOrigin) return Unauthorized();
-
-            return _service.ListConversations(idOrigin);
+            _service.SetContextUser(GetUserFromContext(HttpContext));
+            var res = _service.ListConversations(idOrigin);
+            if (res.Errors.Count > 0) return Unauthorized(res.Errors);
+            return res.Value;
         }
 
         [HttpGet("{idOrigin}/{idDest}")]
         public ActionResult<List<Message>> GetConversation(int idOrigin, int idDest)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != idOrigin) return Unauthorized();
-
-            return _service.GetConversation(idOrigin, idDest);
+            _service.SetContextUser(GetUserFromContext(HttpContext));
+            var res = _service.GetConversation(idOrigin, idDest);
+            if (res.Errors.Count > 0) return Unauthorized(res.Errors);
+            return res.Value;
         }
         #endregion
 
@@ -69,12 +64,9 @@ namespace VS_SLG6.Api.Controllers
         [HttpPost]
         public ActionResult<Message> Add(Message m)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != m?.Sender?.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var res = _service.Add(m);
-            if (res.Errors.Count > 0) return BadRequest(res);
-            return res.Value;
+            return ReturnResult(res);
         }
         #endregion
 
@@ -84,27 +76,23 @@ namespace VS_SLG6.Api.Controllers
         {
             if (patchDoc == null) return BadRequest(ModelState);
 
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != _service.Get(id)?.Sender.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var message = _service.Patch(id, patchDoc);
-            return message;
+            return ReturnResult(message);
         }
         #endregion
 
         #region DELETE
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult<Message> Delete(int id)
         {
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var message = _service.Get(id);
-            if (message == null) BadRequest(string.Format(NOT_EXIST, nameof(Message)));
+            if (message.Errors.Count > 0) return Unauthorized(message.Errors);
+            if (message.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Message)));
             
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != message.Sender.Id) return Unauthorized();
-
-            _service.Remove(message);
-            return Ok(message);
-
+            var check = _service.Remove(message.Value);
+            return ReturnResult(check);
         }
         #endregion
     }

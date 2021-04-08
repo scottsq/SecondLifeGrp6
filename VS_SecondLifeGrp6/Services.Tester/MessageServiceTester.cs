@@ -114,68 +114,68 @@ namespace Services.Tester
         [TestMethod]
         public void GetConversation_WithSender1AndReceipt1_ThenListNotEmpty()
         {
-            var m = _service.Get(0);
+            var m = _service.Get(0).Value;
             var res = ((MessageService)_service).GetConversation(m.Sender.Id, m.Receipt.Id);
-            Assert.AreNotEqual(0, res.Count);
+            Assert.AreNotEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void GetConversation_WithSender1AndReceipt2_ThenListIsEmpty()
         {
-            var res = ((MessageService)_service).GetConversation(_service.Get(0).Sender.Id, _defaultObjects[1].Receipt.Id);
-            Assert.AreEqual(0, res.Count);
+            var res = ((MessageService)_service).GetConversation(_service.Get(0).Value.Sender.Id, _defaultObjects[1].Receipt.Id);
+            Assert.AreEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void GetConversation_WithReceipt1AndSender1_ThenListNotEmpty()
         {
-            var m = _service.Get(0);
+            var m = _service.Get(0).Value;
             var res = ((MessageService)_service).GetConversation(m.Receipt.Id, m.Sender.Id);
-            Assert.AreNotEqual(0, res.Count);
+            Assert.AreNotEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void ListConversations_WithSender1_ThenListNotEmpty()
         {
-            var res = ((MessageService)_service).ListConversations(_service.Get(0).Sender.Id);
-            Assert.AreNotEqual(0, res.Count);
+            var res = ((MessageService)_service).ListConversations(_service.Get(0).Value.Sender.Id);
+            Assert.AreNotEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void ListConversations_WithReceipt1_ThenListNotEmpty()
         {
-            var res = ((MessageService)_service).ListConversations(_service.Get(0).Receipt.Id);
-            Assert.AreNotEqual(0, res.Count);
+            var res = ((MessageService)_service).ListConversations(_service.Get(0).Value.Receipt.Id);
+            Assert.AreNotEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void ListConversations_WithReceipt2_ThenListEmpty()
         {
             var res = ((MessageService)_service).ListConversations(_defaultObjects[1].Receipt.Id);
-            Assert.AreEqual(0, res.Count);
+            Assert.AreEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void LastMessage_WithSender1AndReceipt1_ThenNotNull()
         {
-            var m = _service.Get(0);
+            var m = _service.Get(0).Value;
             var res = ((MessageService)_service).LastMessage(m.Sender.Id, m.Receipt.Id);
-            Assert.AreNotEqual(null, res);
+            Assert.AreNotEqual(null, res.Value);
         }
 
         [TestMethod]
         public void LastMessage_WithReceipt1AndSender1_ThenNotNull()
         {
-            var m = _service.Get(0);
+            var m = _service.Get(0).Value;
             var res = ((MessageService)_service).LastMessage(m.Receipt.Id, m.Sender.Id);
-            Assert.AreNotEqual(null, res);
+            Assert.AreNotEqual(null, res.Value);
         }
 
         [TestMethod]
         public void LastMessage_WithSender1AndReceipt2_ThenNull()
         {
-            var res = ((MessageService)_service).LastMessage(_service.Get(0).Sender.Id, _defaultObjects[1].Receipt.Id);
-            Assert.AreEqual(null, res);
+            var res = ((MessageService)_service).LastMessage(_service.Get(0).Value.Sender.Id, _defaultObjects[1].Receipt.Id);
+            Assert.AreEqual(null, res.Value);
         }
     }
 }

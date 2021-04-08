@@ -21,13 +21,46 @@ namespace VS_SLG6.Services.Validators
 
         public override ValidationModel<bool> CanAdd(ProductTag obj)
         {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Product.Owner.Id);
+            if (!_validationModel.Value) return _validationModel;
+
+            // Check if already exists
+            if (_repo.All(x => x.Tag.Id == obj.Tag.Id && x.Product.Id == obj.Product.Id).Count > 0)
+            {
+                _validationModel.Errors.Add("ProductTag with similar Product and Tag already exists");
+            }
+
+            _validationModel.Value = _validationModel.Errors.Count == 0;
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> CanEdit(ProductTag obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Product.Owner.Id);
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> CanDelete(ProductTag obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Product.Owner.Id);
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> IsObjectValid(ProductTag obj)
+        {
             _constraintsObject = new ConstraintsObject
             {
                 PropsNonNull = new List<string> { nameof(obj.Product), nameof(obj.Tag) }
             };
 
             // Basic check on fields (null, blank, size)
-            _validationModel = base.CanAdd(obj);
+            _validationModel = base.IsObjectValid(obj);
             if (!_validationModel.Value) return _validationModel;
 
             // Check if Tag exists
@@ -40,11 +73,6 @@ namespace VS_SLG6.Services.Validators
             if (p == null) _validationModel.Errors.Add("ProductTag Product doesn't exist.");
             else obj.Product = p;
 
-            // Check if already exists
-            if (_repo.All(x => x.Tag.Id == obj.Tag.Id && x.Product.Id == obj.Product.Id).Count > 0)
-            {
-                _validationModel.Errors.Add("ProductTag with similar Product and Tag already exists");
-            }
             _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;
         }

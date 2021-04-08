@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.Extensions.Options;
 using VS_SLG6.Api;
+using VS_SLG6.Services.Models;
 
 namespace VS_SLG6.Services.Services
 {
@@ -21,7 +22,7 @@ namespace VS_SLG6.Services.Services
             _appsettings = appsettings.Value;
         }
 
-        public Models.ValidationModel<User> FindByMail(string email)
+        public ValidationModel<User> FindByMail(string email)
         {
             var user = _repo.All(x => x.Email == email).FirstOrDefault();
             if (user == null)
@@ -49,7 +50,8 @@ namespace VS_SLG6.Services.Services
                 {
                     Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
                     {
-                        new Claim("user_id", loginResponse.Id.ToString())
+                        new Claim("user_id", loginResponse.Id.ToString()),
+                        new Claim("user_role", (loginResponse.Id == 0 ? 0 : 1).ToString())
                     }),
                     Expires = DateTime.UtcNow.AddMinutes(60),
                     SigningCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(keys), Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256Signature)

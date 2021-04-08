@@ -14,7 +14,7 @@ namespace VS_SLG6.Api.Controllers
     {
         private IProposalService _service;
 
-        public ProposalController(IProposalService service, IUserService userService): base(userService)
+        public ProposalController(IProposalService service)
         {
             _service = service;
         }
@@ -23,42 +23,37 @@ namespace VS_SLG6.Api.Controllers
         [HttpGet]
         public ActionResult<List<Proposal>> List()
         {
-            // Devrait être accessible seulement à un admin par exemple
-            // Mais je n'ai pas mis en place de rôle donc par défaut on renvoie Unauthorized -> évolution possible
-            return Unauthorized();
             var res = _service.List();
-            if (res.Count == 0) return NoContent();
-            return res;
+            if (res.Value == null) return Unauthorized(res.Errors);
+            return res.Value;
         }
 
         [HttpGet("{id}")]
         public ActionResult<Proposal> GetProposal(int id)
         {
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var proposal = _service.Get(id);
-
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != proposal.Origin.Id && contextUser.Id != proposal.Target.Id) return Unauthorized();
-
-            if (proposal == null) return BadRequest();
-            return proposal;
+            if (proposal.Errors.Count > 0) return Unauthorized(proposal.Errors);
+            if (proposal.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Proposal)));
+            return proposal.Value;
         }
 
         [HttpGet("user/{id}")]
         public ActionResult<List<Proposal>> ListByUserId(int id)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != id) return Unauthorized();
-
-            return _service.ListByUserId(id);
+            _service.SetContextUser(GetUserFromContext(HttpContext));
+            var res = _service.ListByUserId(id);
+            if (res.Errors.Count > 0) return Unauthorized(res.Errors);
+            return res.Value;
         }
 
         [HttpGet("user/{id}/active")]
         public ActionResult<List<Proposal>> ListByUserIdAndActive(int id)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != id) return Unauthorized();
-
-            return _service.ListByUserIdAndActive(id);
+            _service.SetContextUser(GetUserFromContext(HttpContext));
+            var res = _service.ListByUserIdAndActive(id); 
+            if (res.Errors.Count > 0) return Unauthorized(res.Errors);
+            return res.Value;
         }
         #endregion
 
@@ -67,12 +62,9 @@ namespace VS_SLG6.Api.Controllers
         [HttpPost]
         public ActionResult<Proposal> Add(Proposal p)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != p?.Origin?.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var res = _service.Add(p);
-            if (res.Errors.Count > 0) return BadRequest(res);
-            return res.Value;
+            return ReturnResult(res);
         }
 
         [HttpPost("accept")]
@@ -95,12 +87,9 @@ namespace VS_SLG6.Api.Controllers
 
         public ActionResult<Proposal> ChangeState(int id, State state)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != _service.Get(id)?.Origin.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var res = _service.UpdateProposal(id, state);
-            if (res.Errors.Count > 0) return BadRequest(res);
-            return res.Value;
+            return ReturnResult(res);
         }
         #endregion
 
@@ -111,27 +100,23 @@ namespace VS_SLG6.Api.Controllers
         {
             if (patchDoc == null) return BadRequest(ModelState);
 
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != _service.Get(id)?.Origin.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var proposal = _service.Patch(id, patchDoc);
-            return proposal;
+            return ReturnResult(proposal);
         }
         #endregion
 
 
         #region DELETE
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult<Proposal> Delete(int id)
         {
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var proposal = _service.Get(id);
+            if (proposal.Errors.Count > 0) return Unauthorized(proposal.Errors);
             if (proposal == null) return BadRequest(string.Format(NOT_EXIST, nameof(Proposal)));
-
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != _service.Get(id)?.Origin.Id) return Unauthorized();
-
-            _service.Remove(proposal);
-            return Ok(proposal);
+            var check = _service.Remove(proposal.Value);
+            return ReturnResult(check);
         }
         #endregion
     }

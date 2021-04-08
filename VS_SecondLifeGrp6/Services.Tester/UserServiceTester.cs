@@ -128,7 +128,8 @@ namespace Services.Tester
             o.value = _defaultObjects[1].Login;
             var p = new JsonPatchDocument<User>(new List<Operation<User>> { o }, new DefaultContractResolver());
             _service.Patch(0, p);
-            Assert.AreEqual(_defaultObjects[1].Login, _workingObjects[0].Login);
+            var res = _service.Get(0);
+            Assert.AreEqual(_defaultObjects[1].Login, res.Value.Login);
         }
 
         [TestMethod]

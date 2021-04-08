@@ -9,10 +9,11 @@ namespace VS_SLG6.Services.Services
 {
     public interface IService<T> where T : class
     {
-        List<T> List();
-        T Get(int id);
-        Models.ValidationModel<T> Add(T obj);
-        T Patch(int id, JsonPatchDocument<T> jsonPatch);
-        T Remove(T obj);
+        ValidationModel<List<T>> List();
+        ValidationModel<T> Get(int id);
+        ValidationModel<T> Add(T obj);
+        ValidationModel<T> Patch(int id, JsonPatchDocument<T> jsonPatch);
+        ValidationModel<T> Remove(T obj);
+        void SetContextUser(ContextUser cUser);
     }
 }

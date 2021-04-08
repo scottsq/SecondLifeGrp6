@@ -15,7 +15,7 @@ namespace VS_SLG6.Api.Controllers
     {
         private IService<ProductTag> _service;
 
-        public ProductTagController(IService<ProductTag> service, IUserService serviceUser): base(serviceUser)
+        public ProductTagController(IService<ProductTag> service)
         {
             _service = service;
         }
@@ -23,17 +23,15 @@ namespace VS_SLG6.Api.Controllers
         [HttpGet]
         public ActionResult<List<ProductTag>> List()
         {
-            var res = _service.List();
-            if (res.Count == 0) return NoContent();
-            return res;
+            return _service.List().Value;
         }
 
         [HttpGet("{id}")]
         public ActionResult<ProductTag> GetProductTag(int id)
         {
             var productTag = _service.Get(id);
-            if (productTag == null) return BadRequest();
-            return productTag;
+            if (productTag.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(ProductTag)));
+            return productTag.Value;
         }
 
         [AllowAnonymous]
@@ -46,38 +44,29 @@ namespace VS_SLG6.Api.Controllers
         [HttpPost]
         public ActionResult<ProductTag> Add(ProductTag productTag)
         {
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != productTag.Product.Owner.Id) return Unauthorized();
-
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var res = _service.Add(productTag);
-            if (res.Errors.Count > 0) return BadRequest(res);
-            return res.Value;
+            return ReturnResult(res);
         }
 
         [HttpPatch("{id}")]
         public ActionResult<ProductTag> Patch(int id, [FromBody] JsonPatchDocument<ProductTag> patchDoc)
         {
             if (patchDoc == null) return BadRequest(ModelState);
-
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != _service.Get(id)?.Product.Owner.Id) return Unauthorized();
-
             var productTag = _service.Patch(id, patchDoc);
-            return productTag;
+            _service.SetContextUser(GetUserFromContext(HttpContext));
+            return ReturnResult(productTag);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public ActionResult<ProductTag> Delete(int id)
         {
+            _service.SetContextUser(GetUserFromContext(HttpContext));
             var productTag = _service.Get(id);
             if (productTag == null) return BadRequest(string.Format(NOT_EXIST, nameof(ProductTag)));
 
-            var contextUser = GetUserFromContext(HttpContext);
-            if (contextUser.Id != productTag.Product.Owner.Id) return Unauthorized();
-
-            _service.Remove(productTag);
-            return Ok(productTag);
-
+            var check = _service.Remove(productTag.Value);
+            return ReturnResult(check);
         }
     }
 }

@@ -15,15 +15,41 @@ namespace VS_SLG6.Services.Services
         {
         }
 
-        public List<Message> GetConversation(int idOrigin, int idDest)
+        public ValidationModel<List<Message>> GetConversation(int idOrigin, int idDest)
         {
-            return _repo.All(x => (x.Sender.Id == idOrigin && x.Receipt.Id == idDest) || (x.Sender.Id == idDest && x.Receipt.Id == idOrigin));
+            var res = new ValidationModel<List<Message>>();
+            var v = ((MessageValidator)_validator).CanGet(idOrigin, idDest);
+            if (!v.Value)
+            {
+                res.Value = null;
+                res.Errors = v.Errors;
+            }
+            else
+            {
+                res.Value = _repo.All(x => (
+                    x.Sender.Id == idOrigin && x.Receipt.Id == idDest) 
+                    || (x.Sender.Id == idDest && x.Receipt.Id == idOrigin)
+                );
+            }
+            return res;
         }
 
-        public List<Message> ListConversations(int idOrigin)
+        public ValidationModel<List<Message>> ListConversations(int idOrigin)
         {
-            var list = _repo.All(x => x.Sender.Id == idOrigin || x.Receipt.Id == idOrigin);
-            Func<Message, List<Message>, bool> contains = (Message item, List<Message> list) => {
+            var res = new ValidationModel<List<Message>>();
+            var v = ((MessageValidator)_validator).CanGet(idOrigin, -1);
+            if (!v.Value)
+            {
+                res.Value = null;
+                res.Errors = v.Errors;
+            }
+            else
+            {
+                res.Value = _repo.All(x => x.Sender.Id == idOrigin || x.Receipt.Id == idOrigin).Distinct(new ConversationComparer()).ToList();
+            }
+            return res;
+            
+            /*Func<Message, List<Message>, bool> contains = (Message item, List<Message> list) => {
                 return list.Find(x => (x.Receipt.Id == item.Receipt.Id && x.Sender.Id == item.Sender.Id) || (x.Receipt.Id == item.Sender.Id && x.Sender.Id == item.Receipt.Id)) != null;
             };
             List<Message> filteredList = list.Aggregate(new List<Message>(), (acc, item) =>
@@ -31,14 +57,32 @@ namespace VS_SLG6.Services.Services
                 if (!contains(item, acc)) acc.Add(LastMessage(item.Sender.Id, item.Receipt.Id));
                 return acc;
             });
-            return filteredList;
+            return filteredList;*/
         }
 
-        public Message LastMessage(int idOrigin, int idDest)
+        public ValidationModel<Message> LastMessage(int idOrigin, int idDest)
         {
             var list = GetConversation(idOrigin, idDest);
-            list.Sort((a, b) => a.CreationDate > b.CreationDate ? 1 : -1);
-            return list.FirstOrDefault();
+            if (list.Value == null) return _validationModel;
+            else
+            {
+                list.Value.Sort((a, b) => a.CreationDate > b.CreationDate ? 1 : -1);
+                _validationModel.Value = list.Value.FirstOrDefault();
+            }
+            return _validationModel;
+        }
+    }
+
+    public class ConversationComparer : IEqualityComparer<Message>
+    {
+        public bool Equals(Message x, Message y)
+        {
+            return (x.Sender == y.Sender && x.Receipt == y.Receipt) || (x.Sender == y.Receipt && x.Receipt == y.Sender);
+        }
+
+        public int GetHashCode(Message obj)
+        {
+            return int.Parse(obj.Sender.Id.ToString() + obj.Receipt.Id.ToString());
         }
     }
 }

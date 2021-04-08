@@ -8,7 +8,7 @@ namespace VS_SLG6.Services.Services
 {
     public interface IMessageService : IService<Message>
     {
-        public List<Message> GetConversation(int idOrigin, int idDest);
-        public List<Message> ListConversations(int idOrigin);
+        public ValidationModel<List<Message>> GetConversation(int idOrigin, int idDest);
+        public ValidationModel<List<Message>> ListConversations(int idOrigin);
     }
 }

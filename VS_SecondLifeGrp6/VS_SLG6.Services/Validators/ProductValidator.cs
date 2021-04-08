@@ -20,6 +20,38 @@ namespace VS_SLG6.Services.Validators
 
         public override ValidationModel<bool> CanAdd(Product obj)
         {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Owner.Id);
+            if (!_validationModel.Value) return _validationModel;
+
+            // Check if already exists
+            if (_repo.All(x => x.Name == obj.Name && x.Price == obj.Price && x.Owner.Id == obj.Owner.Id).Count > 0)
+            {
+                _validationModel.Errors.Add("This user already saved a similar product.");
+            }
+            _validationModel.Value = _validationModel.Errors.Count == 0;
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> CanEdit(Product obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Owner.Id);
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> CanDelete(Product obj)
+        {
+            _validationModel = IsObjectValid(obj);
+            if (!_validationModel.Value) return _validationModel;
+            CheckUserAuthorization(obj.Owner.Id);
+            return _validationModel;
+        }
+
+        public override ValidationModel<bool> IsObjectValid(Product obj)
+        {
             var listProps = new List<string> { nameof(obj.Description), nameof(obj.Name), nameof(obj.Owner) };
             _constraintsObject = new ConstraintsObject
             {
@@ -27,7 +59,7 @@ namespace VS_SLG6.Services.Validators
                 PropsStringNotBlank = listProps.Where(x => x != nameof(obj.Owner)).ToList()
             };
             // Basic check on fields (null, blank, size)
-            _validationModel = base.CanAdd(obj);
+            _validationModel = base.IsObjectValid(obj);
             if (!_validationModel.Value) return _validationModel;
 
             // Check negative price
@@ -41,11 +73,6 @@ namespace VS_SLG6.Services.Validators
             // Format date
             if (obj.CreationDate == DateTime.MinValue) obj.CreationDate = DateTime.Now;
 
-            // Check if already exists
-            if (_repo.All(x => x.Name == obj.Name && x.Price == obj.Price && x.Owner.Id == obj.Owner.Id).Count > 0)
-            {
-                _validationModel.Errors.Add("This user already saved a similar product.");
-            }
             _validationModel.Value = _validationModel.Errors.Count == 0;
             return _validationModel;
         }

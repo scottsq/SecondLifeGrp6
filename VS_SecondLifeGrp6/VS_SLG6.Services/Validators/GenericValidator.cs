@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
+using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Services.Validators
 {
@@ -19,11 +20,23 @@ namespace VS_SLG6.Services.Validators
         protected static String FieldEmptyError = "{0} {1} cannot be empty.";
         protected static int StringMaxLength = 32;
         protected static String CharCountError = "{0} {1} exceeds limit of " + StringMaxLength.ToString() + " characters.";
+        protected static String CannotPerformActionError = "This user cannot perfore this action.";
 
         public GenericValidator(IRepository<T> repo, ValidationModel<bool> validationModel)
         {
             _repo = repo;
             _validationModel = validationModel;
+        }
+
+        public virtual ValidationModel<bool> CanGet(T obj)
+        {
+            return new ValidationModel<bool> { Value = false };
+        }
+
+        public virtual ValidationModel<bool> CanGet(Roles role)
+        {
+            CheckRoleAuthorization(role);
+            return _validationModel;
         }
 
         public virtual ValidationModel<bool> CanAdd(T obj)
@@ -33,7 +46,7 @@ namespace VS_SLG6.Services.Validators
 
         public virtual ValidationModel<bool> CanDelete(T obj)
         {
-            _validationModel.Value = true;
+            _validationModel.Value = false;
             return _validationModel;
         }
 
@@ -79,7 +92,29 @@ namespace VS_SLG6.Services.Validators
             return _validationModel;
         }
 
-        
+        public virtual void CheckUserAuthorization(int id)
+        {
+            var cUser = GenericService<T>.contextUser;
+            if (cUser != null && id != cUser.Id && cUser.Role != Roles.ADMIN)
+            {
+                _validationModel.Value = false;
+                _validationModel.Errors.Add(CannotPerformActionError);
+            }
+            _validationModel.Value = true;
+        }
+        public virtual void CheckRoleAuthorization(Roles role)
+        {
+            var cUser = GenericService<T>.contextUser;
+            if (cUser != null && cUser.Role != role && cUser.Role != Roles.ADMIN)
+            {
+                _validationModel.Value = false;
+                _validationModel.Errors.Add(CannotPerformActionError);
+            }
+            _validationModel.Value = true;
+        }
+
+
+
 
 
 
@@ -119,7 +154,7 @@ namespace VS_SLG6.Services.Validators
         {
             for (int i = 0; i < list.Count; i++)
             {
-                _validationModel.Errors.Add(String.Format(error, nameof(T), list[i]));
+                _validationModel.Errors.Add(String.Format(error, typeof(T).Name , list[i]));
             }
         }
 
@@ -132,5 +167,6 @@ namespace VS_SLG6.Services.Validators
                 return acc;
             });
         }
+
     }
 }

@@ -14,30 +14,58 @@ namespace VS_SLG6.Services.Services
         {
         }
 
-        public List<Proposal> GetAcceptedProposalByUser(int id)
+        public ValidationModel<List<Proposal>> GetAcceptedProposalByUser(int id)
         {
-            return _repo.All(x => x.State == State.ACCEPTED && (x.Target.Id == id || x.Origin.Id == id));
+            var list = _repo.All(x => x.State == State.ACCEPTED && (x.Target.Id == id || x.Origin.Id == id)); 
+            return SetValidation(list);
         }
 
-        public List<Proposal> ListByUserId(int id)
+        public ValidationModel<List<Proposal>> ListByUserId(int id)
         {
-            return _repo.All(x => x.Target.Id == id || x.Origin.Id == id);
+            var list = _repo.All(x => x.Target.Id == id || x.Origin.Id == id); 
+            return SetValidation(list);
         }
 
-        public List<Proposal> ListByUserIdAndActive(int id)
+        public ValidationModel<List<Proposal>> ListByUserIdAndActive(int id)
         {
-            return _repo.All(x => (x.Target.Id == id || x.Origin.Id == id) && x.State == State.ACTIVE);
+            var list = _repo.All(x => (x.Target.Id == id || x.Origin.Id == id) && x.State == State.ACTIVE);
+            return SetValidation(list);
+        }
+
+        private ValidationModel<List<Proposal>> SetValidation(List<Proposal> list)
+        {
+            var res = new ValidationModel<List<Proposal>>();
+            if (list.Count == 0)
+            {
+                res.Value = list;
+                return res;
+            }
+            var v = _validator.CanGet(list[0]);
+            if (!v.Value) res.Errors = v.Errors;
+            else res.Value = list;
+            return res;
         }
 
         public ValidationModel<Proposal> UpdateProposal(int id, State state)
         {
             var p = Get(id);
-            if (p == null) _validationModel.Errors.Add("Proposal not found");
+            if (p.Errors.Count > 0) {
+                _validationModel.Errors = p.Errors;
+                return _validationModel;
+            }
+            if (p.Value == null)
+            {
+                _validationModel.Errors.Add("Proposal not found");
+                return _validationModel;
+            }
+
+            var check = _validator.CanEdit(p.Value);
+            if (!check.Value) _validationModel.Errors = check.Errors;
             else
             {
-                p.State = state;
-                _repo.Update(p);
-                _validationModel.Value = p;
+                p.Value.State = state;
+                _repo.Update(p.Value);
+                _validationModel.Value = p.Value;
             }
             return _validationModel;
         }

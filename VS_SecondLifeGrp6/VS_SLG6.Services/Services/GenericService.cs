@@ -15,6 +15,7 @@ namespace VS_SLG6.Services.Services
         protected IRepository<T> _repo;
         protected IValidator<T> _validator;
         protected Models.ValidationModel<T> _validationModel;
+        public static ContextUser contextUser = null;
 
         public GenericService(IRepository<T> repo, IValidator<T> validator)
         {
@@ -23,40 +24,62 @@ namespace VS_SLG6.Services.Services
             _validationModel = new Models.ValidationModel<T>();
         }
 
-        public List<T> List()
+        public ValidationModel<List<T>> List()
         {
-            return _repo.All();
+            var res = new ValidationModel<List<T>>();
+            var check = _validator.CanGet(Roles.USER);
+            if (check.Value) res.Value = _repo.All();
+            else res.Errors = check.Errors;
+            return res;
         }
 
-        public virtual T Get(int id)
+        public virtual ValidationModel<T> Get(int id)
         {
-            return _repo.FindOne(id);
+            var check = _validator.CanGet(Roles.USER);
+            if (check.Value) _validationModel.Value = _repo.FindOne(id);
+            else _validationModel.Errors = check.Errors;
+            return _validationModel;
         }
 
         public virtual ValidationModel<T> Add(T obj)
         {
-            var v = _validator.CanAdd(obj);
-            if (v.Value) _validationModel.Value = _repo.Add(obj);
-            else
-            {
-                _validationModel.Value = obj;
-                _validationModel.Errors = _validationModel.Errors.Concat(v.Errors).ToList();
-            }
+            var check = _validator.CanAdd(obj);
+            if (check.Value) _validationModel.Value = _repo.Add(obj);
+            else _validationModel.Errors = check.Errors; 
             return _validationModel;
         }
 
-        public T Remove(T obj)
+        public ValidationModel<T> Remove(T obj)
         {
-            _repo.Remove(obj);
-            return obj;
+            var v = _validator.CanDelete(obj);
+            if (v.Value)
+            {
+                _validationModel.Value = obj;
+                _repo.Remove(obj);
+            }
+            else _validationModel.Errors = v.Errors;
+            return _validationModel;
         }
 
-        public T Patch(int id, JsonPatchDocument<T> jsonPatch)
+        public ValidationModel<T> Patch(int id, JsonPatchDocument<T> jsonPatch)
         {
             var obj = Get(id);
-            jsonPatch.ApplyTo(obj);
-            _repo.Update(obj);
-            return obj;
+            if (obj.Value == null) return _validationModel;
+
+            jsonPatch.ApplyTo(obj.Value);
+            var v = _validator.CanEdit(obj.Value);
+            if (v.Value)
+            {
+                _repo.Update(obj.Value);
+                _validationModel.Value = obj.Value;
+            }
+            else _validationModel.Errors = v.Errors;
+            return _validationModel;
+        }
+
+        public void SetContextUser(ContextUser cUser)
+        {
+            contextUser = cUser;
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using VS_SLG6.Model.Entities;
+using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Api.Controllers
@@ -9,18 +11,28 @@ namespace VS_SLG6.Api.Controllers
     public class ControllerBaseExtended : ControllerBase
     {
         public const string NOT_EXIST = "{0} does not exist.";
-        private static IUserService _service;
 
-        public ControllerBaseExtended(IUserService service)
+        public static ContextUser GetUserFromContext(HttpContext context)
         {
-            _service = service;
+            var claims = context?.User?.Claims;
+            if (claims == null) return null;
+
+            int id = -1;
+            int.TryParse(claims.FirstOrDefault(x => x.Type == "user_id")?.Value, out id);
+
+            int role = 1;
+            int.TryParse(claims.FirstOrDefault(x => x.Type == "user_role")?.Value, out role);
+            if (role < 0 || role > Enum.GetValues(typeof(Roles)).Length) role = 1;
+
+            return new ContextUser { Id = id, Role = (Roles)role };
+
         }
 
-        public static User GetUserFromContext(HttpContext context)
+        public ActionResult<T> ReturnResult<T>(ValidationModel<T> obj)
         {
-            int res = -1;
-            int.TryParse(context?.User?.Claims?.FirstOrDefault(x => x.Type == "user_id")?.Value, out res);
-            return _service.Get(res);
+            if (obj.Value == null) return Unauthorized(obj.Errors);
+            if (obj.Errors.Count > 0) return BadRequest(obj.Errors);
+            return obj.Value;
         }
     }
 }

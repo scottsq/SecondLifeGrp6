@@ -38,6 +38,7 @@ namespace Services.Tester
         {
             _repo = new Mock<IRepository<T>>();
             _service = new GenericService<T>(_repo.Object, _validator);
+            _service.SetContextUser(new ContextUser { Id = 0, Role = Roles.ADMIN });
         }
 
         public void InitBehavior(params T[] objs)
@@ -72,7 +73,7 @@ namespace Services.Tester
         [TestMethod]
         public void List_ThenList()
         {
-            Assert.IsTrue(_workingObjects.SequenceEqual(_service.List()));
+            Assert.IsTrue(_workingObjects.SequenceEqual(_service.List().Value));
         }
 
         [TestMethod]
@@ -84,7 +85,7 @@ namespace Services.Tester
         [TestMethod]
         public void Get_WithMinus1_ThenNull()
         {
-            Assert.AreEqual(null, _service.Get(-1));
+            Assert.AreEqual(null, _service.Get(-1).Value);
         }
 
         [TestMethod]
@@ -128,15 +129,15 @@ namespace Services.Tester
         [TestMethod]
         public void Remove_WithObject0_ThenListIsEmpty()
         {
-            _service.Remove(_service.Get(0));
-            Assert.AreEqual(0, _service.List().Count);
+            _service.Remove(_service.Get(0).Value);
+            Assert.AreEqual(0, _service.List().Value.Count);
         }
 
         [TestMethod]
         public void Remove_WithNullObject_ThenListIsNotEmpty()
         {
             _service.Remove(null);
-            Assert.AreNotEqual(0, _service.List().Count);
+            Assert.AreNotEqual(0, _service.List().Value.Count);
         }
     }
 }

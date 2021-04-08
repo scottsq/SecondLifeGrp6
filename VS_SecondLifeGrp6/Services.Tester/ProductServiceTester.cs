@@ -132,7 +132,7 @@ namespace Services.Tester
         [TestMethod]
         public void GetLatest_WithDefaultAndAdding15MoreProducts_ThenNotEmptyAnd10Results()
         {
-            // Directly adding to list without doing service.Add to avoid creating 15 unecessary objects
+            // Directly adding to working list without doing service.Add because no need to in this case
             for (var i = 0; i < 15; i++) _workingObjects.Add(_product);
             var res = ((ProductService)_service).GetLatest();
             Assert.IsTrue(res.Count == 10);
