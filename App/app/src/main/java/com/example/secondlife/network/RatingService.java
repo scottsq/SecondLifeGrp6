@@ -7,6 +7,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -19,7 +20,7 @@ public interface RatingService {
     Call<Rating> getUserRating(@Path("id") int id);
 
     @POST("rating")
-    Call<Rating> createRating(@Body Rating rating);
+    Call<Rating> createRating(@Header("Authorization") String authorization, @Body Rating rating);
 
     @PATCH("rating/{id}")
     Call<Rating> updateRating(@Path("id") int id, @Body Rating rating);

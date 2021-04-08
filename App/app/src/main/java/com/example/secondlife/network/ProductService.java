@@ -8,6 +8,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
@@ -21,7 +22,7 @@ public interface ProductService {
     Call<List<Product>> getUserProducts(@Path("id") int id);
 
     @GET("product/user/{id}/like")
-    Call<List<Product>> getRelatedProducts(@Path("id") int id);
+    Call<List<Product>> getRelatedProducts(@Header("Authorization") String authorization, @Path("id") int id);
 
     @GET("product/latest")
     Call<List<Product>> getAllProduct();
@@ -30,11 +31,11 @@ public interface ProductService {
     Call<List<Product>> search(@Query("keys") String keys);
 
     @POST("product")
-    Call<Product> createProduct(@Body Product product);
+    Call<Product> createProduct(@Header("Authorization") String authorization, @Body Product product);
 
     @PATCH("product/{id}")
-    Call<Product> updateProduct(@Path("id") int id, @Body Product product);
+    Call<Product> updateProduct(@Header("Authorization") String authorization, @Path("id") int id, @Body Product product);
 
     @DELETE("product/{id}")
-    Call<Product> deleteProduct(@Path("id") int id);
+    Call<Product> deleteProduct(@Header("Authorization") String authorization, @Path("id") int id);
 }

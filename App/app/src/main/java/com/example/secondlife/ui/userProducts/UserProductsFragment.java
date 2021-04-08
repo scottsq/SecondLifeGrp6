@@ -73,6 +73,7 @@ public class UserProductsFragment extends Fragment {
             apiServiceProduct.getUserProducts(id).enqueue(new Callback<List<Product>>() {
                 @Override
                 public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+
                     Log.v("test","ok product");
                     products = response.body();
                     for (int i = 0; i < products.size(); i++) {
@@ -103,7 +104,6 @@ public class UserProductsFragment extends Fragment {
         View view = binding.getRoot();
         return view;
 
-        // homeviewModel.lastestGameLiveData.observe()      Attend un changement de donnée de homeViewModel
     }
 
     @Override

@@ -28,11 +28,11 @@ public interface UserService {
     Call<LoginResponse> loginUser(@Body User user);
 
     @POST("user/reset")
-    Call<User> resetPassword(@Body User user); // TODO: Changer type de retour
+    Call<User> resetPassword(@Header("Authorization") String authorization, @Body User user); // TODO: Changer type de retour
 
     @PATCH("user/{id}")
-    Call<User> updateUser(@Path("id") int id, @Body User user);
+    Call<User> updateUser(@Header("Authorization") String authorization, @Path("id") int id, @Body User user);
 
     @DELETE("user/{id}")
-    Call<User> deleteUser(@Path("id") int id);
+    Call<User> deleteUser(@Header("Authorization") String authorization, @Path("id") int id);
 }
