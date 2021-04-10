@@ -78,7 +78,7 @@ public class ProductDetails extends AppCompatActivity {
 //    }
 
     public void callRateButton(){
-        RatingBar ratingbar =findViewById(R.id.ratingBar);
+        RatingBar ratingbar = findViewById(R.id.ratingBar);
         Button rateButton = findViewById(R.id.rateButton);
 
         rateButton.setOnClickListener(new View.OnClickListener(){

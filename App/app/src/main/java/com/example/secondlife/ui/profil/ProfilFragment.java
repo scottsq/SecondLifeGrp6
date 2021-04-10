@@ -75,9 +75,9 @@ public class ProfilFragment extends Fragment {
         Button saveButton = binding.saveButton;
         saveButton.setOnClickListener(callSaveButton());
 
-        // Ciao button
-        Button ciaoButton = binding.ciaoButton;
-        ciaoButton.setOnClickListener(callCiaoButton());
+        // Disconnection button
+        Button disconnectionButton = binding.disconnectionButton;
+        disconnectionButton.setOnClickListener(callDisconnectionButton());
 
 
 
@@ -91,7 +91,7 @@ public class ProfilFragment extends Fragment {
                 Log.v("Name Profil: ",user.getName());
                 //Log.v("Name Email: ",user.getEmail());
                 Log.v("Login Profil:",user.getLogin());
-                setTextView("TextViewName", user.getName());
+                //setTextView("TextViewName", user.getName());
                 setTextEditText("editTextPersonName", user.getName() == null?"":user.getName());
                 setTextEditText("editTextEmail",user.getEmail() == null?"":user.getEmail());
                 setTextEditText("editTextAvatarUrl",user.getAvatarUrl() == null?"":user.getAvatarUrl());
@@ -107,12 +107,12 @@ public class ProfilFragment extends Fragment {
 
         return view;
     }
-
-    public void setTextView(String idTextView, String text) {
-
-        View view = getViewById(idTextView);
-        ((TextView) view).setText(text);
-    }
+// ancien
+//    public void setTextView(String idTextView, String text) {
+//
+//        View view = getViewById(idTextView);
+//        ((TextView) view).setText(text);
+//    }
 
     public void setTextEditText(String idEditView, String text) {
 
@@ -167,7 +167,7 @@ public class ProfilFragment extends Fragment {
         };
     }
 
-    public View.OnClickListener callCiaoButton() {
+    public View.OnClickListener callDisconnectionButton() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view){

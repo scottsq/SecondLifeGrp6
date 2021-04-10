@@ -107,6 +107,7 @@ public class LoginFragment extends Fragment {
                         }
                         else
                         {
+                            getActivity().findViewById(R.id.textError).setVisibility(View.VISIBLE);
                             Log.v("test1","tamer");
                         }
                     }
