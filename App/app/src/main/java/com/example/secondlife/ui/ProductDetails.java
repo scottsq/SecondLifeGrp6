@@ -57,6 +57,11 @@ public class ProductDetails extends AppCompatActivity {
         ((TextView)findViewById(R.id.product_desc)).setText(product.getDescription());
         if (localData.getUserId() > -1) {
             findViewById(R.id.btn_buy).setVisibility(View.VISIBLE);
+            findViewById(R.id.ratingBar).setVisibility(View.VISIBLE);
+            findViewById(R.id.rateButton).setVisibility(View.VISIBLE);
+            findViewById(R.id.textRatingBar).setVisibility(View.VISIBLE);
+            findViewById(R.id.editTextComment).setVisibility(View.VISIBLE);
+            findViewById(R.id.textComment).setVisibility(View.VISIBLE);
         }
         Log.d("product", product.getName());
     }
