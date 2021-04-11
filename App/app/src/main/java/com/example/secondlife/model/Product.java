@@ -1,8 +1,9 @@
 package com.example.secondlife.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Product {
+public class Product implements Serializable {
     private Integer id;
     private Integer ownerId;
     private String name;

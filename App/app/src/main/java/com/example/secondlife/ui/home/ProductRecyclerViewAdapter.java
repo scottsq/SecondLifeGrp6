@@ -17,8 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.secondlife.MainActivity;
@@ -26,12 +30,14 @@ import com.example.secondlife.R;
 import com.example.secondlife.model.Photo;
 import com.example.secondlife.model.Product;
 import com.example.secondlife.ui.ProductDetails;
+import com.example.secondlife.ui.productDetails.ProductDetailsFragment;
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,16 +80,32 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
         holder.getBtnView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(parent.getContext(), ProductDetails.class);
-                Gson gson = new Gson();
-                String product = gson.toJson(dataSetProduct.get(position));
-                //String photo = gson.toJson(dataSetPhoto.get(position));
-                Photo photoTest = new Photo();
-                photoTest.setUrl("");
-                String photo = gson.toJson(photoTest);
-                i.putExtra("product", product);
-                i.putExtra("photo", photo);
-                parent.getContext().startActivity(i);
+
+//                FragmentTransaction ft = fragmentActivity.getSupportFragmentManager().beginTransaction().setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+//                //ft.setReorderingAllowed(true);
+//                ProductDetailsFragment productDetailsFragment = new ProductDetailsFragment();
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("product", (Serializable)dataSetProduct.get(position));
+//               // bundle.putSerializable("photo", (Serializable)dataSetPhoto.get(position));
+//                productDetailsFragment.setArguments(bundle);
+//                ft.replace(R.id.nav_host_fragment, productDetailsFragment);
+//                ft.addToBackStack(null);
+//                ft.commit();
+
+                Navigation.findNavController(v).navigate(R.id.action_navigation_home_to_navigation_product_details, bundle);
+
+
+
+//                Intent i = new Intent(parent.getContext(), ProductDetails.class);
+//                Gson gson = new Gson();
+//                String product = gson.toJson(dataSetProduct.get(position));
+//                //String photo = gson.toJson(dataSetPhoto.get(position));
+//                Photo photoTest = new Photo();
+//                photoTest.setUrl("");
+//                String photo = gson.toJson(photoTest);
+//                i.putExtra("product", product);
+//                i.putExtra("photo", photo);
+//                parent.getContext().startActivity(i);
             }
         });
         dataSetHolder.add(holder);

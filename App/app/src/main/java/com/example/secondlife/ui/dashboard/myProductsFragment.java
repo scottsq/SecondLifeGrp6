@@ -15,7 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.secondlife.R;
 import com.example.secondlife.databinding.FragmentDashboardBinding;
 
-public class DashboardFragment extends Fragment {
+public class myProductsFragment extends Fragment {
 
     private DashboardViewModel dashboardViewModel;
     private FragmentDashboardBinding binding;

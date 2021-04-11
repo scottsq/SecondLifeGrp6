@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ui.login.LoginFragment"
     android:id="@+id/fragment_login_container"
-    android:background="#ffffff">
+    >
 
 
     <EditText

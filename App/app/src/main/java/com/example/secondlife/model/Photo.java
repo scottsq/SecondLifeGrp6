@@ -1,6 +1,8 @@
 package com.example.secondlife.model;
 
-public class Photo {
+import java.io.Serializable;
+
+public class Photo implements Serializable {
     private Integer id;
     private Integer productId;
     private String url;
