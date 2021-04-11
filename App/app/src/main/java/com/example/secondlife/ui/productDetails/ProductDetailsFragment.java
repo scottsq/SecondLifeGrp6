@@ -1,6 +1,6 @@
 package com.example.secondlife.ui.productDetails;
 
-import androidx.activity.OnBackPressedCallback;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
@@ -8,26 +8,36 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RatingBar;
-import android.widget.TextView;
 
 import com.example.secondlife.LocalData;
 import com.example.secondlife.R;
-import com.example.secondlife.databinding.ActivityProductDetailsBinding;
 import com.example.secondlife.databinding.ProductDetailsFragmentBinding;
+import com.example.secondlife.model.LoginResponse;
 import com.example.secondlife.model.Photo;
 import com.example.secondlife.model.Product;
+import com.example.secondlife.model.ProductRating;
+import com.example.secondlife.model.User;
+import com.example.secondlife.network.OkHttpClass;
+import com.example.secondlife.network.ProductRatingService;
+import com.example.secondlife.network.ProductService;
+import com.example.secondlife.ui.profil.ProfilFragment;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.squareup.picasso.Picasso;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ProductDetailsFragment extends Fragment {
 
@@ -37,6 +47,17 @@ public class ProductDetailsFragment extends Fragment {
     View view;
     Product product = null;
     Photo photo = null;
+    ProductService productService = null;
+
+    Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+            .create();
+    private final Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:61169/api/")
+            // .baseUrl("https://10.0.2.2:44359/api/")
+            .client(OkHttpClass.getUnsafeOkHttpClient().newBuilder().followRedirects(false).followSslRedirects(false).build())
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build();
 
     public static ProductDetailsFragment newInstance() {
         return new ProductDetailsFragment();
@@ -104,8 +125,37 @@ public class ProductDetailsFragment extends Fragment {
                 //product id
                 Log.v("test product rate" , String.valueOf(product.getId()));
 
-
                 Log.v("test rate" , String.valueOf(ratingbar.getRating()));
+
+                ProductRatingService apiService = retrofit.create(ProductRatingService.class);
+                ProductRating productRating = new ProductRating();
+
+                User user = new User();
+                user.setId(localData.getUserId());
+                productRating.setUser(user);
+
+//                Product pp = new Product();
+//                pp.setId(product.getId());
+                productRating.setProduct(product);
+
+                productRating.setStars((int) ratingbar.getRating());
+                productRating.setComment(binding.textComment.getText().toString());
+
+                //apiService.createProductRating(LocalData.GetInstance().getToken(),productRating);
+
+                apiService.createProductRating(LocalData.GetInstance().getToken(),productRating).enqueue(new Callback<ProductRating>() {
+                    @Override
+                    public void onResponse(Call<ProductRating> call, Response<ProductRating> response) {
+                        ProductRating check = response.body();
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<ProductRating> call, Throwable t) {
+                        Log.v("FAIL TA MER" , "FAIL TA MER");
+                    }
+                });
+
                 rateButton.setEnabled(false);
             }
 
