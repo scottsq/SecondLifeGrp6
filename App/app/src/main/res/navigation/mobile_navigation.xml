@@ -28,10 +28,10 @@
     </fragment>
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.secondlife.ui.dashboard.myProductsFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_myProducts"
+        android:name="com.example.secondlife.ui.myProducts.myProductsFragment"
+        android:label="@string/title_myProducts"
+        tools:layout="@layout/fragment_my_products" />
 
     <fragment
         android:id="@+id/navigation_profil"

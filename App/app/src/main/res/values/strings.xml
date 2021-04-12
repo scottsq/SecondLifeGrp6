@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Second Life</string>
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+    <string name="title_myProducts">Mes produits</string>
     <string name="title_profil">Profil</string>
     <string name="last_offers">Dernières offres</string>
     <string name="connexion">Connexion</string>
