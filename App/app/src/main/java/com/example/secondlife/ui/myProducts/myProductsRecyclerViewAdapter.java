@@ -1,7 +1,10 @@
 package com.example.secondlife.ui.myProducts;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,7 +61,7 @@ public class myProductsRecyclerViewAdapter extends RecyclerView.Adapter<myProduc
     @NonNull
     @Override
     public myProductsRecyclerViewAdapter.ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_product_item, parent, false);
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_myproducts_item, parent, false);
         myProductsRecyclerViewAdapter.ProductViewHolder holder = new myProductsRecyclerViewAdapter.ProductViewHolder(itemView);
         this.parent = parent;
         return holder;
@@ -82,7 +85,25 @@ public class myProductsRecyclerViewAdapter extends RecyclerView.Adapter<myProduc
         holder.getBtnView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                apiService.deleteProduct(localData.getToken(), dataSetProduct.get(position).getProduct().getId()).enqueue(deleteProduct());
+                AlertDialog.Builder alert = new AlertDialog.Builder(parent.getContext());
+                alert.setTitle("Suppression");
+                alert.setMessage("Voulez-vous supprimer le produit sélectionné ?");
+                alert.setPositiveButton("Oui", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        apiService.deleteProduct(localData.getToken(), dataSetProduct.get(position).getProduct().getId()).enqueue(deleteProduct());
+                        dataSetProduct.remove(position);
+                        notifyItemRemoved(position);
+                    }
+                });
+                alert.setNegativeButton("Non", new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                alert.show();
             }
         });
         dataSetHolder.add(holder);
@@ -106,7 +127,7 @@ public class myProductsRecyclerViewAdapter extends RecyclerView.Adapter<myProduc
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-
+                Log.v("test log","test fail log");
             }
         };
     }
