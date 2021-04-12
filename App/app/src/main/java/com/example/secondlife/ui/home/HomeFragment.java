@@ -96,8 +96,6 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<List<ProductWithPhoto>> call, Response<List<ProductWithPhoto>> response) {
                 products = response.body();
-
-
                 // Pour le recyclerViewProduct
                 adapter = new ProductRecyclerViewAdapter(getActivity(), products, getContext());
                 RecyclerView recyclerview = binding.recyclerViewProduct;
@@ -106,7 +104,6 @@ public class HomeFragment extends Fragment {
 
                 // Refresh la liste
                 adapter.notifyDataSetChanged();
-
             }
 
             @Override

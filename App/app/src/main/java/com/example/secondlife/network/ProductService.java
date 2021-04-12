@@ -25,6 +25,9 @@ public interface ProductService {
     @GET("product/user/{id}/like")
     Call<List<Product>> getRelatedProducts(@Header("Authorization") String authorization, @Path("id") int id);
 
+    @GET("product/user/{id}/withphoto")
+    Call<List<ProductWithPhoto>> getUserProductWithPhoto(@Path("id") int id);
+
     @GET("product/latest")
     Call<List<Product>> getAllProduct();
 
@@ -41,5 +44,5 @@ public interface ProductService {
     Call<Product> updateProduct(@Header("Authorization") String authorization, @Path("id") int id, @Body Product product);
 
     @DELETE("product/{id}")
-    Call<Product> deleteProduct(@Header("Authorization") String authorization, @Path("id") int id);
+    Call<Void> deleteProduct(@Header("Authorization") String authorization, @Path("id") int id);
 }

@@ -7,8 +7,7 @@
     android:layout_height="50dp"
     android:layout_marginTop="5dp"
     android:background="#20000000"
-    tools:context=".ui.productDetails.ProductDetailsFragment">
-
+    tools:context=".ui.myProducts.myProductsFragment">
 
     <Button
         android:id="@+id/item_more"
@@ -16,7 +15,8 @@
         android:layout_height="match_parent"
         android:insetBottom="0dp"
         android:insetTop="0dp"
-        android:text="+"
+        android:background="#FF0000"
+        android:text="-"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
