@@ -12,6 +12,7 @@ namespace VS_SLG6.Services.Services
         public List<Product> GetUserProducts(int id);
         public List<Product> GetProductsByKeys(string[] keys);
         public List<Product> GetProductsByInterest(int id);
-        public List<ProductWithPhoto> GetProductWithPhotos();
+        public List<ProductWithPhoto> GetProductWithPhotos(); 
+        public List<ProductWithPhoto> GetProductForUserWithPhotos(int id);
     }
 }

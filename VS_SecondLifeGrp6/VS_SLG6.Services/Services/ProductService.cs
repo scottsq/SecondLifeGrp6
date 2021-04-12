@@ -116,5 +116,19 @@ namespace VS_SLG6.Services.Services
             }
             return res;
         }
+
+        public List<ProductWithPhoto> GetProductForUserWithPhotos(int id)
+        {
+            List<ProductWithPhoto> res = new List<ProductWithPhoto>();
+            var list = GetUserProducts(id);
+            foreach (var p in list)
+            {
+                var pwithphoto = new ProductWithPhoto();
+                pwithphoto.Product = p;
+                pwithphoto.Photos = _repoPhoto.All(x => x.Product.Id == p.Id);
+                res.Add(pwithphoto);
+            }
+            return res;
+        }
     }
 }
