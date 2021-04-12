@@ -97,6 +97,9 @@ namespace Services.Tester
                 return null;
             });
 
+            var photoRepo = new Mock<IRepository<Photo>>();
+            photoRepo.Setup(x => x.All(It.IsAny<Expression<Func<Photo, bool>>>())).Returns<Expression<Func<Proposal, bool>>>(x => null);
+
             _validator = new ProductValidator(_repo.Object, new ValidationModel<bool>(), uRepo.Object);
             _repo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x => {
                 return _workingObjects.Find(m => m.Id == x);

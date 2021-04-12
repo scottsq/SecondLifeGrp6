@@ -24,6 +24,12 @@ namespace VS_SLG6.Api.Controllers
             return _service.List().Value;
         }
 
+        [HttpGet("withphoto")]
+        public ActionResult<List<ProductWithPhoto>> ListWithPhoto()
+        {
+            return _service.GetProductWithPhotos();
+        }
+
         [HttpGet("{id}")]
         public ActionResult<Product> GetProduct(int id)
         {

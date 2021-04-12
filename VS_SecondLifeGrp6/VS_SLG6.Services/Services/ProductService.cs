@@ -13,11 +13,13 @@ namespace VS_SLG6.Services.Services
     {
         private IRepository<Proposal> _repoProposal;
         private IRepository<ProductTag> _repoProductTag;
+        private IRepository<Photo> _repoPhoto;
 
-        public ProductService(IRepository<Product> repo, IValidator<Product> validator, IRepository<Proposal> repoProposal, IRepository<ProductTag> repoProductTag) : base(repo, validator)
+        public ProductService(IRepository<Product> repo, IValidator<Product> validator, IRepository<Proposal> repoProposal, IRepository<ProductTag> repoProductTag, IRepository<Photo> repoPhoto) : base(repo, validator)
         {
             _repoProposal = repoProposal;
             _repoProductTag = repoProductTag;
+            _repoPhoto = repoPhoto;
         }
 
         public List<Product> GetLatest(int max = 10)
@@ -99,6 +101,20 @@ namespace VS_SLG6.Services.Services
             var listProducts = new List<Product>();
             foreach (var t in tags) listProducts = listProducts.Concat(GetByTag(t.Id)).ToList();
             return OrderByOccurence(listProducts);
+        }
+
+        public List<ProductWithPhoto> GetProductWithPhotos()
+        {
+            List<ProductWithPhoto> res = new List<ProductWithPhoto>();
+            var list = List().Value;
+            foreach (var p in list)
+            {
+                var pwithphoto = new ProductWithPhoto();
+                pwithphoto.Product = p;
+                pwithphoto.Photos = _repoPhoto.All(x => x.Product.Id == p.Id);
+                res.Add(pwithphoto);
+            }
+            return res;
         }
     }
 }
