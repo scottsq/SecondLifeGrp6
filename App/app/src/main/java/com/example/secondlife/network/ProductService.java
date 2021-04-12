@@ -1,6 +1,7 @@
 package com.example.secondlife.network;
 
 import com.example.secondlife.model.Product;
+import com.example.secondlife.model.ProductWithPhoto;
 
 import java.util.List;
 
@@ -29,6 +30,9 @@ public interface ProductService {
 
     @GET("product/search")
     Call<List<Product>> search(@Query("keys") String keys);
+
+    @GET("product/withphoto")
+    Call<List<ProductWithPhoto>> getAllProductWithPhoto();
 
     @POST("product")
     Call<Product> createProduct(@Header("Authorization") String authorization, @Body Product product);

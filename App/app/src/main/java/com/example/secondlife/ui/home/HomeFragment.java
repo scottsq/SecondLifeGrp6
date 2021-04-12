@@ -21,6 +21,7 @@ import com.example.secondlife.R;
 import com.example.secondlife.databinding.FragmentHomeBinding;
 import com.example.secondlife.model.Photo;
 import com.example.secondlife.model.Product;
+import com.example.secondlife.model.ProductWithPhoto;
 import com.example.secondlife.model.User;
 import com.example.secondlife.network.OkHttpClass;
 import com.example.secondlife.network.ProductService;
@@ -45,7 +46,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class HomeFragment extends Fragment {
 
     private ProductRecyclerViewAdapter adapter;
-    private List<Product> products = new ArrayList<>();
+    private List<ProductWithPhoto> products = new ArrayList<>();
     private List<Photo> photos = new ArrayList<>();
 
     private HomeViewModel homeViewModel;
@@ -67,7 +68,7 @@ public class HomeFragment extends Fragment {
 
         //Product
         ProductService apiServiceProduct = retrofit.create(ProductService.class);
-        apiServiceProduct.getAllProduct().enqueue(getProductListResponse());
+        apiServiceProduct.getAllProductWithPhoto().enqueue(getProductListResponse());
 
         View view = binding.getRoot();
         return view;
@@ -90,15 +91,15 @@ public class HomeFragment extends Fragment {
         };
     }
 
-    private Callback<List<Product>> getProductListResponse() {
-        return new Callback<List<Product>>() {
+    private Callback<List<ProductWithPhoto>> getProductListResponse() {
+        return new Callback<List<ProductWithPhoto>>() {
             @Override
-            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
-                Log.v("test","ok product");
+            public void onResponse(Call<List<ProductWithPhoto>> call, Response<List<ProductWithPhoto>> response) {
                 products = response.body();
 
+
                 // Pour le recyclerViewProduct
-                adapter = new ProductRecyclerViewAdapter(getActivity(), products, photos, getContext());
+                adapter = new ProductRecyclerViewAdapter(getActivity(), products, getContext());
                 RecyclerView recyclerview = binding.recyclerViewProduct;
                 recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerview.setAdapter(adapter);
@@ -109,7 +110,7 @@ public class HomeFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<List<Product>> call, Throwable t) {
+            public void onFailure(Call<List<ProductWithPhoto>> call, Throwable t) {
                 // Log error here since request failed
                 Log.i("test","fail product");
                 t.printStackTrace();
@@ -117,16 +118,20 @@ public class HomeFragment extends Fragment {
                 // Juste pour test, faudrait mettre un message d'erreur à la place
                 Random r = new Random();
                 for (int i=0; i<15; i++) {
+                    ProductWithPhoto pwp = new ProductWithPhoto();
                     Product p = new Product();
+                    List<Photo> photoList = new ArrayList<>();
                     p.setId(i); p.setName("Product " + i); p.setPrice(r.nextInt(50));
-                    products.add(p);
                     Photo ph = new Photo();
                     ph.setId(i);
                     ph.setUrl("https://whatflower.net/imgmini/" + (i+1) + ".png");
                     photos.add(ph);
+                    photoList.add(ph);
+                    pwp.setPhotoList(photoList);
+                    products.add(pwp);
                 }
 
-                adapter = new ProductRecyclerViewAdapter(getActivity(), products, photos, getContext());
+                adapter = new ProductRecyclerViewAdapter(getActivity(), products, getContext());
                 try {
                     RecyclerView recyclerview = binding.recyclerViewProduct;
                     recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));

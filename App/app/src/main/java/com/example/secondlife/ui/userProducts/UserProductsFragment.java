@@ -71,11 +71,11 @@ public class UserProductsFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 //Pour le recyclerViewProduct
-                adapter = new ProductRecyclerViewAdapter(getActivity(), products, photos, getContext());
-                RecyclerView recyclerview = binding.recyclerViewProduct;
-                recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
-                recyclerview.setAdapter(adapter);
-                adapter.notifyDataSetChanged(); // this refresh the list, only call it in ui thread
+//                adapter = new ProductRecyclerViewAdapter(getActivity(), products, getContext());
+//                RecyclerView recyclerview = binding.recyclerViewProduct;
+//                recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
+//                recyclerview.setAdapter(adapter);
+//                adapter.notifyDataSetChanged(); // this refresh the list, only call it in ui thread
             }
 
             @Override

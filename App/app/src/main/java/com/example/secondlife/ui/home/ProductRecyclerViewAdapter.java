@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.secondlife.R;
 import com.example.secondlife.model.Photo;
 import com.example.secondlife.model.Product;
+import com.example.secondlife.model.ProductWithPhoto;
 import com.squareup.picasso.Picasso;
 
 import java.io.Serializable;
@@ -25,17 +26,16 @@ import java.util.List;
 
 
 public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRecyclerViewAdapter.ProdcutViewHolder>{
-    private List<Product> dataSetProduct;
+    private List<ProductWithPhoto> dataSetProduct;
     private List<Photo> dataSetPhoto;
     private Context context;
     private List<ProdcutViewHolder> dataSetHolder = new ArrayList<>();
     private FragmentActivity fragmentActivity;
     private ViewGroup parent;
 
-    public ProductRecyclerViewAdapter(FragmentActivity f, List<Product> products, List<Photo> photos, Context context) {
+    public ProductRecyclerViewAdapter(FragmentActivity f, List<ProductWithPhoto> products, Context context) {
         this.fragmentActivity = f;
         this.dataSetProduct = products;
-        this.dataSetPhoto = photos;
         this.context = context;
     }
 
@@ -56,9 +56,17 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
     public void onBindViewHolder(@NonNull ProdcutViewHolder holder, final int position) {
         //String url = dataSetPhoto.get(position).getUrl();
         //Picasso.get().load(url).placeholder(R.drawable.ic_baseline_image_search_24).into(holder.getImageView());
-        Picasso.get().load(R.drawable.ic_baseline_image_search_24).placeholder(R.drawable.ic_baseline_image_search_24).into(holder.getImageView());
-        holder.getNameView().setText(dataSetProduct.get(position).getName());
-        holder.getPriceView().setText(dataSetProduct.get(position).getPrice() + "€");
+        //si l'image est null
+        if (dataSetProduct.get(position).getPhotoList() == null || dataSetProduct.get(position).getPhotoList().size() == 0 ){
+            Picasso.get().load(R.drawable.ic_baseline_image_search_24).placeholder(R.drawable.ic_baseline_image_search_24).into(holder.getImageView());
+        }
+        else
+        {
+            Picasso.get().load(dataSetProduct.get(position).getPhotoList().get(0).getUrl()).placeholder(R.drawable.ic_baseline_image_search_24).into(holder.getImageView());
+        }
+
+        holder.getNameView().setText(dataSetProduct.get(position).getProduct().getName());
+        holder.getPriceView().setText(dataSetProduct.get(position).getProduct().getPrice() + "€");
         holder.getBtnView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
