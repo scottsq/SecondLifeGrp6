@@ -49,6 +49,7 @@ public class ProductDetailsFragment extends Fragment {
     private Photo photo = null;
     private ProductService productService = null;
     private Retrofit retrofit = localData.GetRetrofit();
+    private ProductRatingService apiService = retrofit.create(ProductRatingService.class);
 
     public static ProductDetailsFragment newInstance() {
         return new ProductDetailsFragment();
@@ -68,17 +69,19 @@ public class ProductDetailsFragment extends Fragment {
         // Rating
         callRateButton();
 
+
+
+
         // Pour les info du Product
         Picasso.get().load(R.drawable.ic_baseline_image_search_24).into(binding.productImg);
         binding.productName.setText(product.getName());
         binding.productDesc.setText(product.getDescription());
+        apiService.getAverage(product.getId()).enqueue(getRatingStars());
         if (localData.getUserId() > -1) {
+
+            apiService.getUserRatingForProduct(product.getId(),localData.getUserId()).enqueue(getUserRating());
+
             binding.btnBuy.setVisibility(View.VISIBLE);
-            binding.ratingBar.setVisibility(View.VISIBLE);
-            binding.rateButton.setVisibility(View.VISIBLE);
-            binding.textRatingBar.setVisibility(View.VISIBLE);
-            binding.editTextComment.setVisibility(View.VISIBLE);
-            binding.textComment.setVisibility(View.VISIBLE);
         }
         Log.d("product", product.getName());
 
@@ -112,7 +115,6 @@ public class ProductDetailsFragment extends Fragment {
                 User user = new User();
                 user.setId(localData.getUserId());
 
-                ProductRatingService apiService = retrofit.create(ProductRatingService.class);
                 ProductRating productRating = new ProductRating();
 
                 productRating.setUser(user);
@@ -136,5 +138,39 @@ public class ProductDetailsFragment extends Fragment {
             }
 
         });
+    }
+
+    private Callback<Float> getRatingStars(){
+        return new Callback<Float>() {
+            @Override
+            public void onResponse(Call<Float> call, Response<Float> response) {
+                binding.textStars.setText("Note: " + response.body() +" ⭐");
+            }
+
+            @Override
+            public void onFailure(Call<Float> call, Throwable t) {
+
+            }
+        };
+    }
+
+    private Callback<ProductRating> getUserRating(){
+        return new Callback<ProductRating>() {
+            @Override
+            public void onResponse(Call<ProductRating> call, Response<ProductRating> response) {
+                if (!response.isSuccessful()){
+                    binding.ratingBar.setVisibility(View.VISIBLE);
+                    binding.rateButton.setVisibility(View.VISIBLE);
+                    binding.textRatingBar.setVisibility(View.VISIBLE);
+                    binding.editTextComment.setVisibility(View.VISIBLE);
+                    binding.textComment.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ProductRating> call, Throwable t) {
+
+            }
+        };
     }
 }
