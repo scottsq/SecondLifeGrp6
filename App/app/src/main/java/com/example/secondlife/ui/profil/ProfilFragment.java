@@ -100,12 +100,8 @@ public class ProfilFragment extends Fragment {
             user.setName(binding.editTextPersonName.getText().toString());
             user.setEmail(binding.editTextEmail.getText().toString());
             user.setAvatarUrl(binding.editTextAvatarUrl.getText().toString());
+            apiService.updateUser(localData.getToken(), localData.getUserId(), localData.ObjectToPatch(user)).enqueue(patchUser());
 
-            try {
-                apiService.updateUser(localData.getToken(), localData.getUserId(), localData.ObjectToPatch(user)).enqueue(patchUser());
-            } catch (JSONException e) {
-                Log.e("json error", e.getMessage() != null ? e.getMessage() : e.toString());
-            }
         };
     }
 

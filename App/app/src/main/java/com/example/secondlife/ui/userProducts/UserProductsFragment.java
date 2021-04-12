@@ -62,7 +62,7 @@ public class UserProductsFragment extends Fragment {
             // TODO: se connecter
         }
 
-        return binding.getRoot();;
+        return binding.getRoot();
 
     }
 

@@ -53,38 +53,38 @@ public class LocalData extends Application {
                 .build();
     }
 
-//    public <T> JsonArray ObjectToPatch(T obj) {
-//        List<HashMap> list = new ArrayList<>();
-//        Field[] allFields = obj.getClass().getDeclaredFields();
-//        for (Field field : allFields) {
-//            if (field.getName().toLowerCase() == "id") continue;
-//            HashMap hmap = new HashMap();
-//            hmap.put("op", "replace");
-//            hmap.put("path", "/" + field.getName());
-//            try {
-//                hmap.put("value", field.get(obj));
-//                if (field.get(obj) != null) list.add(hmap);
-//            }
-//            catch (Exception e) { new Gson().fromJson(new Gson().toJson(new ArrayList<HashMap>()), JsonArray.class); }
-//        }
-//        return new Gson().fromJson(new Gson().toJson(list), JsonArray.class);
-//    }
-
-    public <T> JSONArray ObjectToPatch(T obj) throws JSONException {
-        JSONArray array = new JSONArray();
+    public <T> JsonArray ObjectToPatch(T obj) {
+        List<HashMap> list = new ArrayList<>();
         Field[] allFields = obj.getClass().getDeclaredFields();
         for (Field field : allFields) {
             if (field.getName().toLowerCase() == "id") continue;
-            JSONObject jsonObj = new JSONObject();
-            jsonObj.put("op", "replace");
-            jsonObj.put("path", "/" + field.getName());
-            jsonObj.put("op", "replace");
+            HashMap hmap = new HashMap();
+            hmap.put("op", "replace");
+            hmap.put("path", "/" + field.getName());
             try {
-                jsonObj.put("value", field.get(obj));
-                if (field.get(obj) != null) array.put(jsonObj);
+                hmap.put("value", field.get(obj));
+                if (field.get(obj) != null) list.add(hmap);
             }
-            catch (Exception e) { }
+            catch (Exception e) { new Gson().fromJson(new Gson().toJson(new ArrayList<HashMap>()), JsonArray.class); }
         }
-        return array;
+        return new Gson().fromJson(new Gson().toJson(list), JsonArray.class);
     }
+
+//    public <T> JSONArray ObjectToPatch(T obj) throws JSONException {
+//        JSONArray array = new JSONArray();
+//        Field[] allFields = obj.getClass().getDeclaredFields();
+//        for (Field field : allFields) {
+//            if (field.getName().toLowerCase() == "id") continue;
+//            JSONObject jsonObj = new JSONObject();
+//            jsonObj.put("op", "replace");
+//            jsonObj.put("path", "/" + field.getName());
+//            jsonObj.put("op", "replace");
+//            try {
+//                jsonObj.put("value", field.get(obj));
+//                if (field.get(obj) != null) array.put(jsonObj);
+//            }
+//            catch (Exception e) { }
+//        }
+//        return array;
+//    }
 }

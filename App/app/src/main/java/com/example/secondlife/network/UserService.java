@@ -36,7 +36,7 @@ public interface UserService {
     Call<User> resetPassword(@Header("Authorization") String authorization, @Body User user); // TODO: Changer type de retour
 
     @PATCH("user/{id}")
-    Call<User> updateUser(@Header("Authorization") String authorization, @Path("id") int id, @Body JSONArray user);
+    Call<User> updateUser(@Header("Authorization") String authorization, @Path("id") int id, @Body JsonArray user);
 
     @DELETE("user/{id}")
     Call<User> deleteUser(@Header("Authorization") String authorization, @Path("id") int id);
