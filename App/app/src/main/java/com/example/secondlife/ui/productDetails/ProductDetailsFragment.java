@@ -75,6 +75,7 @@ public class ProductDetailsFragment extends Fragment {
         binding.productDesc.setText(product.getDescription());
         apiService.getAverage(product.getId()).enqueue(getRatingStars());
         binding.textOwner.setText("Vendeur: " + product.getOwner().getName());
+        binding.textPrice.setText("Prix: " + product.getPrice() + "€");
         if (localData.getUserId() > -1) {
 
             apiService.getUserRatingForProduct(product.getId(),localData.getUserId()).enqueue(getUserRating());
