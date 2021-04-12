@@ -29,6 +29,8 @@ namespace VS_SLG6.Services.Validators
                 _validationModel.Errors.Add("User with this Login already exists");
             }
             _validationModel.Value = _validationModel.Errors.Count == 0;
+
+            obj.Password = ValidationModel<User>.GetHashString(obj.Password);
             return _validationModel;
         }
 

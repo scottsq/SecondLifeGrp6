@@ -36,11 +36,11 @@ namespace VS_SLG6.Services.Services
 
         public LoginResponse Login(User u)
         {
-            var res = _repo.All(user => u.Login == user.Login && u.Password == user.Password);
+            var res = _repo.All(user => u.Login == user.Login);
             var loginResponse = new LoginResponse();
             loginResponse.Id = -1;
 
-            if (res.Count > 0)
+            if (res.Count > 0 && ValidationModel<User>.AreHashEqual(u.Password, res[0].Password))
             {
                 loginResponse.Id = res[0].Id;
 
