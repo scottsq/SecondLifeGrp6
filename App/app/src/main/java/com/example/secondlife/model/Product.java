@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 public class Product implements Serializable {
     private Integer id;
-    private Integer ownerId;
+    private User owner;
     private String name;
     private float price;
     private String description;
@@ -19,12 +19,12 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public Integer getOwnerId() {
-        return ownerId;
+    public User getOwner() {
+        return owner;
     }
 
-    public void setOwnerId(Integer ownerId) {
-        this.ownerId = ownerId;
+    public void setOwner(User owner) {
+        this.owner = owner;
     }
 
     public String getName() {

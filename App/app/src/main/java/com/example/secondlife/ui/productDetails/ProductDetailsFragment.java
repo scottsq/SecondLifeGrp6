@@ -69,14 +69,12 @@ public class ProductDetailsFragment extends Fragment {
         // Rating
         callRateButton();
 
-
-
-
         // Pour les info du Product
         Picasso.get().load(R.drawable.ic_baseline_image_search_24).into(binding.productImg);
         binding.productName.setText(product.getName());
         binding.productDesc.setText(product.getDescription());
         apiService.getAverage(product.getId()).enqueue(getRatingStars());
+        binding.textOwner.setText("Vendeur: " + product.getOwner().getName());
         if (localData.getUserId() > -1) {
 
             apiService.getUserRatingForProduct(product.getId(),localData.getUserId()).enqueue(getUserRating());
