@@ -101,9 +101,8 @@ public class ProfilFragment extends Fragment {
 
     public View.OnClickListener callSaveButton() {
         return view -> {
-            Log.v("email test",binding.editTextEmail.getText().toString());
-
-            if(binding.editTextEmail.getText().toString() == "" || binding.editTextEmail.getText().toString() == null){
+            if(binding.editTextEmail.getText().toString().matches(""))
+            {
                 Toast.makeText(view.getContext(), "Email invalide", Toast.LENGTH_SHORT).show();
             }
             else
