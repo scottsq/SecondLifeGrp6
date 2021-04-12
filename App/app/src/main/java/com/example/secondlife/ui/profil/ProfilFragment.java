@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -100,14 +101,24 @@ public class ProfilFragment extends Fragment {
 
     public View.OnClickListener callSaveButton() {
         return view -> {
-            user.setName(binding.editTextPersonName.getText().toString());
-            user.setEmail(binding.editTextEmail.getText().toString());
-            user.setAvatarUrl(binding.editTextAvatarUrl.getText().toString());
-            List<String> fields = new ArrayList<>();
-            fields.add("name");
-            fields.add("email");
-            fields.add("avatarUrl");
-            apiService.updateUser(localData.getToken(), localData.getUserId(), localData.ObjectToPatch(user, fields)).enqueue(patchUser());
+            Log.v("email test",binding.editTextEmail.getText().toString());
+
+            if(binding.editTextEmail.getText().toString() == "" || binding.editTextEmail.getText().toString() == null){
+                Toast.makeText(view.getContext(), "Email invalide", Toast.LENGTH_SHORT).show();
+            }
+            else
+            {
+                List<String> fields = new ArrayList<>();
+                fields.add("name");
+                fields.add("email");
+                fields.add("avatarUrl");
+
+                user.setName(binding.editTextPersonName.getText().toString());
+                user.setEmail(binding.editTextEmail.getText().toString());
+                user.setAvatarUrl(binding.editTextAvatarUrl.getText().toString());
+
+                apiService.updateUser(localData.getToken(), localData.getUserId(), localData.ObjectToPatch(user, fields)).enqueue(patchUser());
+            }
         };
     }
 
