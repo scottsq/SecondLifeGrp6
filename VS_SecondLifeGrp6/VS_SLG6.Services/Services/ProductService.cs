@@ -130,5 +130,12 @@ namespace VS_SLG6.Services.Services
             }
             return res;
         }
+
+        public override ValidationModel<Product> Remove(Product obj)
+        {
+            var list = _repoPhoto.All(x => x.Product.Id == obj.Id);
+            foreach (var photo in list) _repoPhoto.Remove(photo);
+            return base.Remove(obj);
+        }
     }
 }

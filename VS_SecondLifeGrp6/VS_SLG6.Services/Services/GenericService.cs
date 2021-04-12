@@ -49,7 +49,7 @@ namespace VS_SLG6.Services.Services
             return _validationModel;
         }
 
-        public ValidationModel<T> Remove(T obj)
+        public virtual ValidationModel<T> Remove(T obj)
         {
             var v = _validator.CanDelete(obj);
             if (v.Value)
