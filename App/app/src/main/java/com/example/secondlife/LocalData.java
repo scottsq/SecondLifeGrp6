@@ -53,11 +53,11 @@ public class LocalData extends Application {
                 .build();
     }
 
-    public <T> JsonArray ObjectToPatch(T obj) {
+    public <T> JsonArray ObjectToPatch(T obj, List<String> fieldsToSet) {
         List<HashMap> list = new ArrayList<>();
         Field[] allFields = obj.getClass().getDeclaredFields();
         for (Field field : allFields) {
-            if (field.getName().toLowerCase() == "id") continue;
+            if (fieldsToSet.size() > 0 && !fieldsToSet.contains(field.getName().toLowerCase())) continue;
             HashMap hmap = new HashMap();
             hmap.put("op", "replace");
             hmap.put("path", "/" + field.getName());
@@ -69,6 +69,24 @@ public class LocalData extends Application {
         }
         return new Gson().fromJson(new Gson().toJson(list), JsonArray.class);
     }
+
+
+//    public <T> JsonArray ObjectToPatch(T obj) {
+//        List<HashMap> list = new ArrayList<>();
+//        Field[] allFields = obj.getClass().getDeclaredFields();
+//        for (Field field : allFields) {
+//            if (field.getName().toLowerCase() == "id") continue;
+//            HashMap hmap = new HashMap();
+//            hmap.put("op", "replace");
+//            hmap.put("path", "/" + field.getName());
+//            try {
+//                hmap.put("value", field.get(obj));
+//                if (field.get(obj) != null) list.add(hmap);
+//            }
+//            catch (Exception e) { new Gson().fromJson(new Gson().toJson(new ArrayList<HashMap>()), JsonArray.class); }
+//        }
+//        return new Gson().fromJson(new Gson().toJson(list), JsonArray.class);
+//    }
 
 //    public <T> JSONArray ObjectToPatch(T obj) throws JSONException {
 //        JSONArray array = new JSONArray();

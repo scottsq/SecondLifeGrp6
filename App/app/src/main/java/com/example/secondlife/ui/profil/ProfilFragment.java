@@ -29,6 +29,9 @@ import com.google.gson.GsonBuilder;
 
 import org.json.JSONException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -100,8 +103,11 @@ public class ProfilFragment extends Fragment {
             user.setName(binding.editTextPersonName.getText().toString());
             user.setEmail(binding.editTextEmail.getText().toString());
             user.setAvatarUrl(binding.editTextAvatarUrl.getText().toString());
-            apiService.updateUser(localData.getToken(), localData.getUserId(), localData.ObjectToPatch(user)).enqueue(patchUser());
-
+            List<String> fields = new ArrayList<>();
+            fields.add("name");
+            fields.add("email");
+            fields.add("avatarUrl");
+            apiService.updateUser(localData.getToken(), localData.getUserId(), localData.ObjectToPatch(user, fields)).enqueue(patchUser());
         };
     }
 
