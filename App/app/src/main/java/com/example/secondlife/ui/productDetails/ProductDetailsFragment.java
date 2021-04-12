@@ -118,7 +118,7 @@ public class ProductDetailsFragment extends Fragment {
                 productRating.setUser(user);
                 productRating.setProduct(product);
                 productRating.setStars((int) ratingbar.getRating());
-                productRating.setComment(binding.textComment.getText().toString());
+                productRating.setComment(binding.editTextComment.getText().toString());
 
                 apiService.createProductRating(LocalData.GetInstance().getToken(),productRating).enqueue(new Callback<ProductRating>() {
                     @Override
