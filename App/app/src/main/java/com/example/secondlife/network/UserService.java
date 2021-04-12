@@ -4,6 +4,8 @@ import com.example.secondlife.model.LoginResponse;
 import com.example.secondlife.model.User;
 import com.google.gson.JsonArray;
 
+import org.json.JSONArray;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,8 +36,7 @@ public interface UserService {
     Call<User> resetPassword(@Header("Authorization") String authorization, @Body User user); // TODO: Changer type de retour
 
     @PATCH("user/{id}")
-    Call<User> updateUser(@Header("Authorization") String authorization, @Path("id") int id, @Body JsonArray user);
-    //void updateUser(@Body HashMap<String, Object> hashMap, Callback<User> callback);
+    Call<User> updateUser(@Header("Authorization") String authorization, @Path("id") int id, @Body JSONArray user);
 
     @DELETE("user/{id}")
     Call<User> deleteUser(@Header("Authorization") String authorization, @Path("id") int id);
