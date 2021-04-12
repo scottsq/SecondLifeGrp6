@@ -50,31 +50,31 @@ public class HomeFragment extends Fragment {
 
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
+    private final Retrofit retrofit = LocalData.GetInstance().GetRetrofit();
 
 
-    Gson gson = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-            .create();
-    private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:61169/api/")
-            .client(OkHttpClass.getUnsafeOkHttpClient())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build();
 
     @Override
-    public View onCreateView (LayoutInflater inflater,
-                              ViewGroup container,
-                              Bundle savedInstanceState) {
+    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Initialisation
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
-
-
         // Pour les info du User
         LocalData localData = LocalData.GetInstance();
         UserService apiService = retrofit.create(UserService.class);
-        apiService.getUser(localData.getToken(),localData.getUserId()).enqueue(new Callback<User>() {
+        apiService.getUser(localData.getToken(),localData.getUserId()).enqueue(getUserResponse());
+
+        //Product
+        ProductService apiServiceProduct = retrofit.create(ProductService.class);
+        apiServiceProduct.getAllProduct().enqueue(getProductListResponse());
+
+        View view = binding.getRoot();
+        return view;
+    }
+
+    private Callback<User> getUserResponse() {
+        return new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 User user = response.body();
@@ -87,27 +87,24 @@ public class HomeFragment extends Fragment {
                 t.printStackTrace();
 
             }
-        });
+        };
+    }
 
-        //Product
-        ProductService apiServiceProduct = retrofit.create(ProductService.class);
-        apiServiceProduct.getAllProduct().enqueue(new Callback<List<Product>>() {
+    private Callback<List<Product>> getProductListResponse() {
+        return new Callback<List<Product>>() {
             @Override
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                 Log.v("test","ok product");
                 products = response.body();
-                for (int i = 0; i < products.size(); i++) {
-                    Log.v("Name: ", products.get(i).getName());
-                }
 
-                //Pour le recyclerViewProduct
+                // Pour le recyclerViewProduct
                 adapter = new ProductRecyclerViewAdapter(getActivity(), products, photos, getContext());
-                Log.v("Product list: ", products.toString());
                 RecyclerView recyclerview = binding.recyclerViewProduct;
                 recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
                 recyclerview.setAdapter(adapter);
 
-                adapter.notifyDataSetChanged(); // this refresh the list, only call it in ui thread
+                // Refresh la liste
+                adapter.notifyDataSetChanged();
 
             }
 
@@ -116,6 +113,8 @@ public class HomeFragment extends Fragment {
                 // Log error here since request failed
                 Log.i("test","fail product");
                 t.printStackTrace();
+
+                // Juste pour test, faudrait mettre un message d'erreur à la place
                 Random r = new Random();
                 for (int i=0; i<15; i++) {
                     Product p = new Product();
@@ -135,13 +134,9 @@ public class HomeFragment extends Fragment {
                     adapter.notifyDataSetChanged(); // this refresh the list, only call it in ui thread
                 } catch(Exception e) {} // do nothing, we just changed view while it was loading
             }
-        });
-
-        View view = binding.getRoot();
-        return view;
-
-        // homeviewModel.lastestGameLiveData.observe()      Attend un changement de donnée de homeViewModel
+        };
     }
+
 
     @Override
     public void onDestroyView() {

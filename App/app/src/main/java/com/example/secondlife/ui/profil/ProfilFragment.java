@@ -27,6 +27,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import org.json.JSONException;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,38 +39,22 @@ public class ProfilFragment extends Fragment {
 
     private ProfilViewModel profilViewModel;
     private FragmentProfilBinding binding;
-    View view;
-
-    LocalData localData = LocalData.GetInstance();
-
-    Gson gson = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
-            .create();
-    private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:61169/api/")
-            .client(OkHttpClass.getUnsafeOkHttpClient())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build();
-
-    UserService apiService = retrofit.create(UserService.class);
+    private View view;
+    private LocalData localData = LocalData.GetInstance();
+    private final Retrofit retrofit = localData.GetRetrofit();
+    private UserService apiService = retrofit.create(UserService.class);
     private User user = null;
 
     @Override
-    public View onCreateView (LayoutInflater inflater,
-                              ViewGroup container,
-                              Bundle savedInstanceState) {
+    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentProfilBinding.inflate(inflater, container, false);
         view = binding.getRoot();
 
-        // Edit button
-        int idEditButton = getResources().getIdentifier("editButton", "id", getActivity().getPackageName());
-        Button editButton = view.findViewById(idEditButton);
-        editButton.setOnClickListener( new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                setEnabled(new String[]{"editTextPersonName","editTextEmail","editTextAvatarUrl"});
-            }
+        binding.editButton.setOnClickListener(view -> {
+            binding.editTextPersonName.setEnabled(true);
+            binding.editTextEmail.setEnabled(true);
+            binding.editTextAvatarUrl.setEnabled(true);
         });
 
         // Save button
@@ -79,58 +65,28 @@ public class ProfilFragment extends Fragment {
         Button disconnectionButton = binding.disconnectionButton;
         disconnectionButton.setOnClickListener(callDisconnectionButton());
 
-
-
         // Save values
+        apiService.getUser(localData.getToken(),localData.getUserId()).enqueue(patchUser());
 
-        apiService.getUser(localData.getToken(),localData.getUserId()).enqueue(new Callback<User>() {
+        return view;
+    }
+
+    private Callback<User> patchUser() {
+        return new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 user = response.body();
-                Log.v("test user" , "test");
-                Log.v("Name Profil: ",user.getName());
-                //Log.v("Name Email: ",user.getEmail());
-                Log.v("Login Profil:",user.getLogin());
-                //setTextView("TextViewName", user.getName());
-                setTextEditText("editTextPersonName", user.getName() == null?"":user.getName());
-                setTextEditText("editTextEmail",user.getEmail() == null?"":user.getEmail());
-                setTextEditText("editTextAvatarUrl",user.getAvatarUrl() == null?"":user.getAvatarUrl());
+                binding.editTextPersonName.setText(user.getName() == null ? "" : user.getName());
+                binding.editTextEmail.setText(user.getEmail() == null ? "" :user.getEmail());
+                binding.editTextAvatarUrl.setText(user.getAvatarUrl() == null ? "" : user.getAvatarUrl());
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
                 Log.i("test","fail");
                 t.printStackTrace();
-
             }
-        });
-
-        return view;
-    }
-// ancien
-//    public void setTextView(String idTextView, String text) {
-//
-//        View view = getViewById(idTextView);
-//        ((TextView) view).setText(text);
-//    }
-
-    public void setTextEditText(String idEditView, String text) {
-
-        View view = getViewById(idEditView);
-        ((EditText) view).setText(text);
-    }
-
-    public void setEnabled(String[] listId){
-        for (int i = 0; i < listId.length; i++) {
-            View view = getViewById(listId[i]);
-            view.setEnabled(!view.isEnabled());
-        }
-    }
-
-    public View getViewById(String idView) {
-        int id = getResources().getIdentifier(idView, "id", getActivity().getPackageName());
-
-        return view.findViewById(id);
+        };
     }
 
     @Override
@@ -140,46 +96,28 @@ public class ProfilFragment extends Fragment {
     }
 
     public View.OnClickListener callSaveButton() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
+        return view -> {
+            user.setName(binding.editTextPersonName.getText().toString());
+            user.setEmail(binding.editTextEmail.getText().toString());
+            user.setAvatarUrl(binding.editTextAvatarUrl.getText().toString());
 
-                user.setName(((EditText) getViewById("editTextPersonName")).getText().toString());
-                user.setEmail(((EditText) getViewById("editTextEmail")).getText().toString());
-                user.setAvatarUrl(((EditText) getViewById("editTextAvatarUrl")).getText().toString());
-                // METTRE LES CHAMPS EN PUBLIC
-                apiService.updateUser(localData.getToken(),localData.getUserId(), localData.ObjectToPatch(user)).enqueue(new Callback<User>() {
-                    @Override
-                    public void onResponse(Call<User> call, Response<User> response) {
-                        user = response.body();
-                        //Log.v("test user update" , "test update");
-                        //Log.v("test user update" , user.getEmail());
-                    }
-
-                    @Override
-                    public void onFailure(Call<User> call, Throwable t) {
-                        //Log.i("test","fail");
-                        t.printStackTrace();
-
-                    }
-                });
+            try {
+                apiService.updateUser(localData.getToken(), localData.getUserId(), localData.ObjectToPatch(user)).enqueue(patchUser());
+            } catch (JSONException e) {
+                Log.e("json error", e.getMessage() != null ? e.getMessage() : e.toString());
             }
         };
     }
 
     public View.OnClickListener callDisconnectionButton() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view){
-                localData.setUserId(-1);
-                localData.setToken("");
+        return view -> {
+            localData.setUserId(-1);
+            localData.setToken("");
 
-                BottomNavigationView navigation = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
-                navigation.getMenu().clear();
-                navigation.inflateMenu(R.menu.bottom_nav_menu);
-                navigation.setSelectedItemId(R.id.navigation_login);
-
-            }
+            BottomNavigationView navigation = (BottomNavigationView) getActivity().findViewById(R.id.nav_view);
+            navigation.getMenu().clear();
+            navigation.inflateMenu(R.menu.bottom_nav_menu);
+            navigation.setSelectedItemId(R.id.navigation_login);
         };
     }
 

@@ -43,21 +43,12 @@ public class ProductDetailsFragment extends Fragment {
 
     private ProductDetailsFragmentBinding binding;
     private ProductDetailsViewModel mViewModel;
-    LocalData localData = LocalData.GetInstance();
-    View view;
-    Product product = null;
-    Photo photo = null;
-    ProductService productService = null;
-
-    Gson gson = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-            .create();
-    private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:61169/api/")
-            // .baseUrl("https://10.0.2.2:44359/api/")
-            .client(OkHttpClass.getUnsafeOkHttpClient().newBuilder().followRedirects(false).followSslRedirects(false).build())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build();
+    private LocalData localData = LocalData.GetInstance();
+    private View view;
+    private Product product = null;
+    private Photo photo = null;
+    private ProductService productService = null;
+    private Retrofit retrofit = localData.GetRetrofit();
 
     public static ProductDetailsFragment newInstance() {
         return new ProductDetailsFragment();
@@ -66,8 +57,6 @@ public class ProductDetailsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
-        Gson gson = new Gson();
 
         Bundle bundle = getArguments();
         product = (Product) bundle.getSerializable("product");
@@ -78,7 +67,6 @@ public class ProductDetailsFragment extends Fragment {
 
         // Rating
         callRateButton();
-
 
         // Pour les info du Product
         Picasso.get().load(R.drawable.ic_baseline_image_search_24).into(binding.productImg);
@@ -119,40 +107,28 @@ public class ProductDetailsFragment extends Fragment {
 
             @Override
             public void onClick(View arg0) {
-                String rating = String.valueOf(ratingbar.getRating());
-                //user id
-                Log.v("test user rate" , String.valueOf(localData.getUserId()));
-                //product id
-                Log.v("test product rate" , String.valueOf(product.getId()));
+                Log.v("test rating" , String.format("userId: [%d], productId: [%d], rating: [%f]", localData.getUserId(), product.getId(), ratingbar.getRating()));
 
-                Log.v("test rate" , String.valueOf(ratingbar.getRating()));
+                User user = new User();
+                user.setId(localData.getUserId());
 
                 ProductRatingService apiService = retrofit.create(ProductRatingService.class);
                 ProductRating productRating = new ProductRating();
 
-                User user = new User();
-                user.setId(localData.getUserId());
                 productRating.setUser(user);
-
-//                Product pp = new Product();
-//                pp.setId(product.getId());
                 productRating.setProduct(product);
-
                 productRating.setStars((int) ratingbar.getRating());
                 productRating.setComment(binding.textComment.getText().toString());
-
-                //apiService.createProductRating(LocalData.GetInstance().getToken(),productRating);
 
                 apiService.createProductRating(LocalData.GetInstance().getToken(),productRating).enqueue(new Callback<ProductRating>() {
                     @Override
                     public void onResponse(Call<ProductRating> call, Response<ProductRating> response) {
                         ProductRating check = response.body();
-
                     }
 
                     @Override
                     public void onFailure(Call<ProductRating> call, Throwable t) {
-                        Log.v("FAIL TA MER" , "FAIL TA MER");
+                        // Afficher message d'erreur
                     }
                 });
 

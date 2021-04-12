@@ -39,71 +39,50 @@ public class UserProductsFragment extends Fragment {
     private ProductRecyclerViewAdapter adapter;
     private List<Product> products = new ArrayList<>();
     private List<Photo> photos = new ArrayList<>();
-
     private UserProductsViewModel userProductsViewModel;
     private FragmentUserProductsBinding binding;
-
-
-    Gson gson = new GsonBuilder()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-            .create();
-    private final Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:61169/api/")
-            .client(OkHttpClass.getUnsafeOkHttpClient())
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .build();
+    private LocalData localData = LocalData.GetInstance();
+    private final Retrofit retrofit = localData.GetRetrofit();
 
     @Override
-    public View onCreateView (LayoutInflater inflater,
-                              ViewGroup container,
-                              Bundle savedInstanceState) {
+    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //Initialisation
         userProductsViewModel = new ViewModelProvider(this).get(UserProductsViewModel.class);
         binding = FragmentUserProductsBinding.inflate(inflater, container, false);
 
-
-
         // Pour les info du User
-        LocalData localData = (LocalData)(getActivity().getApplication());
         int id = localData.getUserId();
 
-        if(id != -1){
+        if (id != -1){
             //Product
             ProductService apiServiceProduct = retrofit.create(ProductService.class);
-            apiServiceProduct.getUserProducts(id).enqueue(new Callback<List<Product>>() {
-                @Override
-                public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
-
-                    Log.v("test","ok product");
-                    products = response.body();
-                    for (int i = 0; i < products.size(); i++) {
-                        Log.v("Name: ", products.get(i).getName());
-                    }
-
-                    //Pour le recyclerViewProduct
-                    adapter = new ProductRecyclerViewAdapter(getActivity(), products, photos, getContext());
-                    Log.v("Product list: ", products.toString());
-                    RecyclerView recyclerview = binding.recyclerViewProduct;
-                    recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
-                    recyclerview.setAdapter(adapter);
-
-                    adapter.notifyDataSetChanged(); // this refresh the list, only call it in ui thread
-
-                }
-
-                @Override
-                public void onFailure(Call<List<Product>> call, Throwable t) {
-                    // TODO: bouton pour aller sur login
-                }
-            });
-        }else{
-            // TODO
+            apiServiceProduct.getUserProducts(id).enqueue(getUserProducts());
+        }
+        else {
+            // TODO: se connecter
         }
 
+        return binding.getRoot();;
 
-        View view = binding.getRoot();
-        return view;
+    }
 
+    public Callback<List<Product>> getUserProducts() {
+        return new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                //Pour le recyclerViewProduct
+                adapter = new ProductRecyclerViewAdapter(getActivity(), products, photos, getContext());
+                RecyclerView recyclerview = binding.recyclerViewProduct;
+                recyclerview.setLayoutManager(new LinearLayoutManager(getContext()));
+                recyclerview.setAdapter(adapter);
+                adapter.notifyDataSetChanged(); // this refresh the list, only call it in ui thread
+            }
+
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                // TODO: se connecter
+            }
+        };
     }
 
     @Override
