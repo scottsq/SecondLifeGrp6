@@ -84,7 +84,9 @@ public class ProductDetailsFragment extends Fragment {
         binding.textOwner.setText("Vendeur: " + product.getProduct().getOwner().getName());
         binding.textPrice.setText("Prix: " + product.getProduct().getPrice() + "€");
         if (localData.getUserId() > -1) {
-
+            // Vérifie si l'utilisateur à voté avec l'appel API
+            //S'il a voté : dans la fonction getUserRating --> isSuccessful ok et les champs seront caché ( car de base ils sont cachés)
+            //S'il n'a pas voté :dans la fonction getUserRating --> isSuccessful pas ok / error 400 bad request  et les champs seront affichés
             apiService.getUserRatingForProduct(product.getProduct().getId(),localData.getUserId()).enqueue(getUserRating());
 
             binding.btnBuy.setVisibility(View.VISIBLE);
@@ -146,6 +148,7 @@ public class ProductDetailsFragment extends Fragment {
         });
     }
 
+    //Pour avoir la moyenne
     private Callback<Float> getRatingStars(){
         return new Callback<Float>() {
             @Override
