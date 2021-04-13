@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using VS_SLG6.Model.Entities;
 
 namespace VS_SLG6.Services.Models
 {
@@ -9,6 +10,4 @@ namespace VS_SLG6.Services.Models
         public int Id { get; set; }
         public Roles Role { get; set; }
     }
-
-    public enum Roles { ADMIN, USER };
 }

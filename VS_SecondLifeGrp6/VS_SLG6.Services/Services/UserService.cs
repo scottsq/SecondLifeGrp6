@@ -51,8 +51,8 @@ namespace VS_SLG6.Services.Services
                 {
                     Subject = new ClaimsIdentity(new Claim[]
                     {
-                        new Claim("user_id", loginResponse.Id.ToString()),
-                        new Claim("user_role", (loginResponse.Id == 0 ? 0 : 1).ToString())
+                        new Claim("user_id", user.Id.ToString()),
+                        new Claim("user_role", user.Role.Id.ToString())
                     }),
                     Expires = DateTime.UtcNow.AddMinutes(60),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keys), SecurityAlgorithms.HmacSha256Signature)
