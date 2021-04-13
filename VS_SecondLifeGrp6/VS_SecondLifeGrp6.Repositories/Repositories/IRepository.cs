@@ -13,5 +13,6 @@ namespace VS_SLG6.Repositories.Repositories
         bool Exists(T obj);
         T FindOne(int id);
         List<T> All(Expression<Func<T, bool>> condition = null);
+        T FindOne(Expression<Func<T, bool>> condition = null);
     }
 }

@@ -10,6 +10,7 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using VS_SLG6.Api;
 using VS_SLG6.Services.Models;
+using Microsoft.IdentityModel.Tokens;
 
 namespace VS_SLG6.Services.Services
 {
@@ -36,32 +37,33 @@ namespace VS_SLG6.Services.Services
 
         public LoginResponse Login(User u)
         {
-            var res = _repo.All(user => u.Login == user.Login);
-            var loginResponse = new LoginResponse();
-            loginResponse.Id = -1;
+            var user = _repo.FindOne(x => u.Login == x.Login);
+            var accessManager = new AccessManager();
 
-            if (res.Count > 0 && ValidationModel<User>.AreHashEqual(u.Password, res[0].Password))
+            if (user != null && accessManager.AreHashEqual(accessManager.GetStringSha256Hash(u.Password), user.Password))
             {
-                loginResponse.Id = res[0].Id;
+                var loginResponse = new LoginResponse();
+                loginResponse.Id = user.Id;
 
                 var tokenhandler = new JwtSecurityTokenHandler();
                 var keys = Encoding.ASCII.GetBytes(_appsettings.Key);
-                var tokendescriptor = new Microsoft.IdentityModel.Tokens.SecurityTokenDescriptor
+                var tokendescriptor = new SecurityTokenDescriptor
                 {
-                    Subject = new System.Security.Claims.ClaimsIdentity(new Claim[]
+                    Subject = new ClaimsIdentity(new Claim[]
                     {
                         new Claim("user_id", loginResponse.Id.ToString()),
                         new Claim("user_role", (loginResponse.Id == 0 ? 0 : 1).ToString())
                     }),
                     Expires = DateTime.UtcNow.AddMinutes(60),
-                    SigningCredentials = new Microsoft.IdentityModel.Tokens.SigningCredentials(new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(keys), Microsoft.IdentityModel.Tokens.SecurityAlgorithms.HmacSha256Signature)
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(keys), SecurityAlgorithms.HmacSha256Signature)
 
                 };
                 var tokens = tokenhandler.CreateToken(tokendescriptor);
 
                 loginResponse.Token = tokenhandler.WriteToken(tokens);
+                return loginResponse;
             }
-            return loginResponse;
+            return null;
         }
 
         public string ResetEmail(string email)

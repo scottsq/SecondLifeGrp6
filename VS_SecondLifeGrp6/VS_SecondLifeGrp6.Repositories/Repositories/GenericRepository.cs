@@ -61,6 +61,11 @@ namespace VS_SLG6.Repositories.Repositories
             _context.SaveChanges();
             return obj;
         }
+
+        public T FindOne(Expression<Func<T, bool>> condition = null)
+        {
+            return _contextWithIncludes.FirstOrDefault(condition);
+        }
     }
 
     public interface Entity

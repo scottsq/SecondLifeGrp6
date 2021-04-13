@@ -20,7 +20,7 @@ namespace VS_SLG6.Services.Validators
         protected static String FieldEmptyError = "{0} {1} cannot be empty.";
         protected static int StringMaxLength = 32;
         protected static String CharCountError = "{0} {1} exceeds limit of " + StringMaxLength.ToString() + " characters.";
-        protected static String CannotPerformActionError = "This user cannot perfore this action.";
+        protected static String CannotPerformActionError = "This user cannot perform this action.";
 
         public GenericValidator(IRepository<T> repo, ValidationModel<bool> validationModel)
         {
@@ -76,7 +76,6 @@ namespace VS_SLG6.Services.Validators
             if (errorList.Count > 0)
             {
                 AppendFormattedErrors(errorList, FieldNullError);
-                return _validationModel;
             }
 
             // 3.1 Empty strings
@@ -125,7 +124,7 @@ namespace VS_SLG6.Services.Validators
             var list = GetPropsValues(obj, properties);
             for (int i = 0; i < list.Count; i++)
             {
-                if (Regex.Replace(list[i], " +", "").Length == 0)
+                if (list[i] != null && Regex.Replace(list[i], " +", "").Length == 0)
                 {
                     res.Value = true;
                     res.Errors.Add(properties[i]);
@@ -141,7 +140,7 @@ namespace VS_SLG6.Services.Validators
             var list = GetPropsValues(obj, properties);
             for (int i = 0; i < list.Count; i++) 
             {
-                if (list[i].Length > max)
+                if (list[i] != null && list[i].Length > max)
                 {
                     res.Value = true;
                     res.Errors.Add(properties[i]);

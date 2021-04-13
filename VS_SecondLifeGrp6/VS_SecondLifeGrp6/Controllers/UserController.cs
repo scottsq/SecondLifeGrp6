@@ -13,7 +13,7 @@ using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize()]
     [ApiController, Route("api/[controller]")]
     public class UserController : ControllerBaseExtended
     {
@@ -52,7 +52,7 @@ namespace VS_SLG6.Controllers
         public ActionResult<LoginResponse> Login(User u)
         {
             var res = _service.Login(u);
-            if (res.Token == null) return BadRequest();
+            if (res == null) return BadRequest();
             return res;
         }
 

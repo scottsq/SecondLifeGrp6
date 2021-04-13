@@ -98,7 +98,7 @@ namespace Services.Tester
             });
 
             var photoRepo = new Mock<IRepository<Photo>>();
-            photoRepo.Setup(x => x.All(It.IsAny<Expression<Func<Photo, bool>>>())).Returns<Expression<Func<Proposal, bool>>>(x => null);
+            photoRepo.Setup(x => x.All(It.IsAny<Expression<Func<Photo, bool>>>())).Returns<Expression<Func<Proposal, bool>>>(x => new List<Photo>());
 
             _validator = new ProductValidator(_repo.Object, new ValidationModel<bool>(), uRepo.Object);
             _repo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x => {
@@ -119,7 +119,9 @@ namespace Services.Tester
                 return _listProductTags.Where(x.Compile()).ToList();
             });
 
-            _service = new ProductService(_repo.Object, _validator, propRepo.Object, prodTagRepo.Object);
+            
+
+            _service = new ProductService(_repo.Object, _validator, propRepo.Object, prodTagRepo.Object, photoRepo.Object);
             nullFields = new List<string> { "Name", "Description", "Owner", "Price" };
         }
 

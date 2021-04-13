@@ -16,9 +16,9 @@ namespace VS_SLG6.Services.Services
 
         public double GetAverageRating(int id)
         {
-            var res = _repo.All(x => x.Product.Id == id);
-            if (res.Count == 0) return 0;
-            return res.Average(x => x.Stars);
+            var list = _repo.All(x => x.Product.Id == id);
+            if (list.Count == 0) return 0;
+            return list.Average(x => x.Stars);
         }
 
         public List<ProductRating> GetRatings(int id)
@@ -28,9 +28,7 @@ namespace VS_SLG6.Services.Services
 
         public ProductRating GetUserRating(int idProduct, int idUser)
         {
-            var res = _repo.All(x => x.Product.Id == idProduct && x.User.Id == idUser);
-            if (res.Count == 0) return null;
-            return res[0];
+            return _repo.FindOne(x => x.Product.Id == idProduct && x.User.Id == idUser);
         }
     }
 }
