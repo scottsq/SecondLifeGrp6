@@ -13,7 +13,7 @@ using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Controllers
 {
-    [Authorize()]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController, Route("api/[controller]")]
     public class UserController : ControllerBaseExtended
     {
