@@ -134,6 +134,7 @@ namespace VS_SecondLifeGrp6
             services.AddScoped<IRepository<Product>, ProductRepository>();
             services.AddScoped<IRepository<ProductTag>, ProductTagRepository>();
             services.AddScoped<IRepository<Proposal>, ProposalRepository>();
+            services.AddScoped<IRepository<User>, UserRepository>();
             services.AddScoped<IRepository<UserRating>, UserRatingRepository>();
         }
 
