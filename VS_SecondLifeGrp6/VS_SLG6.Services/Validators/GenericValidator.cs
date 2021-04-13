@@ -19,7 +19,7 @@ namespace VS_SLG6.Services.Validators
 
         protected static String FieldNullError = "{0} {1} cannot be null";
         protected static String FieldEmptyError = "{0} {1} cannot be empty.";
-        protected static int StringMaxLength = 32;
+        protected static int StringMaxLength = 64;
         protected static String CharCountError = "{0} {1} exceeds limit of " + StringMaxLength.ToString() + " characters.";
         protected static String CannotPerformActionError = "This user cannot perform this action.";
 
