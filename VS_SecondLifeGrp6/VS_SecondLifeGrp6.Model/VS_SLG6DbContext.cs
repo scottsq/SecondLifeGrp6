@@ -7,6 +7,7 @@ namespace VS_SLG6.Model
     {
         public DbSet<Message> Message { get; set; }
         public DbSet<Photo> Photo { get; set; }
+        public DbSet<Role> Role { get; set; }
         public DbSet<Product> Product { get; set; }
         public DbSet<ProductRating> ProductRating { get; set; }
         public DbSet<ProductTag> ProductTag { get; set; }
