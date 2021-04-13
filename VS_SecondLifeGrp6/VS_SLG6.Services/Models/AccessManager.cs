@@ -8,9 +8,6 @@ namespace VS_SLG6.Services.Models
 {
     public class AccessManager : IAccessManager
     {
-
-        // sha256 pour le hashage dans une autre classe + interface
-
         public string GetHashString(string inputString)
         {
             byte[] salt;
@@ -26,20 +23,6 @@ namespace VS_SLG6.Services.Models
         public bool AreHashEqual(string input, string saved)
         {
             return input == saved;
-            /*var test1 = GetHashString("toto");
-            var test2 = test1 == GetHashString("toto");
-            byte[] hashBytes = Convert.FromBase64String(saved);
-            byte[] salt = new byte[16];
-            Array.Copy(hashBytes, 0, salt, 0, 16);
-
-            var pbkdf2 = new Rfc2898DeriveBytes(input, salt, 100000);
-            byte[] hash = pbkdf2.GetBytes(20);
-
-            for (int i = 0; i < 20; i++)
-            {
-                if (hashBytes[i + 16] != hash[i]) return false;
-            }
-            return true;*/
         }
 
         public string GetStringSha256Hash(string text)
