@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.myProducts.myProductsFragment"
+    tools:context=".ui.myProducts.MyProductsFragment"
     android:background="#ffffff">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -17,4 +17,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/imgLoading"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+
+        android:src="@drawable/loading_raw"
+        app:layout_constraintBottom_toBottomOf="@+id/recyclerViewMyProducts"
+        app:layout_constraintEnd_toEndOf="@+id/recyclerViewMyProducts"
+        app:layout_constraintStart_toStartOf="@+id/recyclerViewMyProducts"
+        app:layout_constraintTop_toTopOf="@+id/recyclerViewMyProducts" />
 </androidx.constraintlayout.widget.ConstraintLayout>

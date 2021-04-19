@@ -45,15 +45,13 @@ public class ProfilFragment extends Fragment {
     private FragmentProfilBinding binding;
     private View view;
     private LocalData localData = LocalData.GetInstance();
-    private final Retrofit retrofit = localData.GetRetrofit();
-    private UserService apiService = retrofit.create(UserService.class);
-    private User user = null;
 
     @Override
     public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentProfilBinding.inflate(inflater, container, false);
         view = binding.getRoot();
+        profilViewModel = new ViewModelProvider(getActivity()).get(ProfilViewModel.class);
 
         binding.editButton.setOnClickListener(view -> {
             binding.editTextPersonName.setEnabled(true);
@@ -69,29 +67,17 @@ public class ProfilFragment extends Fragment {
         Button disconnectionButton = binding.disconnectionButton;
         disconnectionButton.setOnClickListener(callDisconnectionButton());
 
-        // Save values
-        apiService.getUser(localData.getToken(),localData.getUserId()).enqueue(patchUser());
+        Observer<User> o = user -> {
+            binding.editTextPersonName.setText(user.getName() == null ? "" : user.getName());
+            binding.editTextEmail.setText(user.getEmail() == null ? "" :user.getEmail());
+            binding.editTextAvatarUrl.setText(user.getAvatarUrl() == null ? "" : user.getAvatarUrl());
+        };
+        profilViewModel.getUserLiveData().observe(getActivity(), o);
 
         return view;
     }
 
-    private Callback<User> patchUser() {
-        return new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                user = response.body();
-                binding.editTextPersonName.setText(user.getName() == null ? "" : user.getName());
-                binding.editTextEmail.setText(user.getEmail() == null ? "" :user.getEmail());
-                binding.editTextAvatarUrl.setText(user.getAvatarUrl() == null ? "" : user.getAvatarUrl());
-            }
 
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Log.i("test","fail");
-                t.printStackTrace();
-            }
-        };
-    }
 
     @Override
     public void onDestroyView() {
@@ -107,16 +93,11 @@ public class ProfilFragment extends Fragment {
             }
             else
             {
-                List<String> fields = new ArrayList<>();
-                fields.add("name");
-                fields.add("email");
-                fields.add("avatarUrl");
-
+                User user = new User();
                 user.setName(binding.editTextPersonName.getText().toString());
                 user.setEmail(binding.editTextEmail.getText().toString());
                 user.setAvatarUrl(binding.editTextAvatarUrl.getText().toString());
-
-                apiService.updateUser(localData.getToken(), localData.getUserId(), localData.ObjectToPatch(user, fields)).enqueue(patchUser());
+                profilViewModel.updateUser(user);
             }
         };
     }

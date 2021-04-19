@@ -1,6 +1,7 @@
 package com.example.secondlife.ui.productDetails;
 
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
@@ -49,8 +50,6 @@ public class ProductDetailsFragment extends Fragment {
     private ProductWithPhoto product = null;
     private Photo photo = null;
     private ProductService productService = null;
-    private Retrofit retrofit = localData.GetRetrofit();
-    private ProductRatingService apiService = retrofit.create(ProductRatingService.class);
 
     public static ProductDetailsFragment newInstance() {
         return new ProductDetailsFragment();
@@ -62,32 +61,30 @@ public class ProductDetailsFragment extends Fragment {
 
         Bundle bundle = getArguments();
         product = (ProductWithPhoto) bundle.getSerializable("product");
-        // photo = (Photo) bundle.getSerializable("photo");
 
         binding = ProductDetailsFragmentBinding.inflate(inflater, container, false);
         view = binding.getRoot();
+        mViewModel = new ViewModelProvider(getActivity()).get(ProductDetailsViewModel.class);
 
         // Rating
         callRateButton();
 
         // Pour les info du Product
-        if (product.getPhotoList() == null || product.getPhotoList().size() == 0){
-            Picasso.get().load(R.drawable.ic_baseline_image_search_24).placeholder(R.drawable.ic_baseline_image_search_24).into(binding.productImg);
-        }
-        else
-        {
-            Picasso.get().load(product.getPhotoList().get(0).getUrl()).placeholder(R.drawable.ic_baseline_image_search_24).into(binding.productImg);
-        }
-        binding.productName.setText(product.getProduct().getName());
-        binding.productDesc.setText(product.getProduct().getDescription());
-        apiService.getAverage(product.getProduct().getId()).enqueue(getRatingStars());
-        binding.textOwner.setText("Vendeur: " + product.getProduct().getOwner().getName());
-        binding.textPrice.setText("Prix: " + product.getProduct().getPrice() + "€");
+        initProductInfo();
+
         if (localData.getUserId() > -1) {
             // Vérifie si l'utilisateur à voté avec l'appel API
             //S'il a voté : dans la fonction getUserRating --> isSuccessful ok et les champs seront caché ( car de base ils sont cachés)
             //S'il n'a pas voté :dans la fonction getUserRating --> isSuccessful pas ok / error 400 bad request  et les champs seront affichés
-            apiService.getUserRatingForProduct(product.getProduct().getId(),localData.getUserId()).enqueue(getUserRating());
+            Observer<ProductRating> o = productRating -> {
+                if (productRating != null) return;
+                binding.ratingBar.setVisibility(View.VISIBLE);
+                binding.rateButton.setVisibility(View.VISIBLE);
+                binding.textRatingBar.setVisibility(View.VISIBLE);
+                binding.editTextComment.setVisibility(View.VISIBLE);
+                binding.textComment.setVisibility(View.VISIBLE);
+            };
+            mViewModel.getProductRatingMutableLiveData().observe(getActivity(), o);
 
             binding.btnBuy.setVisibility(View.VISIBLE);
         }
@@ -97,11 +94,24 @@ public class ProductDetailsFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(ProductDetailsViewModel.class);
-        // TODO: Use the ViewModel
+    private void initProductInfo() {
+        if (product.getPhotoList() == null || product.getPhotoList().size() == 0){
+            Picasso.get().load(R.drawable.ic_baseline_image_search_24).placeholder(R.drawable.ic_baseline_image_search_24).into(binding.productImg);
+        }
+        else
+        {
+            Picasso.get().load(product.getPhotoList().get(0).getUrl()).placeholder(R.drawable.ic_baseline_image_search_24).into(binding.productImg);
+        }
+        binding.productName.setText(product.getProduct().getName());
+        binding.productDesc.setText(product.getProduct().getDescription());
+
+        Observer<Float> o = value -> {
+            binding.textStars.setText("Note: " + value +" ⭐");
+        };
+        mViewModel.getAverageLiveData().observe(getActivity(), o);
+
+        binding.textOwner.setText("Vendeur: " + product.getProduct().getOwner().getName());
+        binding.textPrice.setText("Prix: " + product.getProduct().getPrice() + "€");
     }
 
     @Override
@@ -114,72 +124,22 @@ public class ProductDetailsFragment extends Fragment {
         RatingBar ratingbar = binding.ratingBar;
         Button rateButton = binding.rateButton;
 
-        rateButton.setOnClickListener(new View.OnClickListener(){
+        rateButton.setOnClickListener(arg0 -> {
+            Log.v("test rating" , String.format("userId: [%d], productId: [%d], rating: [%f]", localData.getUserId(), product.getProduct().getId(), ratingbar.getRating()));
 
-            @Override
-            public void onClick(View arg0) {
-                Log.v("test rating" , String.format("userId: [%d], productId: [%d], rating: [%f]", localData.getUserId(), product.getProduct().getId(), ratingbar.getRating()));
+            User user = new User();
+            user.setId(localData.getUserId());
 
-                User user = new User();
-                user.setId(localData.getUserId());
+            ProductRating productRating = new ProductRating();
+            productRating.setUser(user);
+            productRating.setProduct(product.getProduct());
+            productRating.setStars((int) ratingbar.getRating());
+            productRating.setComment(binding.editTextComment.getText().toString());
 
-                ProductRating productRating = new ProductRating();
-
-                productRating.setUser(user);
-                productRating.setProduct(product.getProduct());
-                productRating.setStars((int) ratingbar.getRating());
-                productRating.setComment(binding.editTextComment.getText().toString());
-
-                apiService.createProductRating(LocalData.GetInstance().getToken(),productRating).enqueue(new Callback<ProductRating>() {
-                    @Override
-                    public void onResponse(Call<ProductRating> call, Response<ProductRating> response) {
-                        ProductRating check = response.body();
-                    }
-
-                    @Override
-                    public void onFailure(Call<ProductRating> call, Throwable t) {
-                        // Afficher message d'erreur
-                    }
-                });
-
-                rateButton.setEnabled(false);
-            }
-
+            mViewModel.createProductRating(productRating);
+            rateButton.setEnabled(false);
         });
     }
 
-    //Pour avoir la moyenne
-    private Callback<Float> getRatingStars(){
-        return new Callback<Float>() {
-            @Override
-            public void onResponse(Call<Float> call, Response<Float> response) {
-                binding.textStars.setText("Note: " + response.body() +" ⭐");
-            }
 
-            @Override
-            public void onFailure(Call<Float> call, Throwable t) {
-
-            }
-        };
-    }
-
-    private Callback<ProductRating> getUserRating(){
-        return new Callback<ProductRating>() {
-            @Override
-            public void onResponse(Call<ProductRating> call, Response<ProductRating> response) {
-                if (!response.isSuccessful()){
-                    binding.ratingBar.setVisibility(View.VISIBLE);
-                    binding.rateButton.setVisibility(View.VISIBLE);
-                    binding.textRatingBar.setVisibility(View.VISIBLE);
-                    binding.editTextComment.setVisibility(View.VISIBLE);
-                    binding.textComment.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<ProductRating> call, Throwable t) {
-
-            }
-        };
-    }
 }

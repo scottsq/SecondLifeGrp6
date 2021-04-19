@@ -1,16 +1,86 @@
 package com.example.secondlife.ui.home;
 
-import androidx.lifecycle.LiveData;
+import android.util.Log;
+
+import com.example.secondlife.LocalData;
+import com.example.secondlife.model.Photo;
+import com.example.secondlife.model.Product;
+import com.example.secondlife.model.ProductWithPhoto;
+import com.example.secondlife.model.User;
+import com.example.secondlife.network.ProductService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 
 public class HomeViewModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
+    // static pour pas la recharger à chaque fois
+    private static MutableLiveData<List<ProductWithPhoto>> productsLiveData;
+    private static List<ProductWithPhoto> products = new ArrayList<>();
+    private static boolean isFetchingData = false;
+    private Retrofit mRetrofit = LocalData.GetInstance().GetRetrofit();
 
     public HomeViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is home fragment");
+        if (productsLiveData == null) productsLiveData = new MutableLiveData<>();
+        if (products != null && products.size() == 0 && !isFetchingData) getApiProducts();
+    }
+
+    public MutableLiveData<List<ProductWithPhoto>> getProductsLiveData() {
+        if (productsLiveData == null) productsLiveData = new MutableLiveData<>();
+        return productsLiveData;
+    }
+
+    public void getApiProducts() {
+        if (products != null) products.clear();
+        isFetchingData = true;
+        ProductService apiServiceProduct = mRetrofit.create(ProductService.class);
+        apiServiceProduct.getAllProductWithPhoto().enqueue(getProductListResponse());
+    }
+
+    private Callback<List<ProductWithPhoto>> getProductListResponse() {
+        return new Callback<List<ProductWithPhoto>>() {
+            @Override
+            public void onResponse(Call<List<ProductWithPhoto>> call, Response<List<ProductWithPhoto>> response) {
+                productsLiveData.setValue(response.body());
+                isFetchingData = false;
+            }
+
+            @Override
+            public void onFailure(Call<List<ProductWithPhoto>> call, Throwable t) {
+                // Log error here since request failed
+                Log.i("test","fail product");
+                t.printStackTrace();
+
+                // Juste pour test, faudrait mettre un message d'erreur à la place
+                Random r = new Random();
+                for (int i=0; i<15; i++) {
+                    User u = new User(); u.name = "Test";
+                    ProductWithPhoto pwp = new ProductWithPhoto();
+                    List<Photo> photoList = new ArrayList<>();
+                    Product p = new Product();
+                    p.setId(i); p.setName("Product " + i); p.setPrice(r.nextInt(50)); p.setOwner(u);
+                    Photo ph = new Photo();
+                    ph.setId(i);
+                    ph.setUrl("https://whatflower.net/imgmini/" + (i+1) + ".png");
+                    photoList.add(ph);
+                    pwp.setPhotoList(photoList);
+                    products.add(pwp);
+                    pwp.setProduct(p);
+                }
+                productsLiveData.setValue(products);
+                isFetchingData = false;
+            }
+        };
     }
 }

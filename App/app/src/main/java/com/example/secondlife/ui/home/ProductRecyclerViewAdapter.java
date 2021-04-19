@@ -70,8 +70,10 @@ public class ProductRecyclerViewAdapter  extends RecyclerView.Adapter<ProductRec
         holder.getBtnView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!parent.isEnabled()) return;
                 Bundle bundle = new Bundle();
-                bundle.putSerializable("product", (Serializable)dataSetProduct.get(position));
+                ProductWithPhoto p = dataSetProduct.get(position);
+                bundle.putSerializable("product", (Serializable)p);
                 Navigation.findNavController(v).navigate(R.id.action_navigation_home_to_navigation_product_details, bundle);
             }
         });

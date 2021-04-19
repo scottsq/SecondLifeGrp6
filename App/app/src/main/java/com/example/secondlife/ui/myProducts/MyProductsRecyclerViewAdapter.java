@@ -3,7 +3,6 @@ package com.example.secondlife.ui.myProducts;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,19 +14,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.secondlife.LocalData;
 import com.example.secondlife.R;
 import com.example.secondlife.model.Photo;
 import com.example.secondlife.model.ProductWithPhoto;
-import com.example.secondlife.network.ProductRatingService;
 import com.example.secondlife.network.ProductService;
-import com.example.secondlife.ui.home.ProductRecyclerViewAdapter;
 import com.squareup.picasso.Picasso;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,11 +31,11 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class myProductsRecyclerViewAdapter extends RecyclerView.Adapter<myProductsRecyclerViewAdapter.ProductViewHolder>{
+public class MyProductsRecyclerViewAdapter extends RecyclerView.Adapter<MyProductsRecyclerViewAdapter.ProductViewHolder>{
     private List<ProductWithPhoto> dataSetProduct;
     private List<Photo> dataSetPhoto;
     private Context context;
-    private List<myProductsRecyclerViewAdapter.ProductViewHolder> dataSetHolder = new ArrayList<>();
+    private List<MyProductsRecyclerViewAdapter.ProductViewHolder> dataSetHolder = new ArrayList<>();
     private FragmentActivity fragmentActivity;
     private ViewGroup parent;
 
@@ -48,27 +43,27 @@ public class myProductsRecyclerViewAdapter extends RecyclerView.Adapter<myProduc
     private Retrofit retrofit = localData.GetRetrofit();
     private ProductService apiService = retrofit.create(ProductService.class);
 
-    public myProductsRecyclerViewAdapter(FragmentActivity f, List<ProductWithPhoto> products, Context context) {
+    public MyProductsRecyclerViewAdapter(FragmentActivity f, List<ProductWithPhoto> products, Context context) {
         this.fragmentActivity = f;
         this.dataSetProduct = products;
         this.context = context;
     }
 
-    public myProductsRecyclerViewAdapter.ProductViewHolder getHolder(int position) {
+    public MyProductsRecyclerViewAdapter.ProductViewHolder getHolder(int position) {
         return dataSetHolder.get(position);
     }
 
     @NonNull
     @Override
-    public myProductsRecyclerViewAdapter.ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public MyProductsRecyclerViewAdapter.ProductViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.recyclerview_myproducts_item, parent, false);
-        myProductsRecyclerViewAdapter.ProductViewHolder holder = new myProductsRecyclerViewAdapter.ProductViewHolder(itemView);
+        MyProductsRecyclerViewAdapter.ProductViewHolder holder = new MyProductsRecyclerViewAdapter.ProductViewHolder(itemView);
         this.parent = parent;
         return holder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull myProductsRecyclerViewAdapter.ProductViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull MyProductsRecyclerViewAdapter.ProductViewHolder holder, final int position) {
         //String url = dataSetPhoto.get(position).getUrl();
         //Picasso.get().load(url).placeholder(R.drawable.ic_baseline_image_search_24).into(holder.getImageView());
         //si l'image est null

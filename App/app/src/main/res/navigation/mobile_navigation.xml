@@ -29,7 +29,7 @@
 
     <fragment
         android:id="@+id/navigation_myProducts"
-        android:name="com.example.secondlife.ui.myProducts.myProductsFragment"
+        android:name="com.example.secondlife.ui.myProducts.MyProductsFragment"
         android:label="@string/title_myProducts"
         tools:layout="@layout/fragment_my_products" >
         <action

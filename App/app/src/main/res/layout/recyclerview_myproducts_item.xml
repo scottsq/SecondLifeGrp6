@@ -7,7 +7,7 @@
     android:layout_height="50dp"
     android:layout_marginTop="5dp"
     android:background="#20000000"
-    tools:context=".ui.myProducts.myProductsFragment">
+    tools:context=".ui.myProducts.MyProductsFragment">
 
     <Button
         android:id="@+id/item_more"
