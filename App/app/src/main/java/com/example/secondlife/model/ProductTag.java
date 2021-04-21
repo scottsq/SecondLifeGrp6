@@ -1,31 +1,31 @@
 package com.example.secondlife.model;
 
 public class ProductTag {
-    private Integer id;
-    private Integer tagId;
-    private Integer productId;
+    private int id;
+    private int tagId;
+    private int productId;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public Integer getTagId() {
+    public int getTagId() {
         return tagId;
     }
 
-    public void setTagId(Integer tagId) {
+    public void setTagId(int tagId) {
         this.tagId = tagId;
     }
 
-    public Integer getProductId() {
+    public int getProductId() {
         return productId;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(int productId) {
         this.productId = productId;
     }
 }

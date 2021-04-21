@@ -2,12 +2,12 @@ package com.example.secondlife.model;
 
 public class User {
 
-    public int id;
-    public String login;
-    public String password;
-    public String name;
-    public String email;
-    public String avatarUrl;
+    private int id;
+    private String login;
+    private String password;
+    private String name;
+    private String email;
+    private String avatarUrl;
 
     public int getId() {
         return id;

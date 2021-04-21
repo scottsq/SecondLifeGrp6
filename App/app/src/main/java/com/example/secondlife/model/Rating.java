@@ -1,17 +1,17 @@
 package com.example.secondlife.model;
 
 public class Rating {
-    private Integer id;
+    private int id;
     private String productId;
     private String userId;
     private String stars;
 
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 

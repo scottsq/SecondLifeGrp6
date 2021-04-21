@@ -27,8 +27,8 @@ public interface MessageService {
     Call<Message> createMessage(@Body Message message);
 
     @PATCH("message/{id}")
-    Call<Message> updateMessage(@Path("id") Integer id, @Body Message message);
+    Call<Message> updateMessage(@Path("id") int id, @Body Message message);
 
     @DELETE("message/{id}")
-    Call<Message> deleteMessage(@Path("id") Integer id);
+    Call<Message> deleteMessage(@Path("id") int id);
 }

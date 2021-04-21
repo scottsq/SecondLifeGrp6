@@ -58,6 +58,7 @@ public class LocalData extends Application {
         Field[] allFields = obj.getClass().getDeclaredFields();
         for (Field field : allFields) {
             if (fieldsToSet.size() > 0 && !fieldsToSet.contains(field.getName().toLowerCase())) continue;
+            field.setAccessible(true);
             HashMap hmap = new HashMap();
             hmap.put("op", "replace");
             hmap.put("path", "/" + field.getName());

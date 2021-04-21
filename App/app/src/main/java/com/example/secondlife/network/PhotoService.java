@@ -12,14 +12,14 @@ import retrofit2.http.Path;
 
 public interface PhotoService {
     @GET("photo/{id}")
-    Call<Photo> getPhoto(@Path("id") Integer id);
+    Call<Photo> getPhoto(@Path("id") int id);
 
     @POST("photo")
     Call<Photo> createPhoto(@Body Photo photo);
 
     @PATCH("photo/{id}")
-    Call<Photo> updatePhoto(@Path("id") Integer id, @Body Photo photo);
+    Call<Photo> updatePhoto(@Path("id") int id, @Body Photo photo);
 
     @DELETE("photo/{id}")
-    Call<Photo> deletePhoto(@Path("id") Integer id);
+    Call<Photo> deletePhoto(@Path("id") int id);
 }

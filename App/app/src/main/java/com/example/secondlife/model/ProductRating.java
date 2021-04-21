@@ -1,11 +1,11 @@
 package com.example.secondlife.model;
 
 public class ProductRating {
-    public int Id;
-    public Product Product;
-    public User User;
-    public int Stars;
-    public String Comment;
+    private int Id;
+    private Product Product;
+    private User User;
+    private int Stars;
+    private String Comment;
 
     public int getId() {
         return Id;
@@ -15,19 +15,19 @@ public class ProductRating {
         Id = id;
     }
 
-    public com.example.secondlife.model.Product getProduct() {
+    public Product getProduct() {
         return Product;
     }
 
-    public void setProduct(com.example.secondlife.model.Product product) {
+    public void setProduct(Product product) {
         Product = product;
     }
 
-    public com.example.secondlife.model.User getUser() {
+    public User getUser() {
         return User;
     }
 
-    public void setUser(com.example.secondlife.model.User user) {
+    public void setUser(User user) {
         User = user;
     }
 

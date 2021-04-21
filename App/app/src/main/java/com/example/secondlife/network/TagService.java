@@ -13,14 +13,14 @@ import retrofit2.http.Path;
 
 public interface TagService {
     @GET("tag/{id}")
-    Call<Tag> getTag(@Path("id") Integer id);
+    Call<Tag> getTag(@Path("id") int id);
 
     @POST("tag")
     Call<Tag> createTag(@Body Tag tag);
 
     @PATCH("tag/{id}")
-    Call<Tag> updateTag(@Path("id") Integer id, @Body Tag tag);
+    Call<Tag> updateTag(@Path("id") int id, @Body Tag tag);
 
     @DELETE("tag/{id}")
-    Call<Tag> deleteTag(@Path("id") Integer id);
+    Call<Tag> deleteTag(@Path("id") int id);
 }

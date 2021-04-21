@@ -3,23 +3,23 @@ package com.example.secondlife.model;
 import java.io.Serializable;
 
 public class Photo implements Serializable {
-    private Integer id;
-    private Integer productId;
+    private int id;
+    private int productId;
     private String url;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public Integer getProductId() {
+    public int getProductId() {
         return productId;
     }
 
-    public void setProductId(Integer productId) {
+    public void setProductId(int productId) {
         this.productId = productId;
     }
 

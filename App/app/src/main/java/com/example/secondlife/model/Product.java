@@ -4,18 +4,18 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Product implements Serializable {
-    private Integer id;
+    private int id;
     private User owner;
     private String name;
     private float price;
     private String description;
     private String creationDate;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
