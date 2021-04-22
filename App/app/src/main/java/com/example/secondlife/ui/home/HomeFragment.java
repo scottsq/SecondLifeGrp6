@@ -31,22 +31,6 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         linearLayoutManager = new LinearLayoutManagerCustom(getContext());
 
-        //Product
-        setLoadingScreenVisible(true);
-        oProducts = productWithPhotos -> {
-            try {
-                adapter = new ProductRecyclerViewAdapter(getActivity(), productWithPhotos, getContext());
-                binding.recyclerViewProduct.setLayoutManager(linearLayoutManager);
-                binding.recyclerViewProduct.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-                setLoadingScreenVisible(false);
-            } catch (Exception e) {};
-        };
-        homeViewModel.getProductsLiveData().observe(getActivity(), oProducts);
-
-
-        binding.btnRefresh.setOnClickListener(btnRefreshClick());
-
         View view = binding.getRoot();
         return view;
     }

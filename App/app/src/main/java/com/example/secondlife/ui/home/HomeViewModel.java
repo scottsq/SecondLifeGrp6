@@ -65,7 +65,7 @@ public class HomeViewModel extends ViewModel {
                 // Juste pour test, faudrait mettre un message d'erreur à la place
                 Random r = new Random();
                 for (int i=0; i<15; i++) {
-                    User u = new User(); u.name = "Test";
+                    User u = new User(); u.setName("Test");
                     ProductWithPhoto pwp = new ProductWithPhoto();
                     List<Photo> photoList = new ArrayList<>();
                     Product p = new Product();
