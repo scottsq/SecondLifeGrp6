@@ -6,4 +6,10 @@
     <string name="last_offers">Dernières offres</string>
     <string name="connexion">Connexion</string>
     <string name="catalogue_title">Catalogue 🎮</string>
+    <string name="ajouter_un_jeu">Ajouter un jeu</string>
+    <string name="description">Description</string>
+    <string name="title">Titre</string>
+    <string name="price">Prix</string>
+    <string name="url_image">Url image</string>
+    <string name="ajouter">Ajouter</string>
 </resources>

@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import androidx.fragment.app.Fragment;
 
 import com.example.secondlife.LocalData;
+import com.example.secondlife.R;
 import com.example.secondlife.databinding.FragmentMyProductsBinding;
 import com.example.secondlife.model.ProductWithPhoto;
 import com.example.secondlife.ui.home.LinearLayoutManagerCustom;
@@ -16,8 +17,10 @@ import com.example.secondlife.ui.home.ProductRecyclerViewAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import retrofit2.Retrofit;
 
 public class MyProductsFragment extends Fragment {
@@ -36,6 +39,7 @@ public class MyProductsFragment extends Fragment {
         binding = FragmentMyProductsBinding.inflate(inflater, container, false);
         linearLayoutManager = new LinearLayoutManagerCustom(getContext());
 
+        binding.btnAddGame.setOnClickListener(btnAddGameClick());
         setLoadingScreenVisible(true);
         Observer<List<ProductWithPhoto>> products = productWithPhotos -> {
             try {
@@ -63,5 +67,11 @@ public class MyProductsFragment extends Fragment {
         binding.recyclerViewMyProducts.setEnabled(!visible);
         binding.recyclerViewMyProducts.setVerticalScrollBarEnabled(!visible);
         binding.imgLoading.setVisibility(visible ? View.VISIBLE : View.GONE);
+    }
+
+    private View.OnClickListener btnAddGameClick() {
+        return v -> {
+            Navigation.findNavController(v).navigate(R.id.action_navigation_myProducts_to_navigation_addGame);
+        };
     }
 }

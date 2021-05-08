@@ -27,4 +27,17 @@
         app:layout_constraintEnd_toEndOf="@+id/recyclerViewMyProducts"
         app:layout_constraintStart_toStartOf="@+id/recyclerViewMyProducts"
         app:layout_constraintTop_toTopOf="@+id/recyclerViewMyProducts" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnAddGame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:clickable="true"
+        android:src="@android:drawable/ic_menu_add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:focusable="true"
+        android:contentDescription="@string/ajouter_un_jeu" />
 </androidx.constraintlayout.widget.ConstraintLayout>

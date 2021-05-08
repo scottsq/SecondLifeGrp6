@@ -35,6 +35,9 @@
         <action
             android:id="@+id/action_navigation_myProducts_to_navigation_product_details"
             app:destination="@id/navigation_product_details" />
+        <action
+            android:id="@+id/action_navigation_myProducts_to_navigation_addGame"
+            app:destination="@id/navigation_addGame" />
     </fragment>
 
     <fragment
@@ -48,4 +51,14 @@
         android:name="com.example.secondlife.ui.login.LoginFragment"
         android:label="@string/connexion"
         tools:layout="@layout/fragment_login" />
+
+    <fragment
+        android:id="@+id/navigation_addGame"
+        android:name="com.example.secondlife.ui.addGame.AddGame"
+        android:label="Ajouter un jeu"
+        tools:layout="@layout/add_game_fragment" >
+        <action
+            android:id="@+id/action_navigation_addGame_to_navigation_myProducts"
+            app:destination="@id/navigation_myProducts" />
+    </fragment>
 </navigation>
