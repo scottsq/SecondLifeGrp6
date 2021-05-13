@@ -114,28 +114,28 @@ namespace Services.Tester
         [TestMethod]
         public void GetUserRatings_WithU1AndU2_ThenNotNull()
         {
-            var res = ((UserRatingService)_service).GetUserRating(_u1.Id, _u2.Id);
+            var res = ((UserRatingService)_service).GetRating(_u1.Id, _u2.Id);
             Assert.AreNotEqual(null, res);
         }
 
         [TestMethod]
         public void GetUserRatings_WithU2AndU3_ThenEmpty()
         {
-            var res = ((UserRatingService)_service).GetUserRating(_u2.Id, _u3.Id);
+            var res = ((UserRatingService)_service).GetRating(_u2.Id, _u3.Id);
             Assert.AreEqual(null, res);
         }
 
         [TestMethod]
         public void GetRatings_WithU1_ThenEmpty()
         {
-            var res = ((UserRatingService)_service).GetRatings(_u1.Id);
+            var res = ((UserRatingService)_service).ListRatings(_u1.Id);
             Assert.AreEqual(0, res.Count);
         }
 
         [TestMethod]
         public void GetRatings_WithU2_ThenNotEmpty()
         {
-            var res = ((UserRatingService)_service).GetRatings(_u2.Id);
+            var res = ((UserRatingService)_service).ListRatings(_u2.Id);
             Assert.AreNotEqual(0, res.Count);
         }
     }

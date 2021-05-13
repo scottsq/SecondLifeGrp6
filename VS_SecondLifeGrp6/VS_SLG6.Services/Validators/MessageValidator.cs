@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
-using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Services.Validators
 {
@@ -13,72 +11,49 @@ namespace VS_SLG6.Services.Validators
     {
         private IRepository<User> _repoUser;
 
-        public MessageValidator(IRepository<Message> repo, ValidationModel<bool> validationModel, IRepository<User> repoUser) : base(repo, validationModel) 
+        public MessageValidator(IRepository<Message> repo, IRepository<User> repoUser) : base(repo) 
         {
             _repoUser = repoUser;
         }
 
-        public override ValidationModel<bool> CanGet(Message obj)
+        public override List<string> CanAdd(Message obj)
         {
-            return CanGet(obj.Sender.Id, obj.Receipt.Id);
-        }
-        public ValidationModel<bool> CanGet(int idOrigin, int idTarget)
-        {
-            CheckUserAuthorization(idOrigin);
-            CheckUserAuthorization(idTarget);
-            _validationModel.Value = _validationModel.Errors.Count < 2;
-            return _validationModel;
-        }
+            var listErrors = IsObjectValid(obj);
+            if (listErrors.Any()) return listErrors;
 
-        public override ValidationModel<bool> CanAdd(Message obj)
-        {
-            _validationModel = IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
-            CheckUserAuthorization(obj.Sender.Id);
-            if (!_validationModel.Value) return _validationModel;
-            
             // check if message exist for same receipt at same datetime
-            var m = _repo.All(x => x.CreationDate == obj.CreationDate && x.Receipt.Id == obj.Receipt.Id);
-            if (m.Count > 0) _validationModel.Errors.Add("Message already exists.");
-
-            _validationModel.Value = _validationModel.Errors.Count == 0;
-            return _validationModel;
+            IsObjectExisting(listErrors, x => x.CreationDate == obj.CreationDate && x.Receipt.Id == obj.Receipt.Id);
+            return listErrors;
         }
 
-        public override ValidationModel<bool> CanEdit(Message obj)
+        public override List<string> CanEdit(Message obj)
         {
-            _validationModel = IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
-            CheckUserAuthorization(obj.Sender.Id);
-            return _validationModel;
+            return IsObjectValid(obj);
         }
 
-        public override ValidationModel<bool> CanDelete(Message obj)
+        public override List<string> CanDelete(Message obj)
         {
-            _validationModel = IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
-            CheckUserAuthorization(obj.Sender.Id);
-            _validationModel.Value = _validationModel.Errors.Count == 0;
-            return _validationModel;
+            return IsObjectValid(obj);
         }
 
-        public override ValidationModel<bool> IsObjectValid(Message obj)
+        public override List<string> IsObjectValid(Message obj, ConstraintsObject constraintsObject = null)
         {
+            // Build helper
             var listProps = new List<string> { nameof(obj.Content), nameof(obj.Receipt), nameof(obj.Sender) };
-            _constraintsObject = new ConstraintsObject
+            constraintsObject = new ConstraintsObject()
             {
-                PropsNonNull = listProps,
-                PropsStringNotBlank = listProps.Where(x => x == nameof(obj.Content)).ToList()
+                FieldsNotNull = listProps,
+                FieldsStringNotBlank = listProps.Where(x => x == nameof(obj.Content)).ToList()
             };
 
             // Basic check on fields (null, blank, size)
-            _validationModel = base.IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
+            var listErrors = base.IsObjectValid(obj, constraintsObject);
+            if (listErrors.Any()) return listErrors;
 
             // check if Sender and Receipt exist
             var sender = _repoUser.FindOne(obj.Sender.Id);
             var receipt = _repoUser.FindOne(obj.Receipt.Id);
-            if (sender == null || receipt == null) _validationModel.Errors.Add("Cannot send message with invalid User(s).");
+            if (sender == null || receipt == null) listErrors.Add("Cannot send message with invalid User(s).");
             else
             {
                 obj.Sender = sender;
@@ -86,13 +61,12 @@ namespace VS_SLG6.Services.Validators
             }
 
             // Check if Sender and Receipt are identical
-            if (obj.Sender.Id == obj.Receipt.Id) _validationModel.Errors.Add("Message Sender and Receipt cannot be indentical.");
+            if (obj.Sender.Id == obj.Receipt.Id) listErrors.Add("Message Sender and Receipt cannot be indentical.");
 
             // check time / not an error but more a formatting task
             if (obj.CreationDate == DateTime.MinValue) obj.CreationDate = DateTime.Now;
 
-            _validationModel.Value = _validationModel.Errors.Count == 0;
-            return _validationModel;
+            return listErrors;
         }
     }
 }

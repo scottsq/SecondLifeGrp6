@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using VS_SLG6.Api.ControllerAccess;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Services.Services;
 
@@ -16,10 +14,12 @@ namespace VS_SLG6.Api.Controllers
     public class PhotoController : ControllerBaseExtended
     {
         private IService<Photo> _service;
+        private IControllerAccess<Photo> _controllerAccess;
 
-        public PhotoController(IService<Photo> service)
+        public PhotoController(IService<Photo> service, IControllerAccess<Photo> controllerAccess)
         {
             _service = service;
+            _controllerAccess = controllerAccess;
         }
 
         [AllowAnonymous]
@@ -42,14 +42,16 @@ namespace VS_SLG6.Api.Controllers
         [HttpGet("product/{id}")]
         public ActionResult<List<Photo>> GetProductPhotos(int id)
         {
-            var photos = ((PhotoService)_service).GetByProduct(id);
+            var photos = ((PhotoService)_service).Find(id);
             return photos;
         }
 
         [HttpPost]
         public ActionResult<Photo> Add(Photo p)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
+            if (!_controllerAccess.CanAdd(GetUserFromContext(HttpContext), p)) {
+                return Unauthorized();
+            }
             var res = _service.Add(p);
             return ReturnResult(res);
         }

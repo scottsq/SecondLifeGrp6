@@ -70,7 +70,7 @@ namespace VS_SLG6.Controllers
         public ActionResult<string> SendUser(string mail)
         {
             // Je sais pas si on est censé s'en servir de cette route, j'crois pas en tout cas
-            var res = _service.FindByMail(mail);
+            var res = _service.Find(mail);
             if (res.Errors.Count > 0) return BadRequest(res.Errors);
             return res.Value.Login;
         }

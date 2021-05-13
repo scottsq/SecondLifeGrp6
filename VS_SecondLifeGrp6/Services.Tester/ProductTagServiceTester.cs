@@ -89,14 +89,14 @@ namespace Services.Tester
         [TestMethod]
         public void GetByProductId_WithP1_ThenNotEmpty()
         {
-            var res = ((ProductTagService)_service).GetByProductId(_p1.Id);
+            var res = ((ProductTagService)_service).Find(_p1.Id);
             Assert.AreNotEqual(0, res.Count);
         }
 
         [TestMethod]
         public void GetByProductId_WithP2_ThenEmpty()
         {
-            var res = ((ProductTagService)_service).GetByProductId(_p2.Id);
+            var res = ((ProductTagService)_service).Find(_p2.Id);
             Assert.AreEqual(0, res.Count);
         }
     }

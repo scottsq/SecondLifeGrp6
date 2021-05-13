@@ -11,6 +11,8 @@ using Microsoft.Extensions.Options;
 using VS_SLG6.Api;
 using VS_SLG6.Services.Models;
 using Microsoft.IdentityModel.Tokens;
+using System.Linq.Expressions;
+using LinqKit;
 
 namespace VS_SLG6.Services.Services
 {
@@ -23,24 +25,32 @@ namespace VS_SLG6.Services.Services
             _appsettings = appsettings.Value;
         }
 
-        public ValidationModel<User> FindByMail(string email)
+        public List<User> Find(int id = -1, string email = null, string login = null, string name = null, string orderBy = nameof(User.Name), bool reverse = false, int from = 0, int max = 10)
         {
-            var user = _repo.All(x => x.Email == email).FirstOrDefault();
-            if (user == null)
+            var list = _repo.All(GenerateCondition(id, email, login, name), from, max);
+            if (orderBy == nameof(User.Name))
             {
-                _validationModel.Value = null;
-                _validationModel.Errors.Add("Email not bound to any user");
+                if (reverse) list = list.OrderByDescending(x => x.Name).ToList();
+                else list = list.OrderBy(x => x.Name).ToList();
             }
-            else _validationModel.Value = user;
-            return _validationModel;
+            return list;
+        }
+
+        public static Expression<Func<User, bool>> GenerateCondition(int id = -1, string email = null, string login = null, string name = null)
+        {
+            Expression<Func<User, bool>> condition = x => true;
+            if (id > -1) condition.And(x => x.Id == id);
+            if (email != null) condition.And(x => x.Email == email);
+            if (login != null) condition.And(x => x.Login == login);
+            if (name != null) condition.And(x => x.Name == name);
+            return condition;
         }
 
         public LoginResponse Login(User u)
         {
             var user = _repo.FindOne(x => u.Login == x.Login);
-            var accessManager = new AccessManager();
 
-            if (user != null && accessManager.AreHashEqual(accessManager.GetStringSha256Hash(u.Password), user.Password))
+            if (user != null && PasswordManager.GetStringSha256Hash(u.Password) == user.Password)
             {
                 var loginResponse = new LoginResponse();
                 loginResponse.Id = user.Id;
@@ -64,25 +74,6 @@ namespace VS_SLG6.Services.Services
                 return loginResponse;
             }
             return null;
-        }
-
-        public string ResetEmail(string email)
-        {
-            if (FindByMail(email).Value != null) return GenerateCode();
-            else return null;
-        }
-
-        private string GenerateCode()
-        {
-            var length = 6;
-            var code = "";
-            var charArray = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".ToCharArray();
-            var r = new Random();
-            for (int i = 0; i < length; i++)
-            {
-                code += charArray[r.Next(0, charArray.Length)];
-            }
-            return code;
         }
     }
 }

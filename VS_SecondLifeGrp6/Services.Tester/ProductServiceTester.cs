@@ -156,21 +156,21 @@ namespace Services.Tester
         [TestMethod]
         public void GetUserProducts_WithU1_ThenNotEmpty()
         {
-            var res = ((ProductService)_service).GetUserProducts(_u1.Id);
+            var res = ((ProductService)_service).GetByUser(_u1.Id);
             Assert.AreNotEqual(0, res.Count);
         }
 
         [TestMethod]
         public void GetUserProducts_WithU2_ThenEmpty()
         {
-            var res = ((ProductService)_service).GetUserProducts(_u2.Id);
+            var res = ((ProductService)_service).GetByUser(_u2.Id);
             Assert.AreEqual(0, res.Count);
         }
 
         [TestMethod]
         public void GetProductsByKeys_WithProduct_ThenNotEmpty()
         {
-            var res = ((ProductService)_service).GetProductsByKeys("Product");
+            var res = ((ProductService)_service).GetByKeys("Product");
             Assert.AreNotEqual(0, res.Count);
         }
 
@@ -178,28 +178,28 @@ namespace Services.Tester
         public void GetProductsByKeys_WithP2Name_Then1Result()
         {
             _service.Add(_product2);
-            var res = ((ProductService)_service).GetProductsByKeys(_product2.Name.Split(" "));
+            var res = ((ProductService)_service).GetByKeys(_product2.Name.Split(" "));
             Assert.AreEqual(1, res.Count);
         }
 
         [TestMethod]
         public void GetProductsByKeys_WithNull_ThenNotEmpty()
         {
-            var res = ((ProductService)_service).GetProductsByKeys(null);
+            var res = ((ProductService)_service).GetByKeys(null);
             Assert.AreNotEqual(0, res.Count);
         }
 
         [TestMethod]
         public void GetProductsByKeys_WithEmptyString_ThenNotEmpty()
         {
-            var res = ((ProductService)_service).GetProductsByKeys("");
+            var res = ((ProductService)_service).GetByKeys("");
             Assert.AreNotEqual(0, res.Count);
         }
 
         [TestMethod]
         public void GetProductsByKeys_WithBlankString_ThenNotEmpty()
         {
-            var res = ((ProductService)_service).GetProductsByKeys(BLANK_STRING);
+            var res = ((ProductService)_service).GetByKeys(BLANK_STRING);
             Assert.AreNotEqual(0, res.Count);
         }
 
@@ -265,21 +265,21 @@ namespace Services.Tester
         [TestMethod]
         public void GetProductsByInterest_WithUnkownId_ThenEmpty()
         {
-            var res = ((ProductService)_service).GetProductsByInterest(-1);
+            var res = ((ProductService)_service).GetByInterest(-1);
             Assert.AreEqual(0, res.Count);
         }
 
         [TestMethod]
         public void GetProductsByInterest_WithU1_ThenNotEmpty()
         {
-            var res = ((ProductService)_service).GetProductsByInterest(_u1.Id);
+            var res = ((ProductService)_service).GetByInterest(_u1.Id);
             Assert.AreNotEqual(0, res.Count);
         }
 
         [TestMethod]
         public void GetProductsByInterest_WithU2_ThenEmpty()
         {
-            var res = ((ProductService)_service).GetProductsByInterest(_u2.Id);
+            var res = ((ProductService)_service).GetByInterest(_u2.Id);
             Assert.AreEqual(0, res.Count);
         }
 

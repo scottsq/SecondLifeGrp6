@@ -41,14 +41,14 @@ namespace VS_SLG6.Controllers
         [HttpGet("origin/{idOrigin}/target/{idTarget}")]
         public ActionResult<UserRating> GetUserRating(int idOrigin, int idTarget)
         {
-            return _service.GetUserRating(idOrigin, idTarget);
+            return _service.GetRating(idOrigin, idTarget);
         }
        
         [AllowAnonymous]
         [HttpGet("target/{id}")]
         public ActionResult<List<UserRating>> GetRatings(int id)
         {
-            return _service.GetRatings(id);
+            return _service.ListRatings(id);
         }
 
         [AllowAnonymous]

@@ -27,13 +27,13 @@ namespace VS_SLG6.Api.Controllers
         [HttpGet("user/{id}/withphoto")]
         public ActionResult<List<ProductWithPhoto>> ListForUserWithPhoto(int id)
         {
-            return _service.GetProductForUserWithPhotos(id);
+            return _service.GetByUserWithPhotos(id);
         }
 
         [HttpGet("withphoto")]
         public ActionResult<List<ProductWithPhoto>> ListWithPhoto()
         {
-            return _service.GetProductWithPhotos();
+            return _service.ListWithPhotos();
         }
 
         [HttpGet("{id}")]
@@ -55,19 +55,19 @@ namespace VS_SLG6.Api.Controllers
         [HttpGet("search/{id}")]
         public ActionResult<List<Product>> GetProductsByUser(int id)
         {
-            return _service.GetUserProducts(id);
+            return _service.GetByUser(id);
         }
 
         [HttpGet("user/search/keys/{keys}")]
         public ActionResult<List<Product>> GetProductsByTags(string[] keys)
         {
-            return _service.GetProductsByKeys(keys);
+            return _service.GetByKeys(keys);
         }
 
         [HttpGet("user/{id}/like")]
         public ActionResult<List<Product>> GetProductsByInterest(int id)
         {
-            return _service.GetProductsByInterest(id);
+            return _service.GetByInterest(id);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

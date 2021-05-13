@@ -1,122 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Text.RegularExpressions;
-using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
-using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Services.Validators
 {
     public class GenericValidator<T> : IValidator<T> where T : class
     {
         protected readonly IRepository<T> _repo;
-        protected ValidationModel<bool> _validationModel;
-        protected ConstraintsObject _constraintsObject = new ConstraintsObject();
 
         protected static String FieldNullError = "{0} {1} cannot be null";
         protected static String FieldEmptyError = "{0} {1} cannot be empty.";
         protected static int StringMaxLength = 64;
         protected static String CharCountError = "{0} {1} exceeds limit of " + StringMaxLength.ToString() + " characters.";
         protected static String CannotPerformActionError = "This user cannot perform this action.";
-
-        public GenericValidator(IRepository<T> repo, ValidationModel<bool> validationModel)
+        protected static String ExistingError = "{0} with them properties already exists.";
+            
+        public GenericValidator(IRepository<T> repo)
         {
             _repo = repo;
-            _validationModel = validationModel;
         }
 
-        public virtual ValidationModel<bool> CanGet(T obj)
+        public virtual List<string> CanGet(T obj)
         {
-            return new ValidationModel<bool> { Value = false };
+            return new List<string>();
         }
 
-        public virtual ValidationModel<bool> CanGet(Roles role)
+        public virtual List<string> CanAdd(T obj)
         {
-            CheckRoleAuthorization(role);
-            return _validationModel;
+            return IsObjectValid(obj, null);
         }
 
-        public virtual ValidationModel<bool> CanAdd(T obj)
+        public virtual List<string> CanDelete(T obj)
         {
-            return IsObjectValid(obj);
+            return new List<string>();
         }
 
-        public virtual ValidationModel<bool> CanDelete(T obj)
+        public virtual List<string> CanEdit(T obj)
         {
-            _validationModel.Value = false;
-            return _validationModel;
+            return IsObjectValid(obj, null);
         }
 
-        public virtual ValidationModel<bool> CanEdit(T obj)
+        public virtual List<string> IsObjectValid(T obj, ConstraintsObject constraintsObject)
         {
-            return IsObjectValid(obj);
-        }
-
-        public virtual ValidationModel<bool> IsObjectValid(T obj)
-        {
-            _validationModel.Value = false;
+            var listErrors = new List<string>();
             // 1. Null case
             if (obj == null)
             {
-                _validationModel.Errors.Add("Cannot add null " + nameof(T));
-                return _validationModel;
+                listErrors.Add("Cannot add null " + nameof(T));
+                return listErrors;
             }
+            if (constraintsObject == null) return listErrors;
 
             var properties = new List<PropertyInfo>(obj.GetType().GetProperties());
             // 2. Null fields
             var errorList = new List<string>();
-            foreach (var field in _constraintsObject.PropsNonNull)
+            foreach (var field in constraintsObject.FieldsNotNull)
             {
                 if (properties.FirstOrDefault(x => x.Name == field).GetValue(obj) == null) errorList.Add(field);
 
             }
-            if (errorList.Count > 0)
-            {
-                AppendFormattedErrors(errorList, FieldNullError);
-            }
+            if (errorList.Count > 0) AppendFormattedErrors(listErrors, errorList, FieldNullError);
 
             // 3.1 Empty strings
-            var check = StringIsEmptyOrBlank(obj, _constraintsObject.PropsStringNotBlank.ToArray());
-            if (check.Errors.Count > 0) AppendFormattedErrors(check.Errors, FieldEmptyError);
+            var check = StringIsEmptyOrBlank(obj, constraintsObject.FieldsStringNotBlank.ToArray());
+            if (check.Errors.Count > 0) AppendFormattedErrors(listErrors, check.Errors, FieldEmptyError);
 
             // 3.2 Too long strings
-            check = StringIsLongerThanMax(obj, StringMaxLength, _constraintsObject.PropsStringNotLongerThanMax.ToArray());
-            if (check.Errors.Count > 0) AppendFormattedErrors(check.Errors, CharCountError);
+            check = StringIsLongerThanMax(obj, StringMaxLength, constraintsObject.FieldsStringNotLongerThanMax.ToArray());
+            if (check.Errors.Count > 0) AppendFormattedErrors(listErrors, check.Errors, CharCountError);
 
-
-            _validationModel.Value = _validationModel.Errors.Count == 0;
-            return _validationModel;
+            return listErrors;
         }
 
-        public virtual void CheckUserAuthorization(int id)
+        public void IsObjectExisting(List<string> listErrors, Expression<Func<T, bool>> condition)
         {
-            var cUser = GenericService<T>.contextUser;
-            if (cUser != null && id != cUser.Id && cUser.Role != Roles.ADMIN)
-            {
-                _validationModel.Value = false;
-                _validationModel.Errors.Add(CannotPerformActionError);
-            }
-            _validationModel.Value = true;
+            if (_repo.All(condition).Any()) listErrors.Add(String.Format(ExistingError, typeof(T).Name));
         }
-        public virtual void CheckRoleAuthorization(Roles role)
-        {
-            var cUser = GenericService<T>.contextUser;
-            if (cUser != null && cUser.Role != role && cUser.Role != Roles.ADMIN)
-            {
-                _validationModel.Value = false;
-                _validationModel.Errors.Add(CannotPerformActionError);
-            }
-            _validationModel.Value = true;
-        }
-
-
-
-
-
 
         public ValidationModel<bool> StringIsEmptyOrBlank(T obj, params string[] properties)
         {
@@ -150,11 +114,11 @@ namespace VS_SLG6.Services.Validators
             return res;
         }
 
-        public void AppendFormattedErrors(List<string> list, string error)
+        public void AppendFormattedErrors(List<string> listErrors, List<string> list, string error)
         {
             for (int i = 0; i < list.Count; i++)
             {
-                _validationModel.Errors.Add(String.Format(error, typeof(T).Name , list[i]));
+                listErrors.Add(String.Format(error, typeof(T).Name , list[i]));
             }
         }
 
@@ -167,6 +131,5 @@ namespace VS_SLG6.Services.Validators
                 return acc;
             });
         }
-
     }
 }

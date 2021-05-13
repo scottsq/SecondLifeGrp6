@@ -135,7 +135,7 @@ namespace Services.Tester
         [TestMethod]
         public void FindByMail_WithNull_ThenError()
         {
-            var res = ((UserService)_service).FindByMail(null);
+            var res = ((UserService)_service).Find(null);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
 
@@ -143,7 +143,7 @@ namespace Services.Tester
         public void FindByMail_WithUser_ThenUser()
         {
             _service.Add(_user);
-            var res = ((UserService)_service).FindByMail(_user.Email);
+            var res = ((UserService)_service).Find(_user.Email);
             Assert.AreEqual(_user, res.Value);
         }
     }

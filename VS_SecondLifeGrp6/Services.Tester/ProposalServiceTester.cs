@@ -130,14 +130,14 @@ namespace Services.Tester
         [TestMethod]
         public void GetAcceptedProposalByUser_WithU1_ThenEmpty()
         {
-            var res = ((ProposalService)_service).GetAcceptedProposalByUser(_u1.Id);
+            var res = ((ProposalService)_service).GetAcceptedByUser(_u1.Id);
             Assert.AreEqual(0, res.Value.Count);
         }
 
         [TestMethod]
         public void GetAcceptedProposalByUser_WithU2_ThenEmpty()
         {
-            var res = ((ProposalService)_service).GetAcceptedProposalByUser(_u2.Id);
+            var res = ((ProposalService)_service).GetAcceptedByUser(_u2.Id);
             Assert.AreEqual(0, res.Value.Count);
         }
 
@@ -145,8 +145,8 @@ namespace Services.Tester
         public void GetAcceptedProposalByUser_WithU3_ThenNotEmpty()
         {
             _service.Add(_proposal2);
-            ((ProposalService)_service).UpdateProposal(_proposal2.Id, State.ACCEPTED);
-            var res = ((ProposalService)_service).GetAcceptedProposalByUser(_u3.Id);
+            ((ProposalService)_service).Update(_proposal2.Id, State.ACCEPTED);
+            var res = ((ProposalService)_service).GetAcceptedByUser(_u3.Id);
             Assert.AreNotEqual(0, res.Value.Count);
         }
 
@@ -154,7 +154,7 @@ namespace Services.Tester
         public void GetAcceptedProposalByUser_WithU3_ThenAccepted()
         {
             _service.Add(_proposal2);
-            var res = ((ProposalService)_service).GetAcceptedProposalByUser(_u3.Id);
+            var res = ((ProposalService)_service).GetAcceptedByUser(_u3.Id);
             for (var i=0; i<res.Value.Count; i++) Assert.AreEqual(State.ACCEPTED, res.Value[i].State);
         }
 
@@ -197,7 +197,7 @@ namespace Services.Tester
         public void ListByUserIdAndActive_WithU3_ThenEmpty()
         {
             _service.Add(_proposal2);
-            ((ProposalService)_service).UpdateProposal(_proposal2.Id, State.ACCEPTED);
+            ((ProposalService)_service).Update(_proposal2.Id, State.ACCEPTED);
             var res = ((ProposalService)_service).ListByUserIdAndActive(_u3.Id);
             Assert.AreEqual(0, res.Value.Count);
         }
@@ -205,14 +205,14 @@ namespace Services.Tester
         [TestMethod]
         public void UpdateProposal_WithPr1AndAccepted_ThenAccepted()
         {
-            var res = ((ProposalService)_service).UpdateProposal(_proposal1.Id, State.ACCEPTED);
+            var res = ((ProposalService)_service).Update(_proposal1.Id, State.ACCEPTED);
             Assert.AreEqual(State.ACCEPTED, res.Value.State);
         }
 
         [TestMethod]
         public void UpdateProposal_WithPr2AndAccepted_ThenValidationError()
         {
-            var res = ((ProposalService)_service).UpdateProposal(_proposal2.Id, State.ACCEPTED);
+            var res = ((ProposalService)_service).Update(_proposal2.Id, State.ACCEPTED);
             Assert.AreNotEqual(0, res.Errors.Count);
         }
     }

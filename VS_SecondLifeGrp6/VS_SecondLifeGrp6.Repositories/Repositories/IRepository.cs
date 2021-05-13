@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Text;
 
 namespace VS_SLG6.Repositories.Repositories
 {
@@ -11,8 +10,8 @@ namespace VS_SLG6.Repositories.Repositories
         T Update(T obj);
         T Remove(T obj);
         bool Exists(T obj);
-        T FindOne(int id);
-        List<T> All(Expression<Func<T, bool>> condition = null);
+        T FindOne(params object[] values);
+        List<T> All(Expression<Func<T, bool>> condition = null, int from = 0, int max = 10);
         T FindOne(Expression<Func<T, bool>> condition = null);
     }
 }

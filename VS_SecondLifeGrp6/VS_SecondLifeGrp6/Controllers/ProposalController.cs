@@ -88,7 +88,7 @@ namespace VS_SLG6.Api.Controllers
         public ActionResult<Proposal> ChangeState(int id, State state)
         {
             _service.SetContextUser(GetUserFromContext(HttpContext));
-            var res = _service.UpdateProposal(id, state);
+            var res = _service.Update(id, state);
             return ReturnResult(res);
         }
         #endregion

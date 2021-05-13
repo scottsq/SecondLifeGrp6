@@ -38,7 +38,7 @@ namespace VS_SLG6.Api.Controllers
         [HttpGet("product/{id}")]
         public ActionResult<List<ProductTag>> GetProductTags(int id)
         {
-            return ((ProductTagService)_service).GetByProductId(id);
+            return ((ProductTagService)_service).Find(id);
         }
 
         [HttpPost]

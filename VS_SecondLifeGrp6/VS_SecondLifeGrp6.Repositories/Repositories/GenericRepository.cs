@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using VS_SLG6.Model;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection;
 
 namespace VS_SLG6.Repositories.Repositories
 {
@@ -37,15 +35,15 @@ namespace VS_SLG6.Repositories.Repositories
             return _context.Set<T>().FirstOrDefault(x => x.Equals(obj)) != null;
         }
 
-        public virtual T FindOne(int id)
+        public virtual T FindOne(params object[] values)
         {
-            return _context.Set<T>().Find(new object[] { id });
+            return _context.Set<T>().Find(values);
         }
 
-        public List<T> All(Expression<Func<T, bool>> condition = null)
+        public List<T> All(Expression<Func<T, bool>> condition=null, int from=0, int max=10)
         {
-            if (condition == null) condition = x => true;
-            return _contextWithIncludes.Where(condition).ToList();
+            condition ??= x => true;
+            return _contextWithIncludes.Where(condition).Skip(from).Take(max).ToList();
         }
 
         public T Remove(T obj)

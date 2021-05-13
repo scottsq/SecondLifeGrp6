@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Validators;
@@ -15,72 +10,53 @@ namespace VS_SLG6.Services.Services
     {
         protected IRepository<T> _repo;
         protected IValidator<T> _validator;
-        protected Models.ValidationModel<T> _validationModel;
-        public static ContextUser contextUser = null;
 
         public GenericService(IRepository<T> repo, IValidator<T> validator)
         {
             _repo = repo;
             _validator = validator;
-            _validationModel = new Models.ValidationModel<T>();
+        }
+
+        protected ValidationModel<X> GetErrors<X>(List<string> values)
+        {
+            var vm = new ValidationModel<X>();
+            vm.Errors.AddRange(values);
+            return vm;
         }
 
         public ValidationModel<List<T>> List()
         {
-            var res = new ValidationModel<List<T>>();
-            var check = _validator.CanGet(Roles.USER);
-            if (check.Value) res.Value = _repo.All();
-            else res.Errors = check.Errors;
-            return res;
+            return new ValidationModel<List<T>> { Value = _repo.All() };
         }
 
         public virtual ValidationModel<T> Get(int id)
         {
-            var check = _validator.CanGet(Roles.USER);
-            if (check.Value) _validationModel.Value = _repo.FindOne(id);
-            else _validationModel.Errors = check.Errors;
-            return _validationModel;
+            return new ValidationModel<T> { Value = _repo.FindOne(id) };
         }
 
         public virtual ValidationModel<T> Add(T obj)
         {
-            var check = _validator.CanAdd(obj);
-            if (check.Value) _validationModel.Value = _repo.Add(obj);
-            else _validationModel.Errors = check.Errors; 
-            return _validationModel;
+            var vm = GetErrors<T>(_validator.CanAdd(obj));
+            if (!vm.HasErrors) vm.Value = _repo.Add(obj);
+            return vm;
         }
 
         public virtual ValidationModel<T> Remove(T obj)
         {
-            var v = _validator.CanDelete(obj);
-            if (v.Value)
-            {
-                _validationModel.Value = obj;
-                _repo.Remove(obj);
-            }
-            else _validationModel.Errors = v.Errors;
-            return _validationModel;
+            var vm = GetErrors<T>(_validator.CanDelete(obj));
+            if (!vm.HasErrors) _repo.Remove(obj);
+            return vm;
         }
 
         public ValidationModel<T> Patch(int id, JsonPatchDocument<T> jsonPatch)
         {
-            var obj = Get(id);
-            if (obj.Value == null) return _validationModel;
+            var vmObj = Get(id);
+            if (vmObj.HasErrors || vmObj.Value == null) return vmObj;
 
-            jsonPatch.ApplyTo(obj.Value);
-            var v = _validator.CanEdit(obj.Value);
-            if (v.Value)
-            {
-                _repo.Update(obj.Value);
-                _validationModel.Value = obj.Value;
-            }
-            else _validationModel.Errors = v.Errors;
-            return _validationModel;
-        }
-
-        public void SetContextUser(ContextUser cUser)
-        {
-            contextUser = cUser;
+            jsonPatch.ApplyTo(vmObj.Value);
+            var vmRes = GetErrors<T>(_validator.CanEdit(vmObj.Value));
+            if (!vmRes.HasErrors) vmRes.Value = _repo.Update(vmObj.Value);
+            return vmRes;
         }
     }
 }

@@ -8,50 +8,30 @@ namespace VS_SLG6.Services.Validators
 {
     public class TagValidator : GenericValidator<Tag>, IValidator<Tag>
     {
-        public TagValidator(IRepository<Tag> repo, ValidationModel<bool> validationModel) : base(repo, validationModel) { }
+        public TagValidator(IRepository<Tag> repo) : base(repo) { }
 
-        public override ValidationModel<bool> CanAdd(Tag obj)
+        public override List<string> CanAdd(Tag obj)
         {
-            _validationModel = IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
-            
+            var listErrors = IsObjectValid(obj);
+            if (listErrors.Any()) return listErrors;
+
             // Check if already exists
-            if (_repo.All(x => x.Name == obj.Name).Count > 0) _validationModel.Errors.Add("Tag with similar name already exists.");
-            _validationModel.Value = _validationModel.Errors.Count == 0;
+            IsObjectExisting(listErrors, x => x.Name == obj.Name);
 
-            return _validationModel;
+            return listErrors;
         }
 
-        public override ValidationModel<bool> CanEdit(Tag obj)
-        {
-            _validationModel = IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
-            CheckRoleAuthorization(Roles.ADMIN);
-            return _validationModel;
-        }
-
-        public override ValidationModel<bool> CanDelete(Tag obj)
-        {
-            _validationModel = IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
-            CheckRoleAuthorization(Roles.ADMIN);
-            return _validationModel;
-        }
-
-        public override ValidationModel<bool> IsObjectValid(Tag obj)
+        public override List<string> IsObjectValid(Tag obj, ConstraintsObject constraintsObject = null)
         {
             var listProps = new List<string> { nameof(obj.Name) };
-            _constraintsObject = new ConstraintsObject
+            constraintsObject = new ConstraintsObject
             {
-                PropsNonNull = listProps,
-                PropsStringNotBlank = listProps
+                FieldsNotNull = listProps,
+                FieldsStringNotBlank = listProps
             };
             // Basic check on fields (null, blank, size)
-            _validationModel = base.IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
-
-            _validationModel.Value = _validationModel.Errors.Count == 0;
-            return _validationModel;
+            var listErrors = base.IsObjectValid(obj, constraintsObject);
+            return listErrors;
         }
     }
 }

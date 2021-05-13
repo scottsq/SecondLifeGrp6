@@ -143,14 +143,14 @@ namespace Services.Tester
         [TestMethod]
         public void GetRatings_WithP1_ThenNotEmpty()
         {
-            var res = ((ProductRatingService)_service).GetRatings(_p1.Id);
+            var res = ((ProductRatingService)_service).ListRatings(_p1.Id);
             Assert.AreNotEqual(0, res.Count);
         }
 
         [TestMethod]
         public void GetRatings_WithP2_ThenEmpty()
         {
-            var res = ((ProductRatingService)_service).GetRatings(_p2.Id);
+            var res = ((ProductRatingService)_service).ListRatings(_p2.Id);
             Assert.AreEqual(0, res.Count);
         }
     }

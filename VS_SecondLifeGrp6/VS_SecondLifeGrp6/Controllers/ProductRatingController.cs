@@ -50,7 +50,7 @@ namespace VS_SLG6.Controllers
         [HttpGet("product/{id}")]
         public ActionResult<List<ProductRating>> GetProductRatings(int id)
         {
-            return _service.GetRatings(id);
+            return _service.ListRatings(id);
         }
 
         [AllowAnonymous]

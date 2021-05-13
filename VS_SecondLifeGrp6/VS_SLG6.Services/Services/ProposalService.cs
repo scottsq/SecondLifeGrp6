@@ -1,6 +1,8 @@
-﻿using System;
+﻿using LinqKit;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Linq.Expressions;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
@@ -14,60 +16,31 @@ namespace VS_SLG6.Services.Services
         {
         }
 
-        public ValidationModel<List<Proposal>> GetAcceptedProposalByUser(int id)
+        public ValidationModel<Proposal> Update(int id, State state)
         {
-            var list = _repo.All(x => x.State == State.ACCEPTED && (x.Target.Id == id || x.Origin.Id == id)); 
-            return SetValidation(list);
-        }
+            var vmProposal = Get(id);
+            if (vmProposal.HasErrors || vmProposal.Value == null) return vmProposal;
 
-        public ValidationModel<List<Proposal>> ListByUserId(int id)
-        {
-            var list = _repo.All(x => x.Target.Id == id || x.Origin.Id == id); 
-            return SetValidation(list);
-        }
-
-        public ValidationModel<List<Proposal>> ListByUserIdAndActive(int id)
-        {
-            var list = _repo.All(x => (x.Target.Id == id || x.Origin.Id == id) && x.State == State.ACTIVE);
-            return SetValidation(list);
-        }
-
-        private ValidationModel<List<Proposal>> SetValidation(List<Proposal> list)
-        {
-            var res = new ValidationModel<List<Proposal>>();
-            if (list.Count == 0)
+            var vmResult = GetErrors<Proposal>(_validator.CanEdit(vmProposal.Value).Errors);
+            if (!vmResult.HasErrors) 
             {
-                res.Value = list;
-                return res;
+                vmProposal.Value.State = state;
+                _repo.Update(vmProposal.Value);
             }
-            var v = _validator.CanGet(list[0]);
-            if (!v.Value) res.Errors = v.Errors;
-            else res.Value = list;
-            return res;
+            return vmProposal;
         }
 
-        public ValidationModel<Proposal> UpdateProposal(int id, State state)
+        public List<Proposal> Find(int userId = -1, State[] states = null, int from = 0, int max = 10)
         {
-            var p = Get(id);
-            if (p.Errors.Count > 0) {
-                _validationModel.Errors = p.Errors;
-                return _validationModel;
-            }
-            if (p.Value == null)
-            {
-                _validationModel.Errors.Add("Proposal not found");
-                return _validationModel;
-            }
+            return _repo.All(GenerateCondition(userId, states), from, max);
+        }
 
-            var check = _validator.CanEdit(p.Value);
-            if (!check.Value) _validationModel.Errors = check.Errors;
-            else
-            {
-                p.Value.State = state;
-                _repo.Update(p.Value);
-                _validationModel.Value = p.Value;
-            }
-            return _validationModel;
+        public static Expression<Func<Proposal, bool>> GenerateCondition(int userId = -1, State[] states = null)
+        {
+            Expression<Func<Proposal, bool>> condition = x => true;
+            if (userId > -1) condition.And(x => x.Origin.Id == userId);
+            if (states.Any()) condition.And(x => states.Contains(x.State));
+            return condition;
         }
     }
 }

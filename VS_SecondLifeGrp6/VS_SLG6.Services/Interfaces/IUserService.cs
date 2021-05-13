@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using VS_SLG6.Model.Entities;
-using VS_SLG6.Services.Models;
 
 namespace VS_SLG6.Services.Services
 {
     public interface IUserService : IService<User>
     {
-        public ValidationModel<User> FindByMail(string email);
-        public string ResetEmail(string email);
+        public List<User> Find(int id=-1, string email=null, string login=null, string name=null, string orderBy = nameof(User.Name), bool reverse = false, int from = 0, int max = 10);
         public LoginResponse Login(User u);
     }
 }

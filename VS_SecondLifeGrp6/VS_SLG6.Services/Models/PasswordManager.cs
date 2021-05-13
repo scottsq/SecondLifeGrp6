@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using VS_SLG6.Services.Interfaces;
 
 namespace VS_SLG6.Services.Models
 {
-    public class AccessManager : IAccessManager
+    public class PasswordManager
     {
-        public string GetHashString(string inputString)
+        public static string GetHashString(string inputString)
         {
             byte[] salt;
             new RNGCryptoServiceProvider().GetBytes(salt = new byte[16]);
@@ -20,12 +18,7 @@ namespace VS_SLG6.Services.Models
             return Convert.ToBase64String(hashBytes);
         }
 
-        public bool AreHashEqual(string input, string saved)
-        {
-            return input == saved;
-        }
-
-        public string GetStringSha256Hash(string text)
+        public static string GetStringSha256Hash(string text)
         {
             if (String.IsNullOrEmpty(text)) return String.Empty;
 

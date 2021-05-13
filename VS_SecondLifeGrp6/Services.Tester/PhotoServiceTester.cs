@@ -68,13 +68,13 @@ namespace Services.Tester
         [TestMethod]
         public void GetByProduct_WithP1_ThenNotEmpty()
         {
-            Assert.AreNotEqual(0, ((PhotoService)_service).GetByProduct(_p1.Id));
+            Assert.AreNotEqual(0, ((PhotoService)_service).Find(_p1.Id));
         }
 
         [TestMethod]
         public void GetByProduct_WithP2_ThenEmpty()
         {
-            Assert.AreNotEqual(0, ((PhotoService)_service).GetByProduct(_p2.Id));
+            Assert.AreNotEqual(0, ((PhotoService)_service).Find(_p2.Id));
         }
 
         [TestMethod]

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Models;
-using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Services.Validators
 {
@@ -13,68 +11,44 @@ namespace VS_SLG6.Services.Validators
     {
         private IRepository<User> _repoUser;
 
-        public ProductValidator(IRepository<Product> repo, ValidationModel<bool> validationModel, IRepository<User> repoUser) : base(repo, validationModel) 
+        public ProductValidator(IRepository<Product> repo, IRepository<User> repoUser) : base(repo) 
         {
             _repoUser = repoUser;
         }
 
-        public override ValidationModel<bool> CanAdd(Product obj)
+        public override List<string> CanAdd(Product obj)
         {
-            _validationModel = IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
-            CheckUserAuthorization(obj.Owner.Id);
-            if (!_validationModel.Value) return _validationModel;
+            var listErrors = IsObjectValid(obj);
+            if (listErrors.Any()) return listErrors;
 
-            // Check if already exists
-            if (_repo.All(x => x.Name == obj.Name && x.Price == obj.Price && x.Owner.Id == obj.Owner.Id).Count > 0)
-            {
-                _validationModel.Errors.Add("This user already saved a similar product.");
-            }
-            _validationModel.Value = _validationModel.Errors.Count == 0;
-            return _validationModel;
+            IsObjectExisting(listErrors, x => x.Name == obj.Name && x.Price == obj.Price && x.Owner.Id == obj.Owner.Id);
+            return listErrors;
         }
 
-        public override ValidationModel<bool> CanEdit(Product obj)
-        {
-            _validationModel = IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
-            CheckUserAuthorization(obj.Owner.Id);
-            return _validationModel;
-        }
-
-        public override ValidationModel<bool> CanDelete(Product obj)
-        {
-            _validationModel = IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
-            CheckUserAuthorization(obj.Owner.Id);
-            return _validationModel;
-        }
-
-        public override ValidationModel<bool> IsObjectValid(Product obj)
+        public override List<string> IsObjectValid(Product obj, ConstraintsObject constraintsObject = null)
         {
             var listProps = new List<string> { nameof(obj.Description), nameof(obj.Name), nameof(obj.Owner) };
-            _constraintsObject = new ConstraintsObject
+            constraintsObject = new ConstraintsObject
             {
-                PropsNonNull = listProps,
-                PropsStringNotBlank = listProps.Where(x => x != nameof(obj.Owner)).ToList()
+                FieldsNotNull = listProps,
+                FieldsStringNotBlank = listProps.Where(x => x != nameof(obj.Owner)).ToList()
             };
             // Basic check on fields (null, blank, size)
-            _validationModel = base.IsObjectValid(obj);
-            if (!_validationModel.Value) return _validationModel;
+            var listErrors = base.IsObjectValid(obj, constraintsObject);
+            if (listErrors.Any()) return listErrors;
 
             // Check negative price
-            if (obj.Price < 0) _validationModel.Errors.Add("Product price cannot be negative.");
+            if (obj.Price < 0) listErrors.Add("Product price cannot be negative.");
 
             // Check if owner exists
             var u = _repoUser.FindOne(obj.Owner.Id);
-            if (u == null) _validationModel.Errors.Add("Product Owner doesn't exist.");
+            if (u == null) listErrors.Add("Product Owner doesn't exist.");
             else obj.Owner = u;
 
             // Format date
             if (obj.CreationDate == DateTime.MinValue) obj.CreationDate = DateTime.Now;
 
-            _validationModel.Value = _validationModel.Errors.Count == 0;
-            return _validationModel;
+            return listErrors;
         }
     }
 }

@@ -19,17 +19,6 @@ namespace VS_SecondLifeGrp6
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
-        /*{
-            var config = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddCommandLine(args)
-            .Build();
-
-            return WebHost.CreateDefaultBuilder(args)
-                    .UseConfiguration(config)
-                    .UseStartup<Startup>()
-                    .Build();
-        }*/
         =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>

@@ -8,13 +8,10 @@ namespace VS_SLG6.Services.Validators
 {
     public interface IValidator<T> where T : class
     {
-        public ValidationModel<bool> CanGet(T obj);
-        public ValidationModel<bool> CanGet(Roles role);
-        public ValidationModel<bool> CanAdd(T obj);
-        public ValidationModel<bool> CanEdit(T obj);
-        public ValidationModel<bool> CanDelete(T obj);
-        public ValidationModel<bool> IsObjectValid(T obj);
-        public void CheckUserAuthorization(int id);
-        public void CheckRoleAuthorization(Roles role);
+        public List<string> CanGet(T obj);
+        public List<string> CanAdd(T obj);
+        public List<string> CanEdit(T obj);
+        public List<string> CanDelete(T obj);
+        public List<string> IsObjectValid(T obj, ConstraintsObject constraintsObject);
     }
 }

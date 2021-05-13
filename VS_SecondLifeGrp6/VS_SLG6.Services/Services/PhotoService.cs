@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Interfaces;
@@ -13,9 +11,9 @@ namespace VS_SLG6.Services.Services
         public PhotoService(IRepository<Photo> repo, IValidator<Photo> validator): base(repo, validator) 
         {       
         }
-        public List<Photo> GetByProduct(int id)
+        public List<Photo> Find(int productId)
         {
-            return _repo.All(x => x.Product.Id == id);
+            return _repo.All(x => x.Product.Id == productId);
         }
     }
 }
