@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using LinqKit;
+using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Services.Interfaces;
 using VS_SLG6.Services.Validators;
 
 namespace VS_SLG6.Services.Services
@@ -11,9 +15,21 @@ namespace VS_SLG6.Services.Services
         {
         }
 
-        public List<ProductTag> Find(int productId = -1, int from = 0, int max = 10)
+        public List<ProductTag> Find(int id = -1, int productId = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            return _repo.All(x => productId > -1 ? x.Product.Id == productId : true, from, max);
+            return _repo.All(
+                GenerateCondition(id, productId),
+                GenerateOrderByCondition(orderBy),
+                reverse, from, max    
+            );
+        }
+
+        public static Expression<Func<ProductTag, bool>> GenerateCondition(int id = -1, int productId = -1)
+        {
+            Expression<Func<ProductTag, bool>> condition = x => true;
+            if (id > -1) condition.And(x => x.Id == id);
+            if (productId > -1) condition.And(x => x.Product.Id == productId);
+            return condition;
         }
     }
 }

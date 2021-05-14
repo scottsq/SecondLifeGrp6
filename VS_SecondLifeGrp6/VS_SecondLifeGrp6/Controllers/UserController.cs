@@ -3,13 +3,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using VS_SLG6.Api;
 using VS_SLG6.Api.Controllers;
+using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
-using VS_SLG6.Services.Models;
-using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Interfaces;
 
 namespace VS_SLG6.Controllers
 {
@@ -18,33 +15,29 @@ namespace VS_SLG6.Controllers
     public class UserController : ControllerBaseExtended
     {
         private IUserService _service;
+        private IUserControllerAccess _controllerAccess;
 
-        public UserController(IUserService service)
+        public UserController(IUserService service, IUserControllerAccess controllerAccess)
         {
             _service = service;
+            _controllerAccess = controllerAccess;
         }
 
-        [HttpGet]
-        public ActionResult<List<User>> List()
+        [HttpGet("?id={id}&email={email}&name={name}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
+        public ActionResult<List<User>> List(int id = -1, bool detailed = false, string email = null, string name = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            return _service.List().Value;
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<User> GetUser(int id)
-        {
-            var user = _service.Get(id);
-            if (user.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Model.Entities.User)));
-            return user.Value;
+            if (!_controllerAccess.CanGet(GetUserFromContext(HttpContext), id))
+            {
+                    return _service.FindAndReduce(id, email, null, name, orderBy, reverse, from, max);
+            }
+            return _service.Find(id, email, null, name, orderBy, reverse, from, max);
         }
 
         [AllowAnonymous]
         [HttpPost]
         public ActionResult<User> Add(User u)
         {
-            var res = _service.Add(u);
-            if (res.Errors.Count > 0) return BadRequest(res.Errors);
-            return res.Value;
+            return ReturnResult(_service.Add(u));
         }
 
         [AllowAnonymous]
@@ -56,42 +49,23 @@ namespace VS_SLG6.Controllers
             return res;
         }
 
-        [AllowAnonymous]
-        [HttpPost("reset")]
-        public ActionResult<string> Reset(string email)
-        {
-            // Euuuh spa une faille de sécurité IMMENSE ça ?
-            // Faudrait renvoyer un hash et envoyer le mail via l'api en vrai j'pense
-            return _service.ResetEmail(email);
-        }
-
-        [AllowAnonymous]
-        [HttpPost("senduser")]
-        public ActionResult<string> SendUser(string mail)
-        {
-            // Je sais pas si on est censé s'en servir de cette route, j'crois pas en tout cas
-            var res = _service.Find(mail);
-            if (res.Errors.Count > 0) return BadRequest(res.Errors);
-            return res.Value.Login;
-        }
-
         [HttpPatch("{id}")]
         public ActionResult<User> Patch(int id, [FromBody] JsonPatchDocument<User> patchDoc)
         {
+            var user = _service.Get(id).Value;
+            if (user == null) return NoContent();
+            if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), user)) return Unauthorized();
             if (patchDoc == null) return BadRequest(ModelState);
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var user = _service.Patch(id, patchDoc);
-            return ReturnResult(user);
+            return ReturnResult(_service.Patch(user, patchDoc));
         }
 
         [HttpDelete("{id}")]
         public ActionResult<User> Delete(int id)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var user = _service.Get(id);
-            if (user == null) return BadRequest(string.Format(NOT_EXIST, nameof(Model.Entities.User)));
-            var check = _service.Remove(user.Value);
-            return ReturnResult(check);       
+            var user = _service.Get(id).Value;
+            if (user == null) return NoContent();
+            if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), user)) return Unauthorized();
+            return ReturnResult(_service.Remove(user));
         }
     }
 }

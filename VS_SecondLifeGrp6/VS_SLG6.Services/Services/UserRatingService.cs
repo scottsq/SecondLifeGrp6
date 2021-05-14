@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System;
 using LinqKit;
+using VS_SLG6.Services.Interfaces;
 
 namespace VS_SLG6.Services.Services
 {
@@ -22,20 +23,20 @@ namespace VS_SLG6.Services.Services
             return res.Average(x => x.Stars);
         }
 
-        public List<UserRating> Find(int idOrigin = -1, int idTarget = -1, string orderBy = nameof(UserRating.Stars), bool reverse = false, int from = 0, int max = 10)
+        public List<UserRating> Find(int id = -1, int idOrigin = -1, int idTarget = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            var list = _repo.All(GenerateCondition(idOrigin, idTarget), from, max);
-            if (orderBy == nameof(UserRating.Stars))
-            {
-                if (reverse) list = list.OrderBy(x => x.Stars).ToList();
-                else list = list.OrderByDescending(x => x.Stars).ToList();
-            }
+            var list = _repo.All(
+                GenerateCondition(id, idOrigin, idTarget),
+                GenerateOrderByCondition(orderBy),
+                reverse, from, max
+            );
             return list;
         }
 
-        public static Expression<Func<UserRating, bool>> GenerateCondition(int idOrigin = -1, int idTarget = -1)
+        public static Expression<Func<UserRating, bool>> GenerateCondition(int id = -1, int idOrigin = -1, int idTarget = -1)
         {
             Expression<Func<UserRating, bool>> condition = x => true;
+            if (id > -1) condition.And(x => x.Id == id);
             if (idOrigin > -1) condition.And(x => x.Origin.Id == idOrigin);
             if (idTarget > -1) condition.And(x => x.Target.Id == idTarget);
             return condition;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Services.Interfaces;
 using VS_SLG6.Services.Validators;
 
 namespace VS_SLG6.Services.Services
@@ -15,15 +16,21 @@ namespace VS_SLG6.Services.Services
         {
         }
 
-        public List<Message> Find(int idOrigin = -1, int idDest = -1, bool twoWays = false, int from = 0, int max = 10)
+        public List<Message> Find(int id = -1, int idOrigin = -1, int idDest = -1, bool twoWays = false, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            var list = _repo.All(GenerateCondition(idOrigin, idDest, twoWays), from, max);
-            return list.Distinct(new ConversationComparer()).ToList();
+            var list = _repo.All(
+                GenerateCondition(id, idOrigin, idDest, twoWays), 
+                GenerateOrderByCondition(orderBy),
+                reverse, from, max
+            );
+            list = list.Distinct(new ConversationComparer()).ToList();
+            return list;
         }
 
-        public static Expression<Func<Message, bool>> GenerateCondition(int idOrigin = -1, int idDest = -1, bool twoWays = false)
+        public static Expression<Func<Message, bool>> GenerateCondition(int id = -1, int idOrigin = -1, int idDest = -1, bool twoWays = false)
         {
             Expression<Func<Message, bool>> condition = x => true;
+            if (id > -1) condition.And(x => x.Id == id);
             if (idOrigin > -1) condition.And(x => x.Sender.Id == idOrigin || (twoWays ? x.Receipt.Id == idOrigin : false));
             if (idDest > -1) condition.And(x => x.Receipt.Id == idDest || (twoWays ? x.Sender.Id == idDest : false));
             return condition;

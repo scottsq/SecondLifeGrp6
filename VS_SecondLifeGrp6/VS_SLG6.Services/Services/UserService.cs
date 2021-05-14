@@ -3,7 +3,6 @@ using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using System;
 using VS_SLG6.Services.Validators;
-using System.Linq;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
@@ -13,6 +12,7 @@ using VS_SLG6.Services.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 using LinqKit;
+using VS_SLG6.Services.Interfaces;
 
 namespace VS_SLG6.Services.Services
 {
@@ -25,13 +25,24 @@ namespace VS_SLG6.Services.Services
             _appsettings = appsettings.Value;
         }
 
-        public List<User> Find(int id = -1, string email = null, string login = null, string name = null, string orderBy = nameof(User.Name), bool reverse = false, int from = 0, int max = 10)
+        public List<User> Find(int id = -1, string email = null, string login = null, string name = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            var list = _repo.All(GenerateCondition(id, email, login, name), from, max);
-            if (orderBy == nameof(User.Name))
+            var list = _repo.All(
+                GenerateCondition(id, email, login, name),
+                GenerateOrderByCondition(orderBy),
+                reverse, from, max
+            );
+            foreach (var u in list) u.Password = null;
+            return list;
+        }
+
+        public List<User> FindAndReduce(int id = -1, string email = null, string login = null, string name = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        {
+            var list = Find(id, email, login, name, orderBy, reverse, from, max);
+            foreach (var u in list)
             {
-                if (reverse) list = list.OrderByDescending(x => x.Name).ToList();
-                else list = list.OrderBy(x => x.Name).ToList();
+                u.Login = null;
+                u.Password = null;
             }
             return list;
         }

@@ -1,9 +1,13 @@
-﻿using VS_SLG6.Model.Entities;
+﻿using VS_SLG6.Api.Interfaces;
+using VS_SLG6.Model.Entities;
+using VS_SLG6.Repositories.Repositories;
 
 namespace VS_SLG6.Api.ControllerAccess
 {
-    public class ProposalControllerAccess : ControllerAccess<Proposal>
+    public class ProposalControllerAccess : GenericControllerAccess<Proposal>, IProposalControllerAccess
     {
+        public ProposalControllerAccess(IRepository<Proposal> repo) : base(repo) { }
+
         public override bool CanAdd(ContextUser ctxUser, Proposal obj)
         {
             return obj?.Origin != null && HasId(obj.Origin.Id, ctxUser);
@@ -23,6 +27,12 @@ namespace VS_SLG6.Api.ControllerAccess
         {
             return  obj?.Origin != null && obj?.Target != null 
                     && (HasId(obj.Origin.Id, ctxUser) || HasId(obj.Target.Id, ctxUser));
+        }
+
+        public bool CanGet(ContextUser ctxUser, int id, int idOrigin, int idTarget)
+        {
+            if (id < 0) return HasId(idOrigin, ctxUser) || HasId(idTarget, ctxUser);
+            return CanGet(ctxUser, _repo.FindOne(id));
         }
     }
 }

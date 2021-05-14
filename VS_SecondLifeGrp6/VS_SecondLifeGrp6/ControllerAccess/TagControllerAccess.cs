@@ -2,7 +2,7 @@
 
 namespace VS_SLG6.Api.ControllerAccess
 {
-    public class TagControllerAccess : ControllerAccess<Tag>
+    public class TagControllerAccess : GenericControllerAccess<Tag>
     {
         public override bool CanAdd(ContextUser ctxUser, Tag obj)
         {

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Services.Interfaces;
 using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Validators;
 
@@ -48,15 +51,19 @@ namespace VS_SLG6.Services.Services
             return vm;
         }
 
-        public ValidationModel<T> Patch(int id, JsonPatchDocument<T> jsonPatch)
+        public ValidationModel<T> Patch(T obj, JsonPatchDocument<T> jsonPatch)
         {
-            var vmObj = Get(id);
-            if (vmObj.HasErrors || vmObj.Value == null) return vmObj;
-
-            jsonPatch.ApplyTo(vmObj.Value);
-            var vmRes = GetErrors<T>(_validator.CanEdit(vmObj.Value));
-            if (!vmRes.HasErrors) vmRes.Value = _repo.Update(vmObj.Value);
+            jsonPatch.ApplyTo(obj);
+            var vmRes = GetErrors<T>(_validator.CanEdit(obj));
+            if (!vmRes.HasErrors) vmRes.Value = _repo.Update(obj);
             return vmRes;
+        }
+
+        public Func<T, object> GenerateOrderByCondition(string propName)
+        {
+            var prop = typeof(T).GetProperties().Where(x => x.Name == propName).FirstOrDefault();
+            if (prop == null) return null;
+            return x => prop.GetValue(x);
         }
     }
 }

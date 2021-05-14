@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Services.Services;
 
@@ -16,84 +17,47 @@ namespace VS_SLG6.Api.Controllers
     public class MessageController : ControllerBaseExtended
     {
         private IMessageService _service;
+        private IMessageControllerAccess _controllerAccess;
 
-        public MessageController(IMessageService service)
+        public MessageController(IMessageService service, IMessageControllerAccess controllerAccess)
         {
             _service = service;
+            _controllerAccess = controllerAccess;
         }
 
-        #region GET
-        [HttpGet]
-        public ActionResult<List<Message>> List()
+        [HttpGet("?id={id}&idOrigin={idOrigin}&idDest={idDest}&twoWays={twoWays}&orderBy={orderBy}&reverse={revese}&from={from}&max={max}")]
+        public ActionResult<List<Message>> List(int id = -1, int idOrigin = -1, int idDest = -1, bool twoWays = false, string orderBy = nameof(Message.CreationDate), bool reverse = false, int from = 0, int max = 10)
         {
-            var res = _service.List();
-            if (res.Value == null) return Unauthorized(res.Errors);
-            return res.Value;
+            if (!_controllerAccess.CanGet(GetUserFromContext(HttpContext), id, idOrigin, idDest)) return Unauthorized();
+            return _service.Find(id, idOrigin, idDest, twoWays, orderBy, reverse, from, max);
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<Message> GetMessage(int id)
-        {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var message = _service.Get(id);
-            if (message.Errors.Count > 0) return Unauthorized(message.Errors);
-            if (message.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Message)));
-            return message.Value;
-        }
-        
-        [HttpGet("{idOrigin}")]
-        public ActionResult<List<Message>> GetConversations(int idOrigin)
-        {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var res = _service.ListConversations(idOrigin);
-            if (res.Errors.Count > 0) return Unauthorized(res.Errors);
-            return res.Value;
-        }
-
-        [HttpGet("{idOrigin}/{idDest}")]
-        public ActionResult<List<Message>> GetConversation(int idOrigin, int idDest)
-        {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var res = _service.GetConversation(idOrigin, idDest);
-            if (res.Errors.Count > 0) return Unauthorized(res.Errors);
-            return res.Value;
-        }
-        #endregion
-
-        #region POST
         [HttpPost]
         public ActionResult<Message> Add(Message m)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var res = _service.Add(m);
-            return ReturnResult(res);
+            if (!_controllerAccess.CanAdd(GetUserFromContext(HttpContext), m)) return Unauthorized();
+            return ReturnResult(_service.Add(m));
         }
-        #endregion
 
-        #region PATCH
         [HttpPatch("{id}")]
         public ActionResult<Message> Patch(int id, [FromBody] JsonPatchDocument<Message> patchDoc)
         {
+            var message = _service.Get(id).Value;
+            if (message == null) return NoContent();
+
+            if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), message)) return Unauthorized();
             if (patchDoc == null) return BadRequest(ModelState);
 
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var message = _service.Patch(id, patchDoc);
-            return ReturnResult(message);
+            return ReturnResult(_service.Patch(message, patchDoc));
         }
-        #endregion
 
-        #region DELETE
         [HttpDelete("{id}")]
         public ActionResult<Message> Delete(int id)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var message = _service.Get(id);
-            if (message.Errors.Count > 0) return Unauthorized(message.Errors);
-            if (message.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Message)));
-            
-            var check = _service.Remove(message.Value);
-            return ReturnResult(check);
+            var message = _service.Get(id).Value;
+            if (message == null) return NoContent();
+            if (!_controllerAccess.CanDelete(GetUserFromContext(HttpContext), message)) return Unauthorized();
+            return ReturnResult(_service.Remove(message));
         }
-        #endregion
     }
 }

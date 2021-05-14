@@ -1,9 +1,12 @@
 ﻿using VS_SLG6.Model.Entities;
+using VS_SLG6.Repositories.Repositories;
 
 namespace VS_SLG6.Api.ControllerAccess
 {
-    public class PhotoControllerAccess : ControllerAccess<Photo>
+    public class PhotoControllerAccess : GenericControllerAccess<Photo>
     {
+        public PhotoControllerAccess(IRepository<Photo> repo) : base(repo) { }
+
         public override bool CanAdd(ContextUser ctxUser, Photo obj)
         {
             return obj?.Product?.Owner != null && HasId(obj.Product.Owner.Id, ctxUser);

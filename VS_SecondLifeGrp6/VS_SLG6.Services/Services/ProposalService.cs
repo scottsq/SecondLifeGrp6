@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Services.Interfaces;
 using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Validators;
 
@@ -21,7 +22,7 @@ namespace VS_SLG6.Services.Services
             var vmProposal = Get(id);
             if (vmProposal.HasErrors || vmProposal.Value == null) return vmProposal;
 
-            var vmResult = GetErrors<Proposal>(_validator.CanEdit(vmProposal.Value).Errors);
+            var vmResult = GetErrors<Proposal>(_validator.CanEdit(vmProposal.Value));
             if (!vmResult.HasErrors) 
             {
                 vmProposal.Value.State = state;
@@ -30,15 +31,21 @@ namespace VS_SLG6.Services.Services
             return vmProposal;
         }
 
-        public List<Proposal> Find(int userId = -1, State[] states = null, int from = 0, int max = 10)
+        public List<Proposal> Find(int id = -1, int originId = -1, int targetId = -1, State[] states = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            return _repo.All(GenerateCondition(userId, states), from, max);
+            return _repo.All(
+                GenerateCondition(id, originId, targetId, states),
+                GenerateOrderByCondition(orderBy),
+                reverse, from, max
+            );
         }
 
-        public static Expression<Func<Proposal, bool>> GenerateCondition(int userId = -1, State[] states = null)
+        public static Expression<Func<Proposal, bool>> GenerateCondition(int id = -1, int originId = -1, int targetId = -1, State[] states = null)
         {
             Expression<Func<Proposal, bool>> condition = x => true;
-            if (userId > -1) condition.And(x => x.Origin.Id == userId);
+            if (id > -1) condition.And(x => x.Id == id);
+            if (originId > -1) condition.And(x => x.Origin.Id == originId);
+            if (targetId > -1) condition.And(x => x.Target.Id == targetId);
             if (states.Any()) condition.And(x => states.Contains(x.State));
             return condition;
         }

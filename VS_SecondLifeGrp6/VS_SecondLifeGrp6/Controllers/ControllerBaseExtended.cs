@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using VS_SLG6.Api.ControllerAccess;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Services.Models;
-using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Api.Controllers
 {
@@ -30,8 +30,8 @@ namespace VS_SLG6.Api.Controllers
 
         public ActionResult<T> ReturnResult<T>(ValidationModel<T> obj)
         {
-            if (obj.Value == null) return Unauthorized(obj.Errors);
             if (obj.Errors.Count > 0) return BadRequest(obj.Errors);
+            if (obj.Value == null) return NoContent();
             return obj.Value;
         }
     }

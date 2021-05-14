@@ -3,8 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
-using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Interfaces;
 
 namespace VS_SLG6.Api.Controllers
 {
@@ -12,56 +13,46 @@ namespace VS_SLG6.Api.Controllers
     [ApiController, Route("api/[controller]")]
     public class TagController : ControllerBaseExtended
     {
-        private IService<Tag> _service;
+        private ITagService _service;
+        private IControllerAccess<Tag> _controllerAccess;
 
-        public TagController(IService<Tag> service)
+        public TagController(ITagService service, IControllerAccess<Tag> controllerAccess)
         {
             _service = service;
+            _controllerAccess = controllerAccess;
         }
 
         [AllowAnonymous]
-        [HttpGet]
-        public ActionResult<List<Tag>> List()
+        [HttpGet("?id={id}&name={name}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
+        public ActionResult<List<Tag>> List(int id = -1, string name = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            return _service.List().Value;
-        }
-
-        [AllowAnonymous]
-        [HttpGet("{id}")]
-        public ActionResult<Tag> GetTag(int id)
-        {
-            var tag = _service.Get(id);
-            if (tag.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Tag)));
-            return tag.Value;
+            return _service.Find(id, name, orderBy, reverse, from, max);
         }
 
         [HttpPost]
-        public ActionResult<Tag> Add(Tag u)
+        public ActionResult<Tag> Add(Tag tag)
         {
-            var res = _service.Add(u);
-            if (res.Errors.Count > 0) return BadRequest(res.Errors);
-            return res.Value;
+            if (!_controllerAccess.CanAdd(GetUserFromContext(HttpContext), tag)) return Unauthorized();
+            return ReturnResult(_service.Add(tag));
         }
 
         [HttpPatch("{id}")]
         public ActionResult<Tag> Patch(int id, [FromBody] JsonPatchDocument<Tag> patchDoc)
         {
+            var tag = _service.Get(id).Value;
+            if (tag == null) return NoContent();
+            if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), tag)) return Unauthorized();
             if (patchDoc == null) return BadRequest(ModelState);
-
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var tag = _service.Patch(id, patchDoc);
-            return ReturnResult(tag);
+            return ReturnResult(_service.Patch(tag, patchDoc));
         }
 
         [HttpDelete("{id}")]
         public ActionResult<Tag> Delete(int id)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-
-            var tag = _service.Get(id);
-            if (tag.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Tag)));
-            var check = _service.Remove(tag.Value);
-            return ReturnResult(check);
+            var tag = _service.Get(id).Value;
+            if (tag == null) return NoContent();
+            if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), tag)) return Unauthorized();
+            return ReturnResult(_service.Remove(tag));
         }
     }
 }

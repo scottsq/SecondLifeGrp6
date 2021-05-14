@@ -20,6 +20,9 @@ using VS_SLG6.Api;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using System;
+using VS_SLG6.Api.ControllerAccess;
+using VS_SLG6.Api.Interfaces;
 
 namespace VS_SecondLifeGrp6
 {
@@ -41,6 +44,7 @@ namespace VS_SecondLifeGrp6
             {
                 options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
             });
+            InjectControllerAccess(services);
             InjectServices(services);
             InjectValidators(services);
             InjectRepositories(services);
@@ -89,6 +93,22 @@ namespace VS_SecondLifeGrp6
                 .First();
         }
 
+        private void InjectControllerAccess(IServiceCollection services)
+        {
+            services.AddScoped(typeof(IControllerAccess<>), typeof(GenericControllerAccess<>));
+            services.AddScoped<IControllerAccess<Message>, MessageControllerAccess>();
+            services.AddScoped<IControllerAccess<Photo>, PhotoControllerAccess>();
+            services.AddScoped<IControllerAccess<Product>, ProductControllerAccess>();
+            services.AddScoped<IControllerAccess<ProductRating>, ProductRatingControllerAccess>();
+            services.AddScoped<IControllerAccess<ProductTag>, ProductTagControllerAccess>();
+            services.AddScoped<IControllerAccess<Proposal>, ProposalControllerAccess>();
+            services.AddScoped<IControllerAccess<Tag>, TagControllerAccess>();
+            services.AddScoped<IControllerAccess<User>, UserControllerAccess>();
+            services.AddScoped<IControllerAccess<UserRating>, UserRatingControllerAccess>();
+            services.AddScoped<IMessageControllerAccess, MessageControllerAccess>();
+            services.AddScoped<IProposalControllerAccess, ProposalControllerAccess>();
+        }
+
         private void InjectServices(IServiceCollection services)
         {
             services.AddScoped(typeof(ValidationModel<>));
@@ -99,6 +119,7 @@ namespace VS_SecondLifeGrp6
             services.AddScoped<IProductService, ProductService>();
             services.AddScoped<IProductTagService, ProductTagService>();
             services.AddScoped<IProposalService, ProposalService>();
+            services.AddScoped<ITagService, TagService>();
             services.AddScoped<IUserRatingService, UserRatingService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IService<Message>, MessageService>();
@@ -107,6 +128,7 @@ namespace VS_SecondLifeGrp6
             services.AddScoped<IService<ProductRating>, ProductRatingService>();
             services.AddScoped<IService<ProductTag>, ProductTagService>();
             services.AddScoped<IService<Proposal>, ProposalService>();
+            services.AddScoped<IService<Tag>, TagService>();
             services.AddScoped<IService<User>, UserService>();
             services.AddScoped<IService<UserRating>, UserRatingService>();
         }

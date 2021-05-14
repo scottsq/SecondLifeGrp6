@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Services.Services;
 
@@ -13,60 +14,45 @@ namespace VS_SLG6.Api.Controllers
     [ApiController, Route("api/[controller]")]
     public class ProductTagController : ControllerBaseExtended
     {
-        private IService<ProductTag> _service;
+        private IProductTagService _service;
+        private IControllerAccess<ProductTag> _controllerAccess;
 
-        public ProductTagController(IService<ProductTag> service)
+        public ProductTagController(IProductTagService service, IControllerAccess<ProductTag> controller)
         {
             _service = service;
+            _controllerAccess = controller;
         }
 
-        [HttpGet]
-        public ActionResult<List<ProductTag>> List()
+        [HttpGet("?id={id}&productId={productId}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
+        public ActionResult<List<ProductTag>> List(int id = -1, int productId = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            return _service.List().Value;
-        }
-
-        [HttpGet("{id}")]
-        public ActionResult<ProductTag> GetProductTag(int id)
-        {
-            var productTag = _service.Get(id);
-            if (productTag.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(ProductTag)));
-            return productTag.Value;
-        }
-
-        [AllowAnonymous]
-        [HttpGet("product/{id}")]
-        public ActionResult<List<ProductTag>> GetProductTags(int id)
-        {
-            return ((ProductTagService)_service).Find(id);
+            return _service.Find(id, productId, orderBy, reverse, from, max);
         }
 
         [HttpPost]
         public ActionResult<ProductTag> Add(ProductTag productTag)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var res = _service.Add(productTag);
-            return ReturnResult(res);
+            if (!_controllerAccess.CanAdd(GetUserFromContext(HttpContext), productTag)) return Unauthorized();
+            return ReturnResult(_service.Add(productTag));
         }
 
         [HttpPatch("{id}")]
         public ActionResult<ProductTag> Patch(int id, [FromBody] JsonPatchDocument<ProductTag> patchDoc)
         {
+            var productTag = _service.Get(id).Value;
+            if (productTag == null) return NoContent();
+            if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), productTag)) return Unauthorized();
             if (patchDoc == null) return BadRequest(ModelState);
-            var productTag = _service.Patch(id, patchDoc);
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            return ReturnResult(productTag);
+            return ReturnResult(_service.Patch(productTag, patchDoc));
         }
 
         [HttpDelete("{id}")]
         public ActionResult<ProductTag> Delete(int id)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var productTag = _service.Get(id);
-            if (productTag == null) return BadRequest(string.Format(NOT_EXIST, nameof(ProductTag)));
-
-            var check = _service.Remove(productTag.Value);
-            return ReturnResult(check);
+            var productTag = _service.Get(id).Value;
+            if (productTag == null) return NoContent();
+            if (!_controllerAccess.CanDelete(GetUserFromContext(HttpContext), productTag)) return Unauthorized();
+            return ReturnResult(_service.Remove(productTag));
         }
     }
 }

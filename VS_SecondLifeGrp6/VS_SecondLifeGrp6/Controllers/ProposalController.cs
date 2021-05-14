@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Services.Services;
 
@@ -13,111 +14,45 @@ namespace VS_SLG6.Api.Controllers
     public class ProposalController : ControllerBaseExtended
     {
         private IProposalService _service;
+        private IProposalControllerAccess _controllerAccess;
 
-        public ProposalController(IProposalService service)
+        public ProposalController(IProposalService service, IProposalControllerAccess controllerAccess)
         {
             _service = service;
+            _controllerAccess = controllerAccess;
         }
 
-        #region GET
-        [HttpGet]
-        public ActionResult<List<Proposal>> List()
+        [HttpGet("?id={id}&originId={originId}&targetId={targetId}&states={states}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
+        public ActionResult<List<Proposal>> List(int id = -1, int originId = -1, int targetId = -1, State[] states = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            var res = _service.List();
-            if (res.Value == null) return Unauthorized(res.Errors);
-            return res.Value;
+            if (!_controllerAccess.CanGet(GetUserFromContext(HttpContext), id, originId, targetId)) return Unauthorized();
+            return _service.Find(id, originId, targetId, states, orderBy, reverse, from, max);
         }
 
-        [HttpGet("{id}")]
-        public ActionResult<Proposal> GetProposal(int id)
-        {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var proposal = _service.Get(id);
-            if (proposal.Errors.Count > 0) return Unauthorized(proposal.Errors);
-            if (proposal.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(Proposal)));
-            return proposal.Value;
-        }
-
-        [HttpGet("user/{id}")]
-        public ActionResult<List<Proposal>> ListByUserId(int id)
-        {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var res = _service.ListByUserId(id);
-            if (res.Errors.Count > 0) return Unauthorized(res.Errors);
-            return res.Value;
-        }
-
-        [HttpGet("user/{id}/active")]
-        public ActionResult<List<Proposal>> ListByUserIdAndActive(int id)
-        {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var res = _service.ListByUserIdAndActive(id); 
-            if (res.Errors.Count > 0) return Unauthorized(res.Errors);
-            return res.Value;
-        }
-        #endregion
-
-
-        #region POST
         [HttpPost]
         public ActionResult<Proposal> Add(Proposal p)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var res = _service.Add(p);
-            return ReturnResult(res);
+            if (!_controllerAccess.CanAdd(GetUserFromContext(HttpContext), p)) return Unauthorized();
+            return ReturnResult(_service.Add(p));
         }
 
-        [HttpPost("accept")]
-        public ActionResult<Proposal> Accept(int id)
-        {
-            return ChangeState(id, State.ACCEPTED);
-        }
-
-        [HttpPost("refuse")]
-        public ActionResult<Proposal> Refuse(int id)
-        {
-            return ChangeState(id, State.REFUSED);
-        }
-
-        [HttpPost("close")]
-        public ActionResult<Proposal> Close(int id)
-        {
-            return ChangeState(id, State.CLOSED);
-        }
-
-        public ActionResult<Proposal> ChangeState(int id, State state)
-        {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var res = _service.Update(id, state);
-            return ReturnResult(res);
-        }
-        #endregion
-
-
-        #region PATCH
         [HttpPatch("{id}")]
         public ActionResult<Proposal> Patch(int id, [FromBody] JsonPatchDocument<Proposal> patchDoc)
         {
+            var p = _service.Get(id).Value;
+            if (p == null) return NoContent();
+            if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), p)) return Unauthorized();
             if (patchDoc == null) return BadRequest(ModelState);
-
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var proposal = _service.Patch(id, patchDoc);
-            return ReturnResult(proposal);
+            return ReturnResult(_service.Patch(p, patchDoc));
         }
-        #endregion
 
-
-        #region DELETE
         [HttpDelete("{id}")]
         public ActionResult<Proposal> Delete(int id)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var proposal = _service.Get(id);
-            if (proposal.Errors.Count > 0) return Unauthorized(proposal.Errors);
-            if (proposal == null) return BadRequest(string.Format(NOT_EXIST, nameof(Proposal)));
-            var check = _service.Remove(proposal.Value);
-            return ReturnResult(check);
+            var p = _service.Get(id).Value;
+            if (p == null) return NoContent();
+            if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), p)) return Unauthorized();
+            return ReturnResult(_service.Remove(p));
         }
-        #endregion
     }
 }

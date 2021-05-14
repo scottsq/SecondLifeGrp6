@@ -2,7 +2,7 @@
 
 namespace VS_SLG6.Api.ControllerAccess
 {
-    public class UserRatingControllerAccess : ControllerAccess<UserRating>
+    public class UserRatingControllerAccess : GenericControllerAccess<UserRating>
     {
         public override bool CanAdd(ContextUser ctxUser, UserRating obj)
         {

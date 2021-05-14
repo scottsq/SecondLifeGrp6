@@ -1,9 +1,12 @@
 ﻿using VS_SLG6.Model.Entities;
+using VS_SLG6.Repositories.Repositories;
 
 namespace VS_SLG6.Api.ControllerAccess
 {
-    public class ProductTagControllerAccess : ControllerAccess<ProductTag>
+    public class ProductTagControllerAccess : GenericControllerAccess<ProductTag>
     {
+        public ProductTagControllerAccess(IRepository<ProductTag> repo) : base(repo) { }
+
         public override bool CanAdd(ContextUser ctxUser, ProductTag obj)
         {
             return obj?.Product?.Owner != null && HasId(obj.Product.Owner.Id, ctxUser);

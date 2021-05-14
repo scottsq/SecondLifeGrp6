@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using VS_SLG6.Api.Controllers;
+using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
+using VS_SLG6.Services.Interfaces;
 using VS_SLG6.Services.Services;
 
 namespace VS_SLG6.Controllers
@@ -14,85 +16,52 @@ namespace VS_SLG6.Controllers
     public class UserRatingController : ControllerBaseExtended
     {
         private IUserRatingService _service;
+        private IControllerAccess<UserRating> _controllerAccess;
 
-        public UserRatingController(IUserRatingService service)
+        public UserRatingController(IUserRatingService service, IControllerAccess<UserRating> controllerAccess)
         {
             _service = service;
-        }
-
-        #region GET
-        [AllowAnonymous]
-        [HttpGet]
-        public ActionResult<List<UserRating>> List()
-        {
-            return _service.List().Value;
+            _controllerAccess = controllerAccess;
         }
 
         [AllowAnonymous]
-        [HttpGet("{id}")]
-        public ActionResult<UserRating> GetRating(int id)
+        [HttpGet("?id={id}&idOrigin={idOrigin}&idTarget={idTarget}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
+        public ActionResult<List<UserRating>> List(int id = -1, int idOrigin = -1, int idTarget = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            var rating = _service.Get(id);
-            if (rating.Value == null) return BadRequest(string.Format(NOT_EXIST, nameof(UserRating)));
-            return rating.Value;
+            return _service.Find(id, idOrigin, idTarget, orderBy, reverse, from, max);
         }
 
         [AllowAnonymous]
-        [HttpGet("origin/{idOrigin}/target/{idTarget}")]
-        public ActionResult<UserRating> GetUserRating(int idOrigin, int idTarget)
+        [HttpGet("average?idTarget={idTarget}")]
+        public ActionResult<double> GetAverageUserRating(int idTarget)
         {
-            return _service.GetRating(idOrigin, idTarget);
-        }
-       
-        [AllowAnonymous]
-        [HttpGet("target/{id}")]
-        public ActionResult<List<UserRating>> GetRatings(int id)
-        {
-            return _service.ListRatings(id);
+            return _service.GetAverageRating(idTarget);
         }
 
-        [AllowAnonymous]
-        [HttpGet("target/{id}/average")]
-        public ActionResult<double> GetAverageUserRating(int id)
-        {
-            return _service.GetAverageRating(id);
-        }
-        #endregion
-
-
-        #region POST
         [HttpPost]
         public ActionResult<UserRating> Add(UserRating r)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var res = _service.Add(r);
-            return ReturnResult(res);
+            if (!_controllerAccess.CanAdd(GetUserFromContext(HttpContext), r)) return Unauthorized();
+            return ReturnResult(_service.Add(r));
         }
-        #endregion
 
-
-        #region PATCH
         [HttpPatch("{id}")]
         public ActionResult<UserRating> Patch(int id, [FromBody] JsonPatchDocument<UserRating> patchDoc)
         {
+            var userRating = _service.Get(id).Value;
+            if (userRating == null) return NoContent();
+            if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), userRating)) return Unauthorized();
             if (patchDoc == null) return BadRequest(ModelState);
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var user = _service.Patch(id, patchDoc);
-            return ReturnResult(user);
+            return ReturnResult(_service.Patch(userRating, patchDoc));
         }
-        #endregion
 
-        
-        #region DELETE
         [HttpDelete("{id}")]
         public ActionResult<UserRating> Delete(int id)
         {
-            _service.SetContextUser(GetUserFromContext(HttpContext));
-            var rating = _service.Get(id);
-            if (rating == null) return BadRequest(string.Format(NOT_EXIST, nameof(UserRating)));
-            var check = _service.Remove(rating.Value);
-            return ReturnResult(check);
+            var userRating = _service.Get(id).Value;
+            if (userRating == null) return NoContent();
+            if (!_controllerAccess.CanDelete(GetUserFromContext(HttpContext), userRating)) return Unauthorized();
+            return ReturnResult(_service.Remove(userRating));
         }
-        #endregion
     }
 }

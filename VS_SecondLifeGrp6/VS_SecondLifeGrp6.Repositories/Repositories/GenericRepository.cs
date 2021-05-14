@@ -40,10 +40,13 @@ namespace VS_SLG6.Repositories.Repositories
             return _context.Set<T>().Find(values);
         }
 
-        public List<T> All(Expression<Func<T, bool>> condition=null, int from=0, int max=10)
+        public List<T> All(Expression<Func<T, bool>> condition=null, Func<T, object> orderBy=null, bool reverse=false, int from=0, int max=10)
         {
             condition ??= x => true;
-            return _contextWithIncludes.Where(condition).Skip(from).Take(max).ToList();
+            var list = _contextWithIncludes.Where(condition).ToList();
+            if (orderBy != null && reverse) list = list.OrderByDescending(orderBy).ToList();
+            else if (orderBy != null) list = list.OrderBy(orderBy).ToList();
+            return list.Skip(from).Take(max).ToList();
         }
 
         public T Remove(T obj)

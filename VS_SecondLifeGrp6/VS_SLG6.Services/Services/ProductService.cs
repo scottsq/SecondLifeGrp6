@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Services.Interfaces;
 using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Validators;
 
@@ -30,20 +31,19 @@ namespace VS_SLG6.Services.Services
             return base.Remove(obj);
         }
 
-        public List<Product> Find(int userId = -1, string[] keys = null, string orderBy = nameof(Product.CreationDate), bool reverse = true, int from = 0, int max = 10)
+        public List<Product> Find(int id = -1, int userId = -1, string[] keys = null, string orderBy = null, bool reverse = true, int from = 0, int max = 10)
         {
-            var list = _repo.All(GenerateCondition(userId, keys), from, max);
-            if (orderBy == nameof(Product.CreationDate))
-            {
-                if (reverse) list = list.OrderByDescending(x => x.CreationDate).ToList();
-                else list = list.OrderBy(x => x.CreationDate).ToList();
-            }
+            var list = _repo.All(
+                GenerateCondition(id, userId, keys),
+                GenerateOrderByCondition(orderBy),
+                reverse, from, max
+            );
             return list;
         }
 
-        public List<ProductWithPhoto> FindWithPhoto(int userId = -1, string[] keys = null, string orderBy = nameof(Product.CreationDate), bool reverse = true, int from = 0, int max = 10)
+        public List<ProductWithPhoto> FindWithPhoto(int id = -1, int userId = -1, string[] keys = null, string orderBy = nameof(Product.CreationDate), bool reverse = true, int from = 0, int max = 10)
         {
-            var list = Find(userId, keys, orderBy, reverse, from, max);
+            var list = Find(id, userId, keys, orderBy, reverse, from, max);
             var listWithPhotos = new List<ProductWithPhoto>();
             foreach (var product in list)
             {
@@ -55,9 +55,10 @@ namespace VS_SLG6.Services.Services
             return listWithPhotos;
         }
 
-        public static Expression<Func<Product, bool>> GenerateCondition(int userId = -1, string[] keys = null)
+        public static Expression<Func<Product, bool>> GenerateCondition(int id = -1, int userId = -1, string[] keys = null)
         {
             Expression<Func<Product, bool>> condition = x => true;
+            if (id > -1) condition.And(x => x.Id == id);
             if (userId > -1) condition.And(x => x.Owner.Id == userId);
             if (keys.Any()) {
                 condition.And(x => keys.Where(key => x.Name.Contains(key)).Any());

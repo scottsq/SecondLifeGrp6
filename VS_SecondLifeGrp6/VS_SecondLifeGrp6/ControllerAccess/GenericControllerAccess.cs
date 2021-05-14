@@ -2,11 +2,20 @@
 using System;
 using System.Linq;
 using VS_SLG6.Model.Entities;
+using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Api.Interfaces;
 
 namespace VS_SLG6.Api.ControllerAccess
 {
-    public class ControllerAccess<T> : IControllerAccess<T>
+    public class GenericControllerAccess<T> : IControllerAccess<T> where T: class
     {
+        protected IRepository<T> _repo;
+
+        public GenericControllerAccess(IRepository<T> repo)
+        {
+            _repo = repo;
+        }
+
         public virtual bool CanAdd(ContextUser ctxUser, T obj)
         {
             return true;
