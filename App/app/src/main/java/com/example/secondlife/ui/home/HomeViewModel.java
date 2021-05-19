@@ -8,6 +8,7 @@ import com.example.secondlife.model.Product;
 import com.example.secondlife.model.ProductWithPhoto;
 import com.example.secondlife.model.User;
 import com.example.secondlife.network.ProductService;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,7 @@ public class HomeViewModel extends ViewModel {
         return new Callback<List<ProductWithPhoto>>() {
             @Override
             public void onResponse(Call<List<ProductWithPhoto>> call, Response<List<ProductWithPhoto>> response) {
+                Log.w("alalalal", new Gson().toJson(response.body()));
                 productsLiveData.setValue(response.body());
                 isFetchingData = false;
             }
@@ -59,7 +61,7 @@ public class HomeViewModel extends ViewModel {
             @Override
             public void onFailure(Call<List<ProductWithPhoto>> call, Throwable t) {
                 // Log error here since request failed
-                Log.i("test","fail product");
+                Log.i("alalalal","alalalal2");
                 t.printStackTrace();
 
                 // Juste pour test, faudrait mettre un message d'erreur à la place

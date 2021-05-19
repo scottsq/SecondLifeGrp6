@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.secondlife.databinding.FragmentHomeBinding;
 import com.example.secondlife.model.ProductWithPhoto;
+import com.example.secondlife.ui.myProducts.MyProductsRecyclerViewAdapter;
 
 import java.util.List;
 
@@ -30,6 +31,20 @@ public class HomeFragment extends Fragment {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         linearLayoutManager = new LinearLayoutManagerCustom(getContext());
+
+        binding.btnRefresh.setOnClickListener(btnRefreshClick());
+        setLoadingScreenVisible(true);
+        Observer<List<ProductWithPhoto>> products = productWithPhotos -> {
+            try {
+                adapter = new ProductRecyclerViewAdapter(getActivity(), productWithPhotos, getContext());
+                binding.recyclerViewProduct.setLayoutManager(linearLayoutManager);
+                binding.recyclerViewProduct.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                setLoadingScreenVisible(false);
+            } catch (Exception e) {};
+        };
+
+        homeViewModel.getProductsLiveData().observe(getActivity(),products);
 
         View view = binding.getRoot();
         return view;

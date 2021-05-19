@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +33,8 @@ public class AddGame extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         binding = AddGameFragmentBinding.inflate(inflater, container, false);
 
+        mViewModel = new ViewModelProvider(this).get(AddGameViewModel.class);
+
         Observer<Boolean> o = success -> {
             if (success) Navigation.findNavController(binding.getRoot()).navigate(R.id.action_navigation_addGame_to_navigation_myProducts);
         };
@@ -53,7 +56,7 @@ public class AddGame extends Fragment {
     private View.OnFocusChangeListener txtUrlChanged() {
         return (v, hasFocus) -> {
             String url = binding.txtUrl.getText().toString();
-            if (url != null && url != "") Picasso.get().load(url).into(binding.imgGame);
+            if (url != null && !url.equals("")) Picasso.get().load(url).into(binding.imgGame);
             else Picasso.get().load(R.drawable.ic_baseline_image_search_24).into(binding.imgGame);
         };
     }

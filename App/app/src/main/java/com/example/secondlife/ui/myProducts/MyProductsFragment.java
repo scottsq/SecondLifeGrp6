@@ -51,6 +51,8 @@ public class MyProductsFragment extends Fragment {
             } catch (Exception e) {};
         };
 
+        myProductsViewModel.getProductsLiveData().observe(getActivity(),products);
+
         View view = binding.getRoot();
         return view;
     }
