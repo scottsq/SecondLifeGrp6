@@ -31,7 +31,7 @@ namespace VS_SLG6.Services.Validators
         {
             constraintsObject = new ConstraintsObject
             {
-                FieldsNotNull = new List<string> { nameof(obj.User), nameof(obj.Product) }
+                FieldsNotNull = new List<string> { nameof(ProductRating.User), nameof(ProductRating.Product) }
             };
 
             // Basic check on fields (null, blank, size)
@@ -52,7 +52,7 @@ namespace VS_SLG6.Services.Validators
             else obj.Product = p;
 
             // Format Comment (can be optional that's why we don't check it in parent)
-            if (obj.Comment != null && StringIsEmptyOrBlank(obj, "Comment").Value) obj.Comment = null;
+            if (obj.Comment != null && StringHelper.StringIsEmptyOrBlank(obj, "Comment").Value) obj.Comment = null;
             else if (obj.Comment != null) obj.Comment = obj.Comment.Trim();
 
             return listErrors;

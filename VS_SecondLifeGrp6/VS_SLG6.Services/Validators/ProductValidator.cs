@@ -27,7 +27,7 @@ namespace VS_SLG6.Services.Validators
 
         public override List<string> IsObjectValid(Product obj, ConstraintsObject constraintsObject = null)
         {
-            var listProps = new List<string> { nameof(obj.Description), nameof(obj.Name), nameof(obj.Owner) };
+            var listProps = new List<string> { nameof(Product.Description), nameof(Product.Name), nameof(Product.Owner) };
             constraintsObject = new ConstraintsObject
             {
                 FieldsNotNull = listProps,

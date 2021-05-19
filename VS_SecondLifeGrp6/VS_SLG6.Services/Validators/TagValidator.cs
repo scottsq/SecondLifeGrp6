@@ -23,7 +23,7 @@ namespace VS_SLG6.Services.Validators
 
         public override List<string> IsObjectValid(Tag obj, ConstraintsObject constraintsObject = null)
         {
-            var listProps = new List<string> { nameof(obj.Name) };
+            var listProps = new List<string> { nameof(Tag.Name) };
             constraintsObject = new ConstraintsObject
             {
                 FieldsNotNull = listProps,

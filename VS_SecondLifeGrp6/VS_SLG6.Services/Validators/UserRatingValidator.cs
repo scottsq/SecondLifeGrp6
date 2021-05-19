@@ -26,7 +26,7 @@ namespace VS_SLG6.Services.Validators
 
         public override List<string> IsObjectValid(UserRating obj, ConstraintsObject constraintsObject = null)
         {
-            var listProps = new List<string> { nameof(obj.Origin), nameof(obj.Target) };
+            var listProps = new List<string> { nameof(UserRating.Origin), nameof(UserRating.Target) };
             constraintsObject = new ConstraintsObject
             {
                 FieldsNotNull = listProps
@@ -49,7 +49,7 @@ namespace VS_SLG6.Services.Validators
             else obj.Target = t;
 
             // Format Comment (can be optional that's why we don't give it to parent function)
-            if (obj.Comment != null && StringIsEmptyOrBlank(obj, "Comment").Value) obj.Comment = null;
+            if (obj.Comment != null && StringHelper.StringIsEmptyOrBlank(obj, "Comment").Value) obj.Comment = null;
             else if (obj.Comment != null) obj.Comment = obj.Comment.Trim();
 
             return listErrors;

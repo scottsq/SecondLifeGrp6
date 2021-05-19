@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Interfaces;
 using VS_SLG6.Services.Models;
@@ -27,9 +28,9 @@ namespace VS_SLG6.Services.Services
             return vm;
         }
 
-        public ValidationModel<List<T>> List()
+        public virtual List<T> Find(Expression<Func<T, bool>> condition = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            return new ValidationModel<List<T>> { Value = _repo.All() };
+            return _repo.All(condition, GenerateOrderByCondition(orderBy), reverse, from, max);
         }
 
         public virtual ValidationModel<T> Get(int id)

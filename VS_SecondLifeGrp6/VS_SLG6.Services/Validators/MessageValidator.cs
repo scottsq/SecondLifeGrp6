@@ -39,7 +39,7 @@ namespace VS_SLG6.Services.Validators
         public override List<string> IsObjectValid(Message obj, ConstraintsObject constraintsObject = null)
         {
             // Build helper
-            var listProps = new List<string> { nameof(obj.Content), nameof(obj.Receipt), nameof(obj.Sender) };
+            var listProps = new List<string> { nameof(Message.Content), nameof(Message.Receipt), nameof(Message.Sender) };
             constraintsObject = new ConstraintsObject()
             {
                 FieldsNotNull = listProps,

@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +8,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
-using VS_SLG6.Services.Models;
+using VS_SLG6.Services.Interfaces;
 using VS_SLG6.Services.Services;
 using VS_SLG6.Services.Validators;
 
@@ -33,48 +31,37 @@ namespace Services.Tester
         /// List containing objects subject to modifications depending on tests
         /// </summary>
         protected List<T> _workingObjects;
-        protected List<string> nullFields = new List<string>();
-        
+        protected List<T> _errorObjects;
+        protected List<string> _nullFields = new List<string>();
+        protected string _fieldOrderBy;
+
         public GenericServiceTester()
         {
             _repo = new Mock<IRepository<T>>();
             _service = new GenericService<T>(_repo.Object, _validator);
-            _service.SetContextUser(new ContextUser { Id = 0, Role = Roles.ADMIN });
         }
 
-        public void InitBehavior(params T[] objs)
+        public void InitBehavior(Func<object[], T> findOneFunc, params T[] objs)
         {
             _defaultObjects = objs.ToList();
-            // Adding only the first one so we can test adding the second one without doing it in children service testers
-            _workingObjects = new List<T> { objs[0] };
+            // Dereferencing objects, so we don't overide default ones
+            // There's probably better way to do it but should I really implement IClonable just for test?
+            _workingObjects = JsonConvert.DeserializeObject<List<T>>(JsonConvert.SerializeObject(_defaultObjects));
 
-            _repo.Setup(x => x.All(It.IsAny<Expression<Func<T, bool>>>())).Returns(_workingObjects);
+            _repo.Setup(x => x.All(It.IsAny<Expression<Func<T, bool>>>(), It.IsAny<Func<T, object>>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
+                .Returns<Expression<Func<T, bool>>, Func<T, object>, bool, int, int>((condition, orderBy, reverse, from, max) => {
+                    condition ??= x => true;
+                    var list = _workingObjects.Where(condition.Compile()).ToList();
+                    if (orderBy != null && reverse) list = list.OrderByDescending(orderBy).ToList();
+                    else if (orderBy != null) list = list.OrderBy(orderBy).ToList();
+                    return list.Skip(from).Take(max).ToList();
+                });
             _repo.Setup(x => x.Add(It.IsAny<T>())).Returns<T>(x => {
                 _workingObjects.Add(x);
                 return x;
             });
             _repo.Setup(x => x.Remove(It.IsAny<T>())).Callback<T>(x => { _workingObjects.Remove(x); });
-            _repo.Setup(x => x.All(It.IsAny<Expression<Func<T, bool>>>())).Returns<Expression<Func<T, bool>>>(x =>
-            {
-                if (x == null) x = t => true;
-                return _workingObjects.Where(x.Compile()).ToList();
-            });
-        }
-
-        public T Clone(T origin, T destination)
-        {
-            var props = new List<PropertyInfo>(origin.GetType().GetProperties());
-            for (var i=0; i<props.Count; i++)
-            {
-                props[i].SetValue(destination, props[i].GetValue(origin));
-            }
-            return destination;
-        }
-
-        [TestMethod]
-        public void List_ThenList()
-        {
-            Assert.IsTrue(_workingObjects.SequenceEqual(_service.List().Value));
+            _repo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(findOneFunc);
         }
 
         [TestMethod]
@@ -90,55 +77,106 @@ namespace Services.Tester
         }
 
         [TestMethod]
-        public virtual void Add_WithObject0_ThenValidationError()
+        public virtual void Add_WithObject0_ThenHasError()
         {
             var res = _service.Add(_defaultObjects[0]);
-            Assert.AreNotEqual(0, res.Errors.Count);
+            Assert.IsTrue(res.HasErrors);
         }
 
         [TestMethod]
-        public void Add_WithNull_ThenValidationError()
+        public void Add_WithNull_ThenHasError()
         {
             var res = _service.Add(null);
-            Assert.AreNotEqual(0, res.Errors.Count);
+            Assert.IsTrue(res.HasErrors);
         }
 
         [TestMethod]
-        public void Add_WithObject1NullFields_ThenValidationError()
+        public void Add_WithErrorObjects_ThenHasError()
+        {
+            for (var i = 0; i < _errorObjects.Count; i++)
+            {
+                var res = _service.Add(_errorObjects[i]);
+                Assert.IsTrue(res.HasErrors);
+            }
+        }
+
+        [TestMethod]
+        public void Add_WithNullFields_ThenHasErrors()
         {
             var props = new List<PropertyInfo>(_defaultObjects[1].GetType().GetProperties());
             for (var i = 0; i < props.Count; i++)
             {
-                if (nullFields.Contains(props[i].Name))
+                if (_nullFields.Contains(props[i].Name))
                 {
                     var saved = props[i].GetValue(_defaultObjects[1]);
                     props[i].SetValue(_defaultObjects[1], null);
                     var res = _service.Add(_defaultObjects[1]);
-                    Assert.AreNotEqual(0, res.Errors.Count);
+                    Assert.IsTrue(res.HasErrors);
                     props[i].SetValue(_defaultObjects[1], saved);
-                }                
+                }
             }
         }
 
         [TestMethod]
         public void Add_WithObject1_ThenNoError()
         {
+            // Remove object 1 first to simulate no entry as object1
+            _service.Remove(_workingObjects[1]);
             var res = _service.Add(_defaultObjects[1]);
-            Assert.AreEqual(0, res.Errors.Count);
+            Assert.IsFalse(res.HasErrors);
         }
 
         [TestMethod]
-        public void Remove_WithObject0_ThenListIsEmpty()
+        public void Remove_WithObject0_ThenNotContainObject0()
         {
-            _service.Remove(_service.Get(0).Value);
-            Assert.AreEqual(0, _service.List().Value.Count);
+            var obj = _workingObjects[0];
+            _service.Remove(obj);
+            CollectionAssert.DoesNotContain(_workingObjects, obj);
         }
 
         [TestMethod]
-        public void Remove_WithNullObject_ThenListIsNotEmpty()
+        public void Remove_WithNullObject_ThenHasError()
         {
-            _service.Remove(null);
-            Assert.AreNotEqual(0, _service.List().Value.Count);
+            var res = _service.Remove(null);
+            Assert.IsTrue(res.HasErrors);
+        }
+
+        [TestMethod]
+        public void Find_WithoutParameter_ThenAll()
+        {
+            var res = _service.Find();
+            CollectionAssert.AreEquivalent(_workingObjects, res);
+        }
+
+        [TestMethod]
+        public void Find_WithOrderByIdAsc_ThenAllOrderedDes()
+        {
+            var res = _service.Find(null, "Id");
+            var prop = typeof(T).GetProperties().FirstOrDefault(x => x.Name == "Id");
+            Assert.IsNotNull(prop);
+            for (int i = 1; i < res.Count; i++)
+            {
+                Assert.IsTrue((int)prop.GetValue(res[i]) > (int)prop.GetValue(res[i - 1]));
+            }
+        }
+
+        [TestMethod]
+        public void Find_WithOrderByIdDesc_ThenAllOrderedDes()
+        {
+            var res = _service.Find(null, "Id", true);
+            var prop = typeof(T).GetProperties().FirstOrDefault(x => x.Name == "Id");
+            Assert.IsNotNull(prop);
+            for (int i = 1; i < res.Count; i++)
+            {                
+                Assert.IsTrue((int) prop.GetValue(res[i]) < (int) prop.GetValue(res[i-1]));
+            }
+        }
+
+        [TestMethod]
+        public void Find_WithFrom1Max2_Then2ResultsAndNotObject0()
+        {
+            var res = _service.Find(from: 1, max: 2);
+            Assert.IsTrue(res.Count == 2 && !res.Contains(_workingObjects[0]));
         }
     }
 }

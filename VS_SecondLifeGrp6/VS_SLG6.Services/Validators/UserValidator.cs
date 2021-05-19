@@ -20,13 +20,13 @@ namespace VS_SLG6.Services.Validators
             if (listErrors.Any()) return listErrors;
 
             IsObjectExisting(listErrors, x => x.Login == obj.Login);
-            obj.Password = PasswordManager.GetStringSha256Hash(obj.Password);
+            obj.Password = StringHelper.GetStringSha256Hash(obj.Password);
             return listErrors;
         }
 
         public override List<string> IsObjectValid(User obj, ConstraintsObject constraintsObject = null)
         {
-            var listProps = new List<string> { nameof(obj.Login), nameof(obj.Password), nameof(obj.Email), nameof(obj.Name) };
+            var listProps = new List<string> { nameof(User.Login), nameof(User.Password), nameof(User.Email), nameof(User.Name) };
             constraintsObject = new ConstraintsObject
             {
                 FieldsNotNull = listProps,

@@ -61,7 +61,7 @@ namespace VS_SLG6.Services.Services
         {
             var user = _repo.FindOne(x => u.Login == x.Login);
 
-            if (user != null && PasswordManager.GetStringSha256Hash(u.Password) == user.Password)
+            if (user != null && StringHelper.GetStringSha256Hash(u.Password) == user.Password)
             {
                 var loginResponse = new LoginResponse();
                 loginResponse.Id = user.Id;

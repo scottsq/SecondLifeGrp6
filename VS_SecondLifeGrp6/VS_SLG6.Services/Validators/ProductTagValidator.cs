@@ -31,7 +31,7 @@ namespace VS_SLG6.Services.Validators
         {
             constraintsObject = new ConstraintsObject
             {
-                FieldsNotNull = new List<string> { nameof(obj.Product), nameof(obj.Tag) }
+                FieldsNotNull = new List<string> { nameof(ProductTag.Product), nameof(ProductTag.Tag) }
             };
 
             // Basic check on fields (null, blank, size)

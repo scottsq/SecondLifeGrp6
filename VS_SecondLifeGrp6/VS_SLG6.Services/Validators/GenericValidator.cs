@@ -18,7 +18,7 @@ namespace VS_SLG6.Services.Validators
         protected static int StringMaxLength = 64;
         protected static String CharCountError = "{0} {1} exceeds limit of " + StringMaxLength.ToString() + " characters.";
         protected static String CannotPerformActionError = "This user cannot perform this action.";
-        protected static String ExistingError = "{0} with them properties already exists.";
+        protected static String ExistingError = "{0} with identical properties already exists.";
             
         public GenericValidator(IRepository<T> repo)
         {
@@ -67,11 +67,11 @@ namespace VS_SLG6.Services.Validators
             if (errorList.Count > 0) AppendFormattedErrors(listErrors, errorList, FieldNullError);
 
             // 3.1 Empty strings
-            var check = StringIsEmptyOrBlank(obj, constraintsObject.FieldsStringNotBlank.ToArray());
+            var check = StringHelper.StringIsEmptyOrBlank(obj, constraintsObject.FieldsStringNotBlank.ToArray());
             if (check.Errors.Count > 0) AppendFormattedErrors(listErrors, check.Errors, FieldEmptyError);
 
             // 3.2 Too long strings
-            check = StringIsLongerThanMax(obj, StringMaxLength, constraintsObject.FieldsStringNotLongerThanMax.ToArray());
+            check = StringHelper.StringIsLongerThanMax(obj, StringMaxLength, constraintsObject.FieldsStringNotLongerThanMax.ToArray());
             if (check.Errors.Count > 0) AppendFormattedErrors(listErrors, check.Errors, CharCountError);
 
             return listErrors;
@@ -82,38 +82,6 @@ namespace VS_SLG6.Services.Validators
             if (_repo.All(condition).Any()) listErrors.Add(String.Format(ExistingError, typeof(T).Name));
         }
 
-        public ValidationModel<bool> StringIsEmptyOrBlank(T obj, params string[] properties)
-        {
-            var res = new ValidationModel<bool>();
-            res.Value = false;
-            var list = GetPropsValues(obj, properties);
-            for (int i = 0; i < list.Count; i++)
-            {
-                if (list[i] != null && Regex.Replace(list[i], " +", "").Length == 0)
-                {
-                    res.Value = true;
-                    res.Errors.Add(properties[i]);
-                }
-            }
-            return res;
-        }
-
-        public ValidationModel<bool> StringIsLongerThanMax(T obj, int max, params string[] properties)
-        {
-            var res = new ValidationModel<bool>();
-            res.Value = false;
-            var list = GetPropsValues(obj, properties);
-            for (int i = 0; i < list.Count; i++) 
-            {
-                if (list[i] != null && list[i].Length > max)
-                {
-                    res.Value = true;
-                    res.Errors.Add(properties[i]);
-                }
-            }
-            return res;
-        }
-
         public void AppendFormattedErrors(List<string> listErrors, List<string> list, string error)
         {
             for (int i = 0; i < list.Count; i++)
@@ -122,14 +90,6 @@ namespace VS_SLG6.Services.Validators
             }
         }
 
-        public List<string> GetPropsValues(T obj, params string[] properties)
-        {
-            var props = new List<PropertyInfo>(obj.GetType().GetProperties());
-            return props.Aggregate(new List<string>(), (acc, item) =>
-            {
-                if (properties.Contains(item.Name)) acc.Add(item.GetValue(obj, null).ToString());
-                return acc;
-            });
-        }
+        
     }
 }
