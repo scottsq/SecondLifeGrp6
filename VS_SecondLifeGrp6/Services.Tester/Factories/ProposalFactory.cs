@@ -6,23 +6,23 @@ namespace Services.Tester.Factories
 {
     public static class ProposalFactory
     {
-        public static Proposal Origin1Target2Proposal;
-        public static Proposal Origin1Target3Proposal;
-        public static Proposal Origin2Target3Proposal;
+        public static Proposal Origin1Target2Proposal = new Proposal();
+        public static Proposal Origin1Target3Proposal = new Proposal();
+        public static Proposal Origin2Target3Proposal = new Proposal();
 
         // Generating errors --------------------
-        public static Proposal UnknownOriginProposal;
-        public static Proposal UnknownTargetProposal;
-        public static Proposal UnknownProductProposal;
-        public static Proposal UnknownStateProposal;
-        public static Proposal NegativePriceProposal;
+        public static Proposal UnknownOriginProposal = new Proposal();
+        public static Proposal UnknownTargetProposal = new Proposal();
+        public static Proposal UnknownProductProposal = new Proposal();
+        public static Proposal UnknownStateProposal = new Proposal();
+        public static Proposal NegativePriceProposal = new Proposal();
 
         public static void InitFactory()
         {
             ProductFactory.InitFactory();
 
             // Origin, Targe, Period, State, Product, Price 
-            var list = new List<Proposal> { Origin1Target2Proposal, Origin1Target3Proposal, Origin2Target3Proposal, UnknownOriginProposal, UnknownTargetProposal, UnknownProductProposal, UnknownStateProposal, NegativePriceProposal };
+            var list = List();
             for (int i=0; i<list.Count; i++)
             {
                 var p = list[i];
@@ -39,6 +39,20 @@ namespace Services.Tester.Factories
             UnknownProductProposal.Product = ProductFactory.UnknownProduct;
             UnknownStateProposal.State = (State)(-1);
             NegativePriceProposal.Price = -1;
+        }
+
+        public static List<Proposal> List()
+        {
+            return new List<Proposal> { 
+                Origin1Target2Proposal, 
+                Origin1Target3Proposal, 
+                Origin2Target3Proposal, 
+                UnknownOriginProposal, 
+                UnknownTargetProposal, 
+                UnknownProductProposal, 
+                UnknownStateProposal, 
+                NegativePriceProposal 
+            };
         }
     }
 }

@@ -43,10 +43,10 @@ namespace VS_SLG6.Services.Services
         public static Expression<Func<Proposal, bool>> GenerateCondition(int id = -1, int originId = -1, int targetId = -1, State[] states = null)
         {
             Expression<Func<Proposal, bool>> condition = x => true;
-            if (id > -1) condition.And(x => x.Id == id);
-            if (originId > -1) condition.And(x => x.Origin.Id == originId);
-            if (targetId > -1) condition.And(x => x.Target.Id == targetId);
-            if (states.Any()) condition.And(x => states.Contains(x.State));
+            if (id > -1) condition = condition.And(x => x.Id == id);
+            if (originId > -1) condition = condition.And(x => x.Origin.Id == originId);
+            if (targetId > -1) condition = condition.And(x => x.Target.Id == targetId);
+            if (states.Any()) condition = condition.And(x => states.Contains(x.State));
             return condition;
         }
     }

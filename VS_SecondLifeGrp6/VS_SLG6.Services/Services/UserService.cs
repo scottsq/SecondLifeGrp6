@@ -50,10 +50,10 @@ namespace VS_SLG6.Services.Services
         public static Expression<Func<User, bool>> GenerateCondition(int id = -1, string email = null, string login = null, string name = null)
         {
             Expression<Func<User, bool>> condition = x => true;
-            if (id > -1) condition.And(x => x.Id == id);
-            if (email != null) condition.And(x => x.Email == email);
-            if (login != null) condition.And(x => x.Login == login);
-            if (name != null) condition.And(x => x.Name == name);
+            if (id > -1) condition = condition.And(x => x.Id == id);
+            if (email != null) condition = condition.And(x => x.Email == email);
+            if (login != null) condition = condition.And(x => x.Login == login);
+            if (name != null) condition = condition.And(x => x.Name == name);
             return condition;
         }
 

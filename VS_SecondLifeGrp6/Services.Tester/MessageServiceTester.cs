@@ -41,7 +41,7 @@ namespace Services.Tester
             uRepo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x =>
             {
                 var val = Convert.ToInt32(x[0]);
-                var message = _workingObjects.FirstOrDefault(m => m.Sender.Id == val || m.Receipt.Id == val);
+                var message = _defaultObjects.FirstOrDefault(m => m.Sender.Id == val || m.Receipt.Id == val);
                 if (message == null) return null;
                 return message.Sender.Id == val ? message.Sender : message.Receipt;
             });

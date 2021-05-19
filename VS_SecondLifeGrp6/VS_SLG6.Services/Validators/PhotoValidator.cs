@@ -21,7 +21,7 @@ namespace VS_SLG6.Services.Validators
             if (listErrors.Any()) return listErrors;
 
             // check if already exists
-            IsObjectExisting(listErrors, x => x.Product.Id == obj.Product.Id && x.Url == obj.Url);
+            IsObjectExisting(listErrors, x => x.Product.Id == obj.Product.Id);
             return listErrors;
         }
 

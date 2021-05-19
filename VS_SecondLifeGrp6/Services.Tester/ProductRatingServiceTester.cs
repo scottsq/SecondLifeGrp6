@@ -1,157 +1,103 @@
-﻿//using Microsoft.VisualStudio.TestTools.UnitTesting;
-//using Moq;
-//using System;
-//using System.Collections.Generic;
-//using System.Text;
-//using VS_SLG6.Model.Entities;
-//using VS_SLG6.Repositories.Repositories;
-//using VS_SLG6.Services.Models;
-//using VS_SLG6.Services.Services;
-//using VS_SLG6.Services.Validators;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Services.Tester.Factories;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using VS_SLG6.Model.Entities;
+using VS_SLG6.Repositories.Repositories;
+using VS_SLG6.Services.Models;
+using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Validators;
 
-//namespace Services.Tester
-//{
-//    [TestClass]
-//    public class ProductRatingServiceTester : GenericServiceTester<ProductRating>
-//    {
-//        private ProductRating _rating = new ProductRating();
-//        private ProductRating _rating1 = new ProductRating();
-//        private ProductRating _rating2 = new ProductRating();
-//        private Product _p1 = new Product();
-//        private Product _p2 = new Product();
-//        private User _u1 = new User();
-//        private User _u2 = new User();
+namespace Services.Tester
+{
+    [TestClass]
+    public class ProductRatingServiceTester : GenericServiceTester<ProductRating>
+    {
+        public ProductRatingServiceTester()
+        {
+            ProductRatingFactory.InitFactory();
+            InitTests();
+        }
 
-//        public ProductRatingServiceTester()
-//        {
-//            CreateInstances();
-//            InitBehavior(_rating1, _rating2);
-//            InitTests();
-//        }
+        private void InitTests()
+        {
+            Func<object[], ProductRating> findOneFunc = x => _workingObjects.Find(p => p.Id == Convert.ToInt32(x[0]));
+            InitBehavior(findOneFunc, ProductRatingFactory.FiveStarsProduct1User1Rating, ProductRatingFactory.ThreeStarsProduct1User2Rating, ProductRatingFactory.TwoStarsProduct2User1Rating);
 
-//        private void CreateInstances()
-//        {
-//            _p1.Id = 0; _p2.Id = 1;
-//            _u1.Id = 0; _u2.Id = 1;
+            var pRepo = InitProductRepo();
+            var uRepo = InitUserRepo();
 
-//            _rating.Id = 2;
-//            _rating.Product = _p1;
-//            _rating.User = _u1;
-//            _rating.Stars = 5;
-//            _rating.Comment = "Wow trop bien";
+            _validator = new ProductRatingValidator(_repo.Object, pRepo.Object, uRepo.Object);
+            _service = new ProductRatingService(_repo.Object, _validator);
+            _errorObjects = new List<ProductRating> { ProductRatingFactory.NegativeStarsProductRating, ProductRatingFactory.SixStarsProductRating, ProductRatingFactory.UnknownProductProductRating, ProductRatingFactory.UnknownUserProductRating };
+            _nullFields = new List<string> { nameof(ProductRating.Product), nameof(ProductRating.User) };
+            _fieldOrderBy = nameof(ProductRating.Stars);
+        }
 
-//            _rating1.Id = 0;
-//            _rating1.Product = _p1;
-//            _rating1.User = _u1;
-//            _rating1.Stars = 1;
-//            _rating1.Comment = null;
+        private Mock<IRepository<Product>> InitProductRepo()
+        {
+            var pRepo = new Mock<IRepository<Product>>();
+            pRepo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x =>
+            {
+                var val = Convert.ToInt32(x[0]);
+                var productRating = _defaultObjects.FirstOrDefault(p => p.Product.Id == val);
+                if (productRating == null) return null;
+                return productRating.Product;
+            });
+            return pRepo;
+        }
 
-//            _rating2.Id = 1;
-//            _rating2.Product = _p2;
-//            _rating2.User = _u2;
-//            _rating2.Stars = 3;
-//            _rating2.Comment = BLANK_STRING;
-//        }
+        private Mock<IRepository<User>> InitUserRepo()
+        {
+            var uRepo = new Mock<IRepository<User>>();
+            uRepo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x =>
+            {
+                var val = Convert.ToInt32(x[0]);
+                var productRating = _defaultObjects.FirstOrDefault(p => p.User.Id == val);
+                if (productRating == null) return null;
+                return productRating.User;
+            });
+            return uRepo;
+        }
 
-//        private void InitTests()
-//        {
-//            var pRepo = new Mock<IRepository<Product>>();
-//            pRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
-//            {
-//                if (x == _p1.Id) return _p1;
-//                if (x == _p2.Id) return _p2;
-//                return null;
-//            });
-//            var uRepo = new Mock<IRepository<User>>();
-//            uRepo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x =>
-//            {
-//                if (x == _u1.Id) return _u1;
-//                if (x == _u2.Id) return _u2;
-//                return null;
-//            });
+        [TestMethod]
+        public void GetAverageRating_WithProduct3_Then0()
+        {
+            var res = (_service as ProductRatingService).GetAverageRating(ProductFactory.GenericProduct3.Id);
+            Assert.AreEqual(0, res);
+        }
 
-//            _validator = new ProductRatingValidator(_repo.Object, new ValidationModel<bool>(), pRepo.Object, uRepo.Object);
-//            _repo.Setup(x => x.FindOne(It.IsAny<int>())).Returns<int>(x => {
-//                return _workingObjects.Find(m => m.Id == x);
-//            });
+        [TestMethod]
+        public void GetAverageRating_WithProduct1_Then4()
+        {
+            var res = (_service as ProductRatingService).GetAverageRating(ProductFactory.GenericProduct1.Id);
+            Assert.AreEqual(4, res);
+        }
 
-//            _service = new ProductRatingService(_repo.Object, _validator);
-//            nullFields = new List<string> { "Product", "User" };
-//        }
+        [TestMethod]
+        public void Find_WithProduct1_Then2Results()
+        {
+            var id = ProductFactory.GenericProduct1.Id;
+            var res = (_service as ProductRatingService).Find(idProduct: id);
+            Assert.IsTrue(res.Count == 2 && res[0].Product.Id == id && res[1].Product.Id == id);
+        }
 
-//        [TestMethod]
-//        public void Add_WithRating2_ThenCommentIsNull()
-//        {
-//            _service.Add(_rating2);
-//            var p = _service.Get(_rating2.Id).Value;
-//            Assert.AreEqual(null, p.Comment);
-//        }
+        [TestMethod]
+        public void Find_WithUnknownProduct_ThenEmpty()
+        {
+            var res = (_service as ProductRatingService).Find(idProduct: 50);
+            Assert.AreEqual(0, res.Count);
+        }
 
-//        [TestMethod]
-//        public void Add_WithUnknownProduct_ThenError()
-//        {
-//            var p = new Product(); p.Id = -1;
-//            _rating.Product = p;
-//            var res = _service.Add(_rating);
-//            Assert.AreNotEqual(0, res.Errors.Count);
-//        }
-
-//        [TestMethod]
-//        public void Add_WithUnknownUser_ThenError()
-//        {
-//            var u = new User(); u.Id = -1;
-//            _rating.User = u;
-//            var res = _service.Add(_rating);
-//            Assert.AreNotEqual(0, res.Errors.Count);
-//        }
-
-//        [TestMethod]
-//        public void GetAverageRating_WithP1_ThenNot0()
-//        {
-//            var res = ((ProductRatingService)_service).GetAverageRating(_p1.Id);
-//            Assert.AreNotEqual(0, res);
-//        }
-
-//        [TestMethod]
-//        public void GetAverageRating_WithP2_Then0()
-//        {
-//            var res = ((ProductRatingService)_service).GetAverageRating(_p2.Id);
-//            Assert.AreEqual(0, res);
-//        }
-
-//        [TestMethod]
-//        public void GetUserRatings_WithP1AndU1_ThenNotNull()
-//        {
-//            var res = ((ProductRatingService)_service).GetUserRating(_p1.Id, _u1.Id);
-//            Assert.AreNotEqual(null, res);
-//        }
-
-//        [TestMethod]
-//        public void GetUserRatings_WithP2AndU1_ThenNull()
-//        {
-//            var res = ((ProductRatingService)_service).GetUserRating(_p2.Id, _u1.Id);
-//            Assert.AreEqual(null, res);
-//        }
-
-//        [TestMethod]
-//        public void GetUserRatings_WithP1AndU2_ThenNull()
-//        {
-//            var res = ((ProductRatingService)_service).GetUserRating(_p1.Id, _u2.Id);
-//            Assert.AreEqual(null, res);
-//        }
-
-//        [TestMethod]
-//        public void GetRatings_WithP1_ThenNotEmpty()
-//        {
-//            var res = ((ProductRatingService)_service).ListRatings(_p1.Id);
-//            Assert.AreNotEqual(0, res.Count);
-//        }
-
-//        [TestMethod]
-//        public void GetRatings_WithP2_ThenEmpty()
-//        {
-//            var res = ((ProductRatingService)_service).ListRatings(_p2.Id);
-//            Assert.AreEqual(0, res.Count);
-//        }
-//    }
-//}
+        [TestMethod]
+        public void Find_WithUser1_Then2Results()
+        {
+            var id = UserFactory.GenericUser1.Id;
+            var res = (_service as ProductRatingService).Find(idUser: id);
+            Assert.IsTrue(res.Count == 2 && res[0].User.Id == id && res[1].User.Id == id);
+        }
+    }
+}

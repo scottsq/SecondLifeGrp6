@@ -25,8 +25,8 @@ namespace VS_SLG6.Services.Services
         public static Expression<Func<Tag, bool>> GenerateCondition(int id = -1, string name = null)
         {
             Expression<Func<Tag, bool>> condition = x => true;
-            if (id > -1) condition.And(x => x.Id == id);
-            if (name != null) condition.And(x => x.Name == name);
+            if (id > -1) condition = condition.And(x => x.Id == id);
+            if (name != null) condition = condition.And(x => x.Name == name);
             return condition;
         }
     }

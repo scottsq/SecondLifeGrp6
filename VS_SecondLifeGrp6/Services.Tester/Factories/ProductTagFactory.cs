@@ -5,20 +5,20 @@ namespace Services.Tester.Factories
 {
     public static class ProductTagFactory
     {
-        public static ProductTag Product1Tag1ProductTag;
-        public static ProductTag Product1Tag2ProductTag;
-        public static ProductTag Product2Tag1ProductTag;
+        public static ProductTag Product1Tag1ProductTag = new ProductTag();
+        public static ProductTag Product1Tag2ProductTag = new ProductTag();
+        public static ProductTag Product2Tag1ProductTag = new ProductTag();
 
         // Generating errors --------------------
-        public static ProductTag UnknownProductProductTag;
-        public static ProductTag UnknownTagProductTag;
+        public static ProductTag UnknownProductProductTag = new ProductTag();
+        public static ProductTag UnknownTagProductTag = new ProductTag();
 
         public static void InitFactory()
         {
             TagFactory.InitFactory();
             ProductFactory.InitFactory();
 
-            var list = new List<ProductTag> { Product1Tag1ProductTag, Product1Tag2ProductTag, Product2Tag1ProductTag, UnknownProductProductTag, UnknownTagProductTag };
+            var list = List();
             for (int i=0; i<list.Count; i++)
             {
                 var pt = list[i];
@@ -30,6 +30,17 @@ namespace Services.Tester.Factories
             Product2Tag1ProductTag.Product = ProductFactory.GenericProduct2;
             UnknownProductProductTag.Product = ProductFactory.UnknownProduct;
             UnknownTagProductTag.Tag = TagFactory.UnknownTag;
+        }
+
+        public static List<ProductTag> List()
+        {
+            return new List<ProductTag> { 
+                Product1Tag1ProductTag, 
+                Product1Tag2ProductTag, 
+                Product2Tag1ProductTag, 
+                UnknownProductProductTag, 
+                UnknownTagProductTag 
+            };
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Services.Tester
             _validator = new PhotoValidator(_repo.Object, pRepo.Object);
             _service = new PhotoService(_repo.Object, _validator);
             _errorObjects = new List<Photo> { PhotoFactory.BlankUrlPhoto, PhotoFactory.UnknownProductPhoto };
-            _nullFields = new List<string> { "Product", "Url" };
+            _nullFields = new List<string> { nameof(Photo.Product), nameof(Photo.Url) };
             _fieldOrderBy = nameof(Photo.Id);
         }
 
@@ -42,7 +42,7 @@ namespace Services.Tester
             pRepo.Setup(x => x.FindOne(It.IsAny<object[]>())).Returns<object[]>(x =>
             {
                 var val = Convert.ToInt32(x[0]);
-                var photo = _workingObjects.FirstOrDefault(p => p.Product.Id == Convert.ToInt32(x[0]));
+                var photo = _defaultObjects.FirstOrDefault(p => p.Product.Id == val);
                 if (photo == null) return null;
                 return photo.Product;
             });

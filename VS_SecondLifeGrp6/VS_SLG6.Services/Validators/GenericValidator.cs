@@ -27,7 +27,9 @@ namespace VS_SLG6.Services.Validators
 
         public virtual List<string> CanGet(T obj)
         {
-            return new List<string>();
+            var list = new List<string>();
+            if (obj == null) list.Add("Cannot get null " + nameof(T));
+            return list;
         }
 
         public virtual List<string> CanAdd(T obj)
@@ -37,7 +39,9 @@ namespace VS_SLG6.Services.Validators
 
         public virtual List<string> CanDelete(T obj)
         {
-            return new List<string>();
+            var list = new List<string>();
+            if (obj == null) list.Add("Cannot remove null " + nameof(T));
+            return list;
         }
 
         public virtual List<string> CanEdit(T obj)

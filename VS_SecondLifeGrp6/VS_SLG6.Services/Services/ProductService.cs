@@ -58,10 +58,10 @@ namespace VS_SLG6.Services.Services
         public static Expression<Func<Product, bool>> GenerateCondition(int id = -1, int userId = -1, string[] keys = null)
         {
             Expression<Func<Product, bool>> condition = x => true;
-            if (id > -1) condition.And(x => x.Id == id);
-            if (userId > -1) condition.And(x => x.Owner.Id == userId);
+            if (id > -1) condition = condition.And(x => x.Id == id);
+            if (userId > -1) condition = condition.And(x => x.Owner.Id == userId);
             if (keys.Any()) {
-                condition.And(x => keys.Where(key => x.Name.Contains(key)).Any());
+                condition = condition.And(x => keys.Where(key => x.Name.Contains(key)).Any());
             }
             return condition;
         }

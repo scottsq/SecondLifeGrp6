@@ -6,22 +6,22 @@ namespace Services.Tester.Factories
 {
     public static class UserRatingFactory
     {
-        public static UserRating FiveStarsOrigin1Target2UserRating;
-        public static UserRating ThreeStarsOrigin1Target3UserRating;
-        public static UserRating TwoStarsOrigin2Target3UserRating;
+        public static UserRating FiveStarsOrigin1Target2UserRating = new UserRating();
+        public static UserRating ThreeStarsOrigin1Target3UserRating = new UserRating();
+        public static UserRating TwoStarsOrigin2Target3UserRating = new UserRating();
 
         // Generating errors --------------------
-        public static UserRating NegativeStarsUserRating;
-        public static UserRating SixStarsUserRating;
-        public static UserRating UnknownOriginUserRating;
-        public static UserRating UnknownTargetUserRating;
-        public static UserRating Origin1Target1UserRating;
+        public static UserRating NegativeStarsUserRating = new UserRating();
+        public static UserRating SixStarsUserRating = new UserRating();
+        public static UserRating UnknownOriginUserRating = new UserRating();
+        public static UserRating UnknownTargetUserRating = new UserRating();
+        public static UserRating Origin1Target1UserRating = new UserRating();
 
         public static void InitFactory()
         {
             UserFactory.InitFactory();
 
-            var list = new List<UserRating> { FiveStarsOrigin1Target2UserRating, ThreeStarsOrigin1Target3UserRating, TwoStarsOrigin2Target3UserRating, NegativeStarsUserRating, SixStarsUserRating, UnknownOriginUserRating, UnknownTargetUserRating, Origin1Target1UserRating };
+            var list = List();
             for (int i=0; i<list.Count; i++)
             {
                 var ur = list[i];
@@ -38,6 +38,20 @@ namespace Services.Tester.Factories
             SixStarsUserRating.Stars = 6;
             UnknownOriginUserRating.Origin = UnknownTargetUserRating.Target = UserFactory.UnknownUser;
             Origin1Target1UserRating.Target = UserFactory.GenericUser1;
+        }
+
+        public static List<UserRating> List()
+        {
+            return new List<UserRating> { 
+                FiveStarsOrigin1Target2UserRating, 
+                ThreeStarsOrigin1Target3UserRating, 
+                TwoStarsOrigin2Target3UserRating, 
+                NegativeStarsUserRating, 
+                SixStarsUserRating, 
+                UnknownOriginUserRating, 
+                UnknownTargetUserRating, 
+                Origin1Target1UserRating 
+            };
         }
     }
 }

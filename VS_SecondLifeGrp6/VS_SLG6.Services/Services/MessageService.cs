@@ -23,27 +23,6 @@ namespace VS_SLG6.Services.Services
             return list;
         }
 
-        public static Expression<Func<Message, bool>> GenerateCondition2(int id = -1, int idOrigin = -1, int idDest = -1, bool twoWays = false)
-        {
-            Expression<Func<Message, bool>> condition = x => true;
-            if (id > -1)
-            {
-                var compiled = condition.Compile();
-                condition = x => compiled(x) && x.Id == id;
-            }
-            if (idOrigin > -1)
-            {
-                var compiled = condition.Compile();
-                condition = x => compiled(x) && (x.Sender.Id == idOrigin || (twoWays ? x.Receipt.Id == idOrigin : false));
-            }
-            if (idDest > -1)
-            {
-                var compiled = condition.Compile();
-                condition = x => compiled(x) && (x.Receipt.Id == idDest || (twoWays ? x.Sender.Id == idDest : false));
-            }
-            return condition;
-        }
-
         public static Expression<Func<Message, bool>> GenerateCondition(int id = -1, int idOrigin = -1, int idDest = -1, bool twoWays = false)
         {
             Expression<Func<Message, bool>> condition = x => true;

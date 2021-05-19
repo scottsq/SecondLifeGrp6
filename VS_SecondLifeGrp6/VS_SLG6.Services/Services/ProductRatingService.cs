@@ -35,9 +35,9 @@ namespace VS_SLG6.Services.Services
         public static Expression<Func<ProductRating, bool>> GenerateCondition(int id = -1, int idProduct = -1, int idUser = -1)
         {
             Expression<Func<ProductRating, bool>> condition = x => true;
-            if (id > -1) condition.And(x => x.Id == id);
-            if (idProduct > -1) condition.And(x => x.Product.Id == idProduct);
-            if (idUser > -1) condition.And(x => x.User.Id == idUser);
+            if (id > -1) condition = condition.And(x => x.Id == id);
+            if (idProduct > -1) condition = condition.And(x => x.Product.Id == idProduct);
+            if (idUser > -1) condition = condition.And(x => x.User.Id == idUser);
             return condition;
         }
     }
