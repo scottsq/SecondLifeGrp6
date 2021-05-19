@@ -44,7 +44,7 @@ public class AddGameViewModel extends ViewModel {
                 Product product = response.body();
                 Photo photo = new Photo();
                 photo.setUrl(url);
-                photo.setProductId(product.getId());
+                photo.setProduct(product);
                 mPhotoService.createPhoto(mLocalData.getToken(), photo).enqueue(new Callback<Photo>() {
                     @Override
                     public void onResponse(Call<Photo> call, Response<Photo> response) {
