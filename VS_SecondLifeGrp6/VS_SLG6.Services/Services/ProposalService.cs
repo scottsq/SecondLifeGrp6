@@ -1,7 +1,6 @@
 ﻿using LinqKit;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;

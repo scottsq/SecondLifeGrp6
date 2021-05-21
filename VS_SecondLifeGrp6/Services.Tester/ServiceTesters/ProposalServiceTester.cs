@@ -83,5 +83,20 @@ namespace Services.Tester.ServiceTesters
             var res = (_service as ProposalService).Find(originId: 6);
             Assert.IsFalse(res.Any());
         }
+
+        [TestMethod]
+        public void Update_WithActiveProposalAndClosed_ThenClosed()
+        {
+            var proposal = ProposalFactory.Origin1Target2ActiveProposal;
+            var res = (_service as ProposalService).Update(proposal.Id, State.CLOSED);
+            Assert.IsTrue(res.Value.State == State.CLOSED);
+        }
+
+        [TestMethod]
+        public void Update_WithUnknownProposalAndClosed_ThenNull()
+        {
+            var res = (_service as ProposalService).Update(-1, State.CLOSED);
+            Assert.AreEqual(null, res.Value);
+        }
     }
 }

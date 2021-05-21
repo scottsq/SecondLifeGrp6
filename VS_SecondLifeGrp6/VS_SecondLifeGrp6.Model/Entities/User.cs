@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace VS_SLG6.Model.Entities
+﻿namespace VS_SLG6.Model.Entities
 {
     public class User
     {
