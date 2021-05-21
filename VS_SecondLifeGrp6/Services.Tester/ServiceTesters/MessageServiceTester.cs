@@ -7,11 +7,10 @@ using System.Linq;
 using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Interfaces;
-using VS_SLG6.Services.Models;
 using VS_SLG6.Services.Services;
 using VS_SLG6.Services.Validators;
 
-namespace Services.Tester
+namespace Services.Tester.ServiceTesters
 {
     [TestClass]
     public class MessageServiceTester : GenericServiceTester<Message>
@@ -25,12 +24,12 @@ namespace Services.Tester
         private void InitTests()
         {
             Func<object[], Message> findOneFunc = x => _workingObjects.Find(m => m.Id == Convert.ToInt32(x[0]));
-            InitBehavior(findOneFunc, MessageFactory.User1ToUser2Message, MessageFactory.User1ToUser3Message, MessageFactory.User2ToUser3Message);
+            InitBehavior(findOneFunc, MessageFactory.GenericList());
 
             var uRepo = InitUserRepo();
             _validator = new MessageValidator(_repo.Object, uRepo.Object);
             _service = new MessageService(_repo.Object, _validator);
-            _errorObjects = new List<Message> { MessageFactory.UnknownReceiptMessage, MessageFactory.UnknownSenderMessage, MessageFactory.NoContentMessage };
+            _errorObjects = MessageFactory.ErrorList();
             _nullFields = new List<string> { nameof(Message.Content), nameof(Message.Receipt), nameof(Message.Sender) };
             _fieldOrderBy = nameof(Message.CreationDate);
         }
@@ -63,6 +62,20 @@ namespace Services.Tester
                 && res[0].Sender.Id == MessageFactory.User1ToUser2Message.Sender.Id 
                 && res[0].Receipt.Id == MessageFactory.User1ToUser2Message.Receipt.Id
             );
+        }
+
+        [TestMethod]
+        public void Find_WithUnknownDest_ThenAll()
+        {
+            var res = (_service as IMessageService).Find(idDest: UserFactory.UnknownUser.Id);
+            Assert.IsTrue(res.Count == _workingObjects.Count());
+        }
+
+        [TestMethod]
+        public void Find_WithOriginId5_ThenEmpty()
+        {
+            var res = (_service as IMessageService).Find(idOrigin: 5);
+            Assert.IsFalse(res.Any());
         }
     }
 }

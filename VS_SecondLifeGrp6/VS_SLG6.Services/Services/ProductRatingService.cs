@@ -23,21 +23,22 @@ namespace VS_SLG6.Services.Services
             return list.Average(x => x.Stars);
         }
 
-        public List<ProductRating> Find(int id = -1, int idProduct = -1, int idUser = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        public List<ProductRating> Find(int id = -1, int idProduct = -1, int idUser = -1, int stars = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
             return _repo.All(
-                GenerateCondition(id, idProduct, idUser),
+                GenerateCondition(id, idProduct, idUser, stars),
                 GenerateOrderByCondition(orderBy),
                 reverse, from, max
             );
         }
 
-        public static Expression<Func<ProductRating, bool>> GenerateCondition(int id = -1, int idProduct = -1, int idUser = -1)
+        public static Expression<Func<ProductRating, bool>> GenerateCondition(int id = -1, int idProduct = -1, int idUser = -1, int stars = -1)
         {
             Expression<Func<ProductRating, bool>> condition = x => true;
             if (id > -1) condition = condition.And(x => x.Id == id);
             if (idProduct > -1) condition = condition.And(x => x.Product.Id == idProduct);
             if (idUser > -1) condition = condition.And(x => x.User.Id == idUser);
+            if (stars > -1) condition = condition.And(x => x.Stars == stars);
             return condition;
         }
     }

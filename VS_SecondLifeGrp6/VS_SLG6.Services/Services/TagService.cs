@@ -26,7 +26,7 @@ namespace VS_SLG6.Services.Services
         {
             Expression<Func<Tag, bool>> condition = x => true;
             if (id > -1) condition = condition.And(x => x.Id == id);
-            if (name != null) condition = condition.And(x => x.Name == name);
+            if (name != null) condition = condition.And(x => x.Name.Contains(name));
             return condition;
         }
     }

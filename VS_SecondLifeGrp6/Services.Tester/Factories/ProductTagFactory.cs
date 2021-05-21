@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using VS_SLG6.Model.Entities;
 
 namespace Services.Tester.Factories
@@ -18,7 +19,7 @@ namespace Services.Tester.Factories
             TagFactory.InitFactory();
             ProductFactory.InitFactory();
 
-            var list = List();
+            var list = All();
             for (int i=0; i<list.Count; i++)
             {
                 var pt = list[i];
@@ -32,14 +33,25 @@ namespace Services.Tester.Factories
             UnknownTagProductTag.Tag = TagFactory.UnknownTag;
         }
 
-        public static List<ProductTag> List()
+        public static List<ProductTag> All()
         {
-            return new List<ProductTag> { 
-                Product1Tag1ProductTag, 
-                Product1Tag2ProductTag, 
-                Product2Tag1ProductTag, 
-                UnknownProductProductTag, 
-                UnknownTagProductTag 
+            return GenericList().Concat(ErrorList()).ToList();
+        }
+
+        public static List<ProductTag> GenericList()
+        {
+            return new List<ProductTag> {
+                Product1Tag1ProductTag,
+                Product1Tag2ProductTag,
+                Product2Tag1ProductTag
+            };
+        }
+
+        public static List<ProductTag> ErrorList()
+        {
+            return new List<ProductTag> {
+                UnknownProductProductTag,
+                UnknownTagProductTag
             };
         }
     }

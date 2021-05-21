@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
-using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Interfaces;
 
 namespace VS_SLG6.Api.Controllers
 {
@@ -22,11 +22,11 @@ namespace VS_SLG6.Api.Controllers
             _controllerAccess = controllerAccess;
         }
 
-        [HttpGet("?id={id}&originId={originId}&targetId={targetId}&states={states}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
-        public ActionResult<List<Proposal>> List(int id = -1, int originId = -1, int targetId = -1, State[] states = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        [HttpGet()]
+        public ActionResult<List<Proposal>> List(int id = -1, int originId = -1, int targetId = -1, State state = State.ALL, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
             if (!_controllerAccess.CanGet(GetUserFromContext(HttpContext), id, originId, targetId)) return Unauthorized();
-            return _service.Find(id, originId, targetId, states, orderBy, reverse, from, max);
+            return _service.Find(id, originId, targetId, state, orderBy, reverse, from, max);
         }
 
         [HttpPost]

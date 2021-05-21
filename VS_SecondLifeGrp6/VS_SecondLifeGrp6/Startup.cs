@@ -20,7 +20,6 @@ using VS_SLG6.Api;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System;
 using VS_SLG6.Api.ControllerAccess;
 using VS_SLG6.Api.Interfaces;
 
@@ -107,6 +106,7 @@ namespace VS_SecondLifeGrp6
             services.AddScoped<IControllerAccess<UserRating>, UserRatingControllerAccess>();
             services.AddScoped<IMessageControllerAccess, MessageControllerAccess>();
             services.AddScoped<IProposalControllerAccess, ProposalControllerAccess>();
+            services.AddScoped<IUserControllerAccess, UserControllerAccess>();
         }
 
         private void InjectServices(IServiceCollection services)

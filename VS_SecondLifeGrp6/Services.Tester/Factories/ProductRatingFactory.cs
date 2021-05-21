@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using VS_SLG6.Model.Entities;
 
 namespace Services.Tester.Factories
@@ -20,7 +21,7 @@ namespace Services.Tester.Factories
         {
             ProductFactory.InitFactory();
 
-            var list = List();
+            var list = All();
             for (int i=0; i<list.Count; i++)
             {
                 var pr = list[i];
@@ -41,17 +42,29 @@ namespace Services.Tester.Factories
             ThreeStarsProduct1User2Rating.User = UserFactory.GenericUser2;
         }
 
-        public static List<ProductRating> List()
+        public static List<ProductRating> All()
         {
-            return new List<ProductRating> { 
+            return GenericList().Concat(ErrorList()).ToList();
+        }
+
+        public static List<ProductRating> GenericList()
+        {
+            return new List<ProductRating> {
                 FiveStarsProduct1User1Rating,
-                ThreeStarsProduct1User2Rating, 
-                TwoStarsProduct2User1Rating, 
-                UnknownProductProductRating, 
-                NegativeStarsProductRating, 
-                SixStarsProductRating, 
-                UnknownUserProductRating 
+                ThreeStarsProduct1User2Rating,
+                TwoStarsProduct2User1Rating
             };
         }
+
+        public static List<ProductRating> ErrorList()
+        {
+            return new List<ProductRating> {
+                UnknownProductProductRating,
+                NegativeStarsProductRating,
+                SixStarsProductRating,
+                UnknownUserProductRating
+            };
+        }
+
     }
 }

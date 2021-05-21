@@ -15,19 +15,20 @@ namespace VS_SLG6.Services.Services
         {
         }
 
-        public List<ProductTag> Find(int id = -1, int productId = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        public List<ProductTag> Find(int id = -1, int tagId = -1, int productId = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
             return _repo.All(
-                GenerateCondition(id, productId),
+                GenerateCondition(id, tagId, productId),
                 GenerateOrderByCondition(orderBy),
                 reverse, from, max    
             );
         }
 
-        public static Expression<Func<ProductTag, bool>> GenerateCondition(int id = -1, int productId = -1)
+        public static Expression<Func<ProductTag, bool>> GenerateCondition(int id = -1, int tagId = -1, int productId = -1)
         {
             Expression<Func<ProductTag, bool>> condition = x => true;
             if (id > -1) condition = condition.And(x => x.Id == id);
+            if (tagId > -1) condition = condition.And(x => x.Tag.Id == tagId);
             if (productId > -1) condition = condition.And(x => x.Product.Id == productId);
             return condition;
         }

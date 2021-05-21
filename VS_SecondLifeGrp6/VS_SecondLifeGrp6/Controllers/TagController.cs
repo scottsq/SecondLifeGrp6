@@ -23,7 +23,7 @@ namespace VS_SLG6.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("?id={id}&name={name}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
+        [HttpGet()]
         public ActionResult<List<Tag>> List(int id = -1, string name = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
             return _service.Find(id, name, orderBy, reverse, from, max);

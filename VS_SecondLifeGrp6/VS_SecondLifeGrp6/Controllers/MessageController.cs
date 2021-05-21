@@ -2,13 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
-using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Interfaces;
 
 namespace VS_SLG6.Api.Controllers
 {
@@ -25,7 +22,7 @@ namespace VS_SLG6.Api.Controllers
             _controllerAccess = controllerAccess;
         }
 
-        [HttpGet("?id={id}&idOrigin={idOrigin}&idDest={idDest}&twoWays={twoWays}&orderBy={orderBy}&reverse={revese}&from={from}&max={max}")]
+        [HttpGet()]
         public ActionResult<List<Message>> List(int id = -1, int idOrigin = -1, int idDest = -1, bool twoWays = false, string orderBy = nameof(Message.CreationDate), bool reverse = false, int from = 0, int max = 10)
         {
             if (!_controllerAccess.CanGet(GetUserFromContext(HttpContext), id, idOrigin, idDest)) return Unauthorized();

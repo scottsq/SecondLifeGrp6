@@ -1,34 +1,33 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Moq.Language.Flow;
 using Newtonsoft.Json;
+using Services.Tester.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using VS_SLG6.Model.Entities;
 using VS_SLG6.Repositories.Repositories;
 using VS_SLG6.Services.Interfaces;
 using VS_SLG6.Services.Services;
 using VS_SLG6.Services.Validators;
 
-namespace Services.Tester
+namespace Services.Tester.ServiceTesters
 {
     [TestClass]
     public class GenericServiceTester<T> where T : class
     {
-        protected const string BLANK_STRING = "      ";
-
         protected Mock<IRepository<T>> _repo;
         protected IValidator<T> _validator;
         protected IService<T> _service;
 
         /// <summary>
-        /// List containing untouched objects, used to be compared with the working list or reset it
+        /// Base objects, do not modify
         /// </summary>
         protected List<T> _defaultObjects;
         /// <summary>
-        /// List containing objects subject to modifications depending on tests
+        /// Editable shallow copy of _defaultObjects
         /// </summary>
         protected List<T> _workingObjects;
         protected List<T> _errorObjects;
@@ -41,19 +40,24 @@ namespace Services.Tester
             _service = new GenericService<T>(_repo.Object, _validator);
         }
 
-        public void InitBehavior(Func<object[], T> findOneFunc, params T[] objs)
+        public void InitBehavior(Func<object[], T> findOneFunc, List<T> objs)
         {
-            _defaultObjects = objs.ToList();
+            _defaultObjects = objs;
             // Dereferencing objects, so we don't overide default ones
             // There's probably better way to do it but should I really implement IClonable just for test?
             _workingObjects = JsonConvert.DeserializeObject<List<T>>(JsonConvert.SerializeObject(_defaultObjects));
 
-            _repo.Setup(x => x.All(It.IsAny<Expression<Func<T, bool>>>(), It.IsAny<Func<T, object>>(), It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>()))
+            RepoHelper<T>.GenerateSetupAll(_repo)
                 .Returns<Expression<Func<T, bool>>, Func<T, object>, bool, int, int>((condition, orderBy, reverse, from, max) => {
                     condition ??= x => true;
                     var list = _workingObjects.Where(condition.Compile()).ToList();
                     if (orderBy != null && reverse) list = list.OrderByDescending(orderBy).ToList();
                     else if (orderBy != null) list = list.OrderBy(orderBy).ToList();
+
+                    from = Math.Max(from, 0);
+                    if (from >= list.Count) return new List<T>();
+
+                    max = Math.Min(Math.Max(max, 1), list.Count);
                     return list.Skip(from).Take(max).ToList();
                 });
             _repo.Setup(x => x.Add(It.IsAny<T>())).Returns<T>(x => {
@@ -177,6 +181,20 @@ namespace Services.Tester
         {
             var res = _service.Find(from: 1, max: 2);
             Assert.IsTrue(res.Count == 2 && !res.Contains(_workingObjects[0]));
+        }
+
+        [TestMethod]
+        public void Find_WithFromMinus1MaxMinus1_Then1ResultAndFirstObject()
+        {
+            var res = _service.Find(from: -1, max: -1);
+            Assert.IsTrue(res.Count == 1 && res[0] == _workingObjects[0]);
+        }
+
+        [TestMethod]
+        public void Find_WithFrom10_ThenEmpty()
+        {
+            var res = _service.Find(from: 10);
+            Assert.IsTrue(!res.Any());
         }
     }
 }

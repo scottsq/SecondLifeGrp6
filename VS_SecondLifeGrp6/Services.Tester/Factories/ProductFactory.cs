@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using VS_SLG6.Model.Entities;
 
@@ -22,7 +23,7 @@ namespace Services.Tester.Factories
         {
             UserFactory.InitFactory();
 
-            var list = List();
+            var list = All();
             var props = typeof(ProductFactory).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
             for (int i=0; i<list.Count; i++)
             {
@@ -41,18 +42,28 @@ namespace Services.Tester.Factories
             UnknownProduct.Id = -1;
         }
 
-        public static List<Product> List()
+        public static List<Product> GenericList()
         {
             return new List<Product> { 
                 GenericProduct1, 
                 GenericProduct2, 
-                GenericProduct3, 
-                BlankNameProduct, 
-                BlankDescriptionProduct, 
-                NegativePriceProduct, 
-                UnknownOwnerProduct,
-                UnknownProduct
+                GenericProduct3
             };
+        }
+
+        public static List<Product> ErrorList()
+        {
+            return new List<Product> { 
+                BlankDescriptionProduct,
+                BlankNameProduct,
+                NegativePriceProduct, 
+                UnknownOwnerProduct
+            };
+        }
+
+        public static List<Product> All()
+        {
+            return GenericList().Concat(ErrorList()).ToList();
         }
     }
 }

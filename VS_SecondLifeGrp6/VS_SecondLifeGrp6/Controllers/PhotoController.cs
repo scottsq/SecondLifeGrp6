@@ -24,7 +24,7 @@ namespace VS_SLG6.Api.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("?id={id}&productId={productId}&orderBy={orderBy}&reverse={revese}&from={from}&max={max}")]
+        [HttpGet()]
         public ActionResult<List<Photo>> List(int id = -1, int productId = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
             return ((IPhotoService)_service).Find(id, productId, orderBy, reverse, from, max);

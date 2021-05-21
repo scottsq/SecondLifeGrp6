@@ -7,7 +7,8 @@ namespace VS_SLG6.Model.Entities
         ACTIVE,
         ACCEPTED,
         REFUSED,
-        CLOSED
+        CLOSED,
+        ALL
     }
 
     public class Proposal

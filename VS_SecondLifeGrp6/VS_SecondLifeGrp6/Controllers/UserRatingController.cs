@@ -25,14 +25,14 @@ namespace VS_SLG6.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("?id={id}&idOrigin={idOrigin}&idTarget={idTarget}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
-        public ActionResult<List<UserRating>> List(int id = -1, int idOrigin = -1, int idTarget = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        [HttpGet()]
+        public ActionResult<List<UserRating>> List(int id = -1, int idOrigin = -1, int idTarget = -1, int stars = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            return _service.Find(id, idOrigin, idTarget, orderBy, reverse, from, max);
+            return _service.Find(id, idOrigin, idTarget, stars, orderBy, reverse, from, max);
         }
 
         [AllowAnonymous]
-        [HttpGet("average?idTarget={idTarget}")]
+        [HttpGet("average")]
         public ActionResult<double> GetAverageUserRating(int idTarget)
         {
             return _service.GetAverageRating(idTarget);

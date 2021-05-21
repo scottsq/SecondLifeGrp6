@@ -31,22 +31,22 @@ namespace VS_SLG6.Services.Services
             return vmProposal;
         }
 
-        public List<Proposal> Find(int id = -1, int originId = -1, int targetId = -1, State[] states = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        public List<Proposal> Find(int id = -1, int originId = -1, int targetId = -1, State state = State.ALL, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
             return _repo.All(
-                GenerateCondition(id, originId, targetId, states),
+                GenerateCondition(id, originId, targetId, state),
                 GenerateOrderByCondition(orderBy),
                 reverse, from, max
             );
         }
 
-        public static Expression<Func<Proposal, bool>> GenerateCondition(int id = -1, int originId = -1, int targetId = -1, State[] states = null)
+        public static Expression<Func<Proposal, bool>> GenerateCondition(int id = -1, int originId = -1, int targetId = -1, State state = State.ALL)
         {
             Expression<Func<Proposal, bool>> condition = x => true;
             if (id > -1) condition = condition.And(x => x.Id == id);
             if (originId > -1) condition = condition.And(x => x.Origin.Id == originId);
             if (targetId > -1) condition = condition.And(x => x.Target.Id == targetId);
-            if (states.Any()) condition = condition.And(x => states.Contains(x.State));
+            if (state != State.ALL) condition = condition.And(x => x.State == state);
             return condition;
         }
     }

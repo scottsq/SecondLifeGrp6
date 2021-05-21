@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
-using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Interfaces;
 
 namespace VS_SLG6.Api.Controllers
 {
@@ -21,11 +21,16 @@ namespace VS_SLG6.Api.Controllers
             _controllerAccess = controllerAccess;
         }
 
-        [HttpGet("&id={id}&userId={userId}&withPhotos={withPhotos}&keys={keys}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
-        public ActionResult<object> List(int id = -1, int userId = -1, bool withPhotos = false, string[] keys = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        [HttpGet()]
+        public ActionResult<List<Product>> List(int id = -1, int userId = -1, string keys = null, string date = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            if (withPhotos) return _service.FindWithPhoto(id, userId, keys, orderBy, reverse, from, max);
-            return _service.Find(id, userId, keys, orderBy, reverse, from, max);
+            return _service.Find(id, userId, keys, date, orderBy, reverse, from, max);
+        }
+
+        [HttpGet("withphotos")]
+        public ActionResult<List<ProductWithPhoto>> ListWithPhotos(int id = -1, int userId = -1, string keys = null, string date = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        {
+            return _service.FindWithPhoto(id, userId, keys, date, orderBy, reverse, from, max);
         }
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

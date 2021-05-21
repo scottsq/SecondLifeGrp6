@@ -46,6 +46,11 @@ namespace VS_SLG6.Repositories.Repositories
             var list = _contextWithIncludes.Where(condition).ToList();
             if (orderBy != null && reverse) list = list.OrderByDescending(orderBy).ToList();
             else if (orderBy != null) list = list.OrderBy(orderBy).ToList();
+
+            from = Math.Max(from, 0);
+            if (from >= list.Count) return new List<T>();
+
+            max = Math.Min(Math.Max(max, 1), list.Count);
             return list.Skip(from).Take(max).ToList();
         }
 

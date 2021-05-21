@@ -64,6 +64,7 @@ namespace VS_SLG6.Services.Services
         {
             var prop = typeof(T).GetProperties().Where(x => x.Name == propName).FirstOrDefault();
             if (prop == null) return null;
+            if (!prop.PropertyType.IsPrimitive) return null;
             return x => prop.GetValue(x);
         }
     }

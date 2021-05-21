@@ -23,14 +23,14 @@ namespace VS_SLG6.Controllers
             _controllerAccess = controllerAccess;
         }
 
-        [HttpGet("?id={id}&email={email}&name={name}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
-        public ActionResult<List<User>> List(int id = -1, bool detailed = false, string email = null, string name = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        [HttpGet()]
+        public ActionResult<List<User>> List(int id = -1, string login = null, string email = null, string name = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
             if (!_controllerAccess.CanGet(GetUserFromContext(HttpContext), id))
             {
-                    return _service.FindAndReduce(id, email, null, name, orderBy, reverse, from, max);
+                    return _service.FindAndReduce(id, email, login, name, orderBy, reverse, from, max);
             }
-            return _service.Find(id, email, null, name, orderBy, reverse, from, max);
+            return _service.Find(id, email, login, name, orderBy, reverse, from, max);
         }
 
         [AllowAnonymous]

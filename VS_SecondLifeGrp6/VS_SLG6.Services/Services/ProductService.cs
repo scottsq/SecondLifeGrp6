@@ -31,19 +31,21 @@ namespace VS_SLG6.Services.Services
             return base.Remove(obj);
         }
 
-        public List<Product> Find(int id = -1, int userId = -1, string[] keys = null, string orderBy = null, bool reverse = true, int from = 0, int max = 10)
+        public List<Product> Find(int id = -1, int userId = -1, string keys = null, string date = null, string orderBy = null, bool reverse = true, int from = 0, int max = 10)
         {
+            var listKeys = keys?.Split(';');
             var list = _repo.All(
-                GenerateCondition(id, userId, keys),
+                GenerateCondition(id, userId, listKeys, date),
                 GenerateOrderByCondition(orderBy),
                 reverse, from, max
             );
+            foreach (var p in list) { p.Owner.Login = p.Owner.Password = null; }
             return list;
         }
 
-        public List<ProductWithPhoto> FindWithPhoto(int id = -1, int userId = -1, string[] keys = null, string orderBy = nameof(Product.CreationDate), bool reverse = true, int from = 0, int max = 10)
+        public List<ProductWithPhoto> FindWithPhoto(int id = -1, int userId = -1, string keys = null, string date = null, string orderBy = nameof(Product.CreationDate), bool reverse = true, int from = 0, int max = 10)
         {
-            var list = Find(id, userId, keys, orderBy, reverse, from, max);
+            var list = Find(id, userId, keys, date, orderBy, reverse, from, max);
             var listWithPhotos = new List<ProductWithPhoto>();
             foreach (var product in list)
             {
@@ -55,13 +57,20 @@ namespace VS_SLG6.Services.Services
             return listWithPhotos;
         }
 
-        public static Expression<Func<Product, bool>> GenerateCondition(int id = -1, int userId = -1, string[] keys = null)
+        public static Expression<Func<Product, bool>> GenerateCondition(int id = -1, int userId = -1, string[] keys = null, string date = null)
         {
             Expression<Func<Product, bool>> condition = x => true;
             if (id > -1) condition = condition.And(x => x.Id == id);
             if (userId > -1) condition = condition.And(x => x.Owner.Id == userId);
-            if (keys.Any()) {
-                condition = condition.And(x => keys.Where(key => x.Name.Contains(key)).Any());
+            if (keys != null && keys.Any())
+            {
+                foreach (var key in keys) condition = condition.And(x => x.Name.Contains(key));
+            }
+            if (date != null)
+            {
+                var d = DateTime.MinValue;
+                var res = DateTime.TryParse(date, out d);
+                if (res) condition = condition.And(x => x.CreationDate == d);
             }
             return condition;
         }

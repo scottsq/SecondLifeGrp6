@@ -2,11 +2,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
-using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Interfaces;
 
 namespace VS_SLG6.Api.Controllers
 {
@@ -23,10 +22,10 @@ namespace VS_SLG6.Api.Controllers
             _controllerAccess = controller;
         }
 
-        [HttpGet("?id={id}&productId={productId}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
-        public ActionResult<List<ProductTag>> List(int id = -1, int productId = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        [HttpGet()]
+        public ActionResult<List<ProductTag>> List(int id = -1, int tagId = -1, int productId = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            return _service.Find(id, productId, orderBy, reverse, from, max);
+            return _service.Find(id, tagId, productId, orderBy, reverse, from, max);
         }
 
         [HttpPost]

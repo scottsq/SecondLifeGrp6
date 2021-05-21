@@ -43,10 +43,12 @@ namespace VS_SLG6.Services.Validators
             if (o == null) listErrors.Add("Rating Origin doesn't exist.");
             else obj.Origin = o;
 
-            // Check if Product exists
+            // Check if Target exists
             var t = _repoUser.FindOne(obj.Target.Id);
             if (t == null) listErrors.Add("Rating Target doesn't exist.");
             else obj.Target = t;
+
+            if (o!=null && t!=null && o.Id == t.Id) listErrors.Add("Rating Origin and Target cannot be the same.");
 
             // Format Comment (can be optional that's why we don't give it to parent function)
             if (obj.Comment != null && StringHelper.StringIsEmptyOrBlank(obj, "Comment").Value) obj.Comment = null;

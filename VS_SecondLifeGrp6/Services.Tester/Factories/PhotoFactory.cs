@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using VS_SLG6.Model.Entities;
 
@@ -19,7 +20,7 @@ namespace Services.Tester.Factories
         {
             ProductFactory.InitFactory();
 
-            var list = List();
+            var list = All();
             var props = typeof(Photo).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
             for (int i=0; i<list.Count; i++)
             {
@@ -34,15 +35,27 @@ namespace Services.Tester.Factories
             BlankUrlPhoto.Url = String.Empty;
         }
 
-        public static List<Photo> List()
+        public static List<Photo> GenericList()
         {
             return new List<Photo> { 
                 Product1Photo, 
                 Product2Photo, 
-                Product3Photo, 
-                UnknownProductPhoto, 
-                BlankUrlPhoto 
+                Product3Photo
             };
+        }
+
+        public static List<Photo> ErrorList()
+        {
+            return new List<Photo>
+            {
+                UnknownProductPhoto,
+                BlankUrlPhoto
+            };
+        }
+
+        internal static List<Photo> All()
+        {
+            return GenericList().Concat(ErrorList()).ToList();
         }
     }
 }

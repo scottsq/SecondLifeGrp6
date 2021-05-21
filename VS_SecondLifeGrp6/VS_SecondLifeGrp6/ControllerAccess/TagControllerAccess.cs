@@ -1,9 +1,14 @@
 ﻿using VS_SLG6.Model.Entities;
+using VS_SLG6.Repositories.Repositories;
 
 namespace VS_SLG6.Api.ControllerAccess
 {
     public class TagControllerAccess : GenericControllerAccess<Tag>
     {
+        public TagControllerAccess(IRepository<Tag> repo) : base(repo)
+        {
+        }
+
         public override bool CanAdd(ContextUser ctxUser, Tag obj)
         {
             return HasRole(Roles.USER, ctxUser);

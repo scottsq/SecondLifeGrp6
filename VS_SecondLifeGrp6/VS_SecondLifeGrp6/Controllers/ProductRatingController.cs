@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using VS_SLG6.Api.Controllers;
 using VS_SLG6.Api.Interfaces;
 using VS_SLG6.Model.Entities;
-using VS_SLG6.Services.Services;
+using VS_SLG6.Services.Interfaces;
 
 namespace VS_SLG6.Controllers
 {
@@ -24,14 +24,14 @@ namespace VS_SLG6.Controllers
         }
 
         [AllowAnonymous]
-        [HttpGet("?id={id}&idProduct={idProduct}&idUser={idUser}&orderBy={orderBy}&reverse={reverse}&from={from}&max={max}")]
-        public ActionResult<List<ProductRating>> List(int id = -1, int idProduct = -1, int idUser = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
+        [HttpGet()]
+        public ActionResult<List<ProductRating>> List(int id = -1, int idProduct = -1, int idUser = -1, int stars = -1, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            return _service.Find(id, idProduct, idUser, orderBy, reverse, from, max);
+            return _service.Find(id, idProduct, idUser, stars, orderBy, reverse, from, max);
         }
 
         [AllowAnonymous]
-        [HttpGet("average?id={id}")]
+        [HttpGet("average")]
         public ActionResult<double> GetAverageProductRating(int id = -1)
         {
             return _service.GetAverageRating(id);

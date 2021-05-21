@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using VS_SLG6.Model.Entities;
 
@@ -23,7 +24,7 @@ namespace Services.Tester.Factories
 
         public static void InitFactory()
         {
-            var list = new List<User> { GenericUser1, GenericUser2, GenericUser3, BlankNameUser, BlankLoginUser, BlankPasswordUser, TooLongLoginUser, TooLongNameUser, TooLongPasswordUser, InvalidMailUser };
+            var list = All();
             var props = typeof(UserFactory).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
             for (int i=0; i<list.Count; i++)
             {
@@ -37,6 +38,33 @@ namespace Services.Tester.Factories
             TooLongLoginUser.Login = TooLongNameUser.Name = TooLongPasswordUser.Password = new string('a', Int16.MaxValue);
             InvalidMailUser.Email = "Invalid.Mail.Format";
             UnknownUser.Id = -1;
+        }
+
+        public static List<User> All()
+        {
+            return GenericList().Concat(ErrorList()).ToList();
+        }
+
+        public static List<User> GenericList()
+        {
+            return new List<User> {
+                GenericUser1,
+                GenericUser2,
+                GenericUser3
+            };
+        }
+
+        public static List<User> ErrorList()
+        {
+            return new List<User> {
+                BlankNameUser,
+                BlankLoginUser,
+                BlankPasswordUser,
+                TooLongLoginUser,
+                TooLongNameUser,
+                TooLongPasswordUser,
+                InvalidMailUser
+            };
         }
     }
 }

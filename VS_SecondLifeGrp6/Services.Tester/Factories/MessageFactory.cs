@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using VS_SLG6.Model.Entities;
 
 namespace Services.Tester.Factories
@@ -20,7 +21,8 @@ namespace Services.Tester.Factories
         {
             UserFactory.InitFactory();
 
-            var list = List();
+            var list = All();
+            list.Add(MinCreationDateMessage);
             for (int i=0; i<list.Count; i++)
             {
                 var m = list[i];
@@ -37,14 +39,25 @@ namespace Services.Tester.Factories
             UnknownReceiptMessage.Receipt = UnknownSenderMessage.Sender = UserFactory.UnknownUser;
         }
 
-        public static List<Message> List()
+        public static List<Message> All()
+        {
+            return GenericList().Concat(ErrorList()).ToList();
+        }
+
+        public static List<Message> GenericList()
         {
             return new List<Message>
             {
-                MinCreationDateMessage,
                 User1ToUser2Message,
                 User1ToUser3Message,
-                User2ToUser3Message,
+                User2ToUser3Message
+            };
+        }
+        
+        public static List<Message> ErrorList()
+        {
+            return new List<Message>
+            {
                 NoContentMessage,
                 UnknownSenderMessage,
                 UnknownReceiptMessage
