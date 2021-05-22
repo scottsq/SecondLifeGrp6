@@ -1,6 +1,9 @@
 package com.example.secondlife.ui.home;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +36,7 @@ public class HomeFragment extends Fragment {
         linearLayoutManager = new LinearLayoutManagerCustom(getContext());
 
         binding.btnRefresh.setOnClickListener(btnRefreshClick());
-        binding.txtSearch.setOnKeyListener(txtSearchKeyChanged());
+        binding.txtSearch.addTextChangedListener(txtSearchChanged());
 
         setLoadingScreenVisible(true);
         Observer<List<ProductWithPhoto>> products = productWithPhotos -> {
@@ -59,10 +62,23 @@ public class HomeFragment extends Fragment {
         };
     }
 
-    private View.OnKeyListener txtSearchKeyChanged() {
-        return v -> {
-            setLoadingScreenVisible(true);
-            homeViewModel.getApiProducts(binding.txtSearch.getText().toString());
+    private TextWatcher txtSearchChanged() {
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                setLoadingScreenVisible(true);
+                homeViewModel.getApiProducts(binding.txtSearch.getText().toString());
+            }
         };
     }
 

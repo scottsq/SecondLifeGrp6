@@ -16,8 +16,6 @@ import java.util.Random;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -34,7 +32,7 @@ public class HomeViewModel extends ViewModel {
 
     public HomeViewModel() {
         if (productsLiveData == null) productsLiveData = new MutableLiveData<>();
-        if (products != null && products.size() == 0 && !isFetchingData) getApiProducts();
+        if (products != null && products.size() == 0 && !isFetchingData) getApiProducts(null);
     }
 
     public MutableLiveData<List<ProductWithPhoto>> getProductsLiveData() {
@@ -65,9 +63,11 @@ public class HomeViewModel extends ViewModel {
                 // Log error here since request failed
                 Log.i("alalalal","alalalal2");
                 t.printStackTrace();
+                productsLiveData.setValue(new ArrayList<>());
+                isFetchingData = false;
 
                 // Juste pour test, faudrait mettre un message d'erreur à la place
-                Random r = new Random();
+                /*Random r = new Random();
                 for (int i=0; i<15; i++) {
                     User u = new User(); u.setName("Test");
                     ProductWithPhoto pwp = new ProductWithPhoto();
@@ -83,7 +83,7 @@ public class HomeViewModel extends ViewModel {
                     pwp.setProduct(p);
                 }
                 productsLiveData.setValue(products);
-                isFetchingData = false;
+                isFetchingData = false;*/
             }
         };
     }
