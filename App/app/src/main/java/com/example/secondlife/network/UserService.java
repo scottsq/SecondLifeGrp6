@@ -20,11 +20,15 @@ import retrofit2.http.Header;
 import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface UserService {
 
-    @GET("user/{id}")
-    Call<User> getUser(@Header("Authorization") String authorization, @Path("id") int id);
+    @GET("user")
+    Call<User> getUser(@Header("Authorization") String authorization, @Query("id") int id, @Query("login") String login, @Query("email") String email, @Query("name") String name, @Query("orderBy") String orderBy, @Query("reverse") boolean reverse, @Query("from") int from, @Query("max") int max);
+
+//    @GET("user/{id}")
+//    Call<User> getUser(@Header("Authorization") String authorization, @Path("id") int id);
 
     @POST("user")
     Call<User> createUser(@Body User user);

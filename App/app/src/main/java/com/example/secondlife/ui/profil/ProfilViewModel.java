@@ -30,7 +30,7 @@ public class ProfilViewModel extends ViewModel {
     }
 
     private void getApiUser() {
-        mApiService.getUser(mLocalData.getToken(), mLocalData.getUserId()).enqueue(patchUser());
+        mApiService.getUser(mLocalData.getToken(), mLocalData.getUserId(), null,null,null,null,false,0,10).enqueue(patchUser());
     }
 
     private Callback<User> patchUser() {
