@@ -42,11 +42,13 @@ public class HomeViewModel extends ViewModel {
         return productsLiveData;
     }
 
-    public void getApiProducts() {
+    public void getApiProducts(String keys) {
+        if (isFetchingData) return;
         if (products != null) products.clear();
         isFetchingData = true;
         ProductService apiServiceProduct = mRetrofit.create(ProductService.class);
-        apiServiceProduct.findProductsWithPhoto(-1,-1,null,null,"CreationDate",true,0,10).enqueue(getProductListResponse());
+        if (keys.equals("")) keys = null;
+        apiServiceProduct.findProductsWithPhoto(-1,-1,keys,null,"CreationDate",true,0,10).enqueue(getProductListResponse());
     }
 
     private Callback<List<ProductWithPhoto>> getProductListResponse() {

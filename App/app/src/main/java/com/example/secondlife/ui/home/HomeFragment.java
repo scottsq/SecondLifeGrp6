@@ -33,6 +33,8 @@ public class HomeFragment extends Fragment {
         linearLayoutManager = new LinearLayoutManagerCustom(getContext());
 
         binding.btnRefresh.setOnClickListener(btnRefreshClick());
+        binding.txtSearch.setOnKeyListener(txtSearchKeyChanged());
+
         setLoadingScreenVisible(true);
         Observer<List<ProductWithPhoto>> products = productWithPhotos -> {
             try {
@@ -51,12 +53,16 @@ public class HomeFragment extends Fragment {
     }
 
     private View.OnClickListener btnRefreshClick() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setLoadingScreenVisible(true);
-                homeViewModel.getApiProducts();
-            }
+        return v -> {
+            setLoadingScreenVisible(true);
+            homeViewModel.getApiProducts(null);
+        };
+    }
+
+    private View.OnKeyListener txtSearchKeyChanged() {
+        return v -> {
+            setLoadingScreenVisible(true);
+            homeViewModel.getApiProducts(binding.txtSearch.getText().toString());
         };
     }
 
