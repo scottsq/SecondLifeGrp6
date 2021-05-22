@@ -27,11 +27,11 @@ namespace VS_SLG6.Services.Services
 
         public List<User> Find(int id = -1, string email = null, string login = null, string name = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
-            var list = _repo.All(
+            var list = CloneList(_repo.All(
                 GenerateCondition(id, email, login, name),
                 GenerateOrderByCondition(orderBy),
                 reverse, from, max
-            );
+            ));
             foreach (var u in list) u.Password = null;
             return list;
         }
@@ -39,12 +39,24 @@ namespace VS_SLG6.Services.Services
         public List<User> FindAndReduce(int id = -1, string email = null, string login = null, string name = null, string orderBy = null, bool reverse = false, int from = 0, int max = 10)
         {
             var list = Find(id, email, login, name, orderBy, reverse, from, max);
+            foreach (var u in list) u.Login = null;
+            return list;
+        }
+
+        private List<User> CloneList(List<User> list)
+        {
+            var clonedList = new List<User>();
             foreach (var u in list)
             {
-                u.Login = null;
-                u.Password = null;
+                var clone = new User();
+                clone.Email = u.AvatarURL;
+                clone.Email = u.Email;
+                clone.Id = u.Id;
+                clone.Login = u.Login;
+                clone.Password = u.Password;
+                clone.Name = u.Name;
             }
-            return list;
+            return clonedList;
         }
 
         public static Expression<Func<User, bool>> GenerateCondition(int id = -1, string email = null, string login = null, string name = null)
