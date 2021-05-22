@@ -16,7 +16,14 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface ProductService {
-    @GET("product/{id}")
+
+    @GET("product?id={id}&userId={userId}&keys={keys}&date={date}&orderby={orderBy}&reverse={reverse}&from={from}&max={max}")
+    Call<List<Product>> findProducts(@Path("id") int id, @Path("userId") int userId, @Path("keys") String keys, @Path("date") String date, @Path("orderBy") String orderBy, @Path("reverse") boolean reverse, @Path("from") int from, @Path("max") int max);
+
+    @GET("product/withphotos?id={id}&userId={userId}&keys={keys}&date={date}&orderby={orderBy}&reverse={reverse}&from={from}&max={max}")
+    Call<List<ProductWithPhoto>> findProductsWithPhoto(@Path("id") int id, @Path("userId") int userId, @Path("keys") String keys, @Path("date") String date, @Path("orderBy") String orderBy, @Path("reverse") boolean reverse, @Path("from") int from, @Path("max") int max);
+
+    /*@GET("product/{id}")
     Call<Product> getProduct(@Path("id") int id);
 
     @GET("product/user/{id}")
@@ -35,7 +42,7 @@ public interface ProductService {
     Call<List<Product>> search(@Query("keys") String keys);
 
     @GET("product/withphoto")
-    Call<List<ProductWithPhoto>> getAllProductWithPhoto();
+    Call<List<ProductWithPhoto>> getAllProductWithPhoto();*/
 
     @POST("product")
     Call<Product> createProduct(@Header("Authorization") String authorization, @Body Product product);

@@ -39,7 +39,7 @@ public class MyProductsViewModel extends ViewModel {
     private void getApiUserProducts() {
         if (mProducts != null) mProducts.clear();
         isFetchingData = true;
-        mApiService.getUserProductWithPhoto(mLocalData.getUserId()).enqueue(getUserProductWithPhoto());
+        mApiService.findProductsWithPhoto(-1,mLocalData.getUserId(),null,null,"CreationDate",true,0,10).enqueue(getUserProductWithPhoto());
     }
 
 
