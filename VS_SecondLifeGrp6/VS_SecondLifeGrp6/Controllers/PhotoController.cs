@@ -13,10 +13,10 @@ namespace VS_SLG6.Api.Controllers
     [ApiController, Route("api/[controller]")]
     public class PhotoController : ControllerBaseExtended
     {
-        private IService<Photo> _service;
+        private IPhotoService _service;
         private IControllerAccess<Photo> _controllerAccess;
 
-        public PhotoController(IService<Photo> service, IControllerAccess<Photo> controllerAccess)
+        public PhotoController(IPhotoService service, IControllerAccess<Photo> controllerAccess)
         {
             _service = service;
             _controllerAccess = controllerAccess;
@@ -39,7 +39,7 @@ namespace VS_SLG6.Api.Controllers
         [HttpPatch("{id}")]
         public ActionResult<Photo> Patch(int id, [FromBody] JsonPatchDocument<Photo> patchDoc)
         {
-            var photo = _service.Get(id).Value;
+            var photo = _service.Find(id: id)[0];
             if (photo == null) return NoContent();
 
             if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), photo)) return Unauthorized();
@@ -51,7 +51,7 @@ namespace VS_SLG6.Api.Controllers
         [HttpDelete("{id}")]
         public ActionResult<Photo> Delete(int id)
         {
-            var photo = _service.Get(id).Value;
+            var photo = _service.Find(id: id)[0];
             if (photo == null) return NoContent();
             if (!_controllerAccess.CanDelete(GetUserFromContext(HttpContext), photo)) return Unauthorized();
             return ReturnResult(_service.Remove(photo));

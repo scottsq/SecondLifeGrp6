@@ -39,7 +39,7 @@ namespace VS_SLG6.Api.Controllers
         [HttpPatch("{id}")]
         public ActionResult<Message> Patch(int id, [FromBody] JsonPatchDocument<Message> patchDoc)
         {
-            var message = _service.Get(id).Value;
+            var message = _service.Find(id: id)[0];
             if (message == null) return NoContent();
 
             if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), message)) return Unauthorized();
@@ -51,7 +51,7 @@ namespace VS_SLG6.Api.Controllers
         [HttpDelete("{id}")]
         public ActionResult<Message> Delete(int id)
         {
-            var message = _service.Get(id).Value;
+            var message = _service.Find(id: id)[0];
             if (message == null) return NoContent();
             if (!_controllerAccess.CanDelete(GetUserFromContext(HttpContext), message)) return Unauthorized();
             return ReturnResult(_service.Remove(message));

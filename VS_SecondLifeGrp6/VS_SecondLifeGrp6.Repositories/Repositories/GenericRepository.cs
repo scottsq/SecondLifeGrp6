@@ -32,7 +32,7 @@ namespace VS_SLG6.Repositories.Repositories
 
         public bool Exists(T obj)
         {
-            return _context.Set<T>().FirstOrDefault(x => x.Equals(obj)) != null;
+            return _contextWithIncludes.FirstOrDefault(x => x.Equals(obj)) != null;
         }
 
         public virtual T FindOne(params object[] values)

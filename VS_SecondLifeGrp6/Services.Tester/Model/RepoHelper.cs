@@ -18,13 +18,12 @@ namespace Services.Tester.Model
         public static void GenerateSetupFindOne<X>(List<T> list, Mock<IRepository<X>> mockedRepo, string prop) where X : class
         {
             if (prop == null) return;
-            mockedRepo.Setup(x => x.FindOne(It.IsAny<object[]>()))
-                .Returns<object[]>(x =>
+            mockedRepo.Setup(x => x.FindOne(It.IsAny<int>()))
+                .Returns<int>(x =>
                 {
                     var property = typeof(T).GetProperty(prop);
                     var subObjectIdProperty = typeof(X).GetProperty("Id");
-                    var val = Convert.ToInt32(x[0]);
-                    var obj = list.FirstOrDefault(o => Convert.ToInt32(subObjectIdProperty.GetValue(property.GetValue(o))) == val);
+                    var obj = list.FirstOrDefault(o => Convert.ToInt32(subObjectIdProperty.GetValue(property.GetValue(o))) == x);
                     if (obj == null) return null;
                     return (X)property.GetValue(obj);
                 });

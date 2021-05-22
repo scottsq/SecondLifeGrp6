@@ -38,7 +38,7 @@ namespace VS_SLG6.Api.Controllers
         [HttpPatch("{id}")]
         public ActionResult<ProductTag> Patch(int id, [FromBody] JsonPatchDocument<ProductTag> patchDoc)
         {
-            var productTag = _service.Get(id).Value;
+            var productTag = _service.Find(id: id)[0];
             if (productTag == null) return NoContent();
             if (!_controllerAccess.CanEdit(GetUserFromContext(HttpContext), productTag)) return Unauthorized();
             if (patchDoc == null) return BadRequest(ModelState);
@@ -48,7 +48,7 @@ namespace VS_SLG6.Api.Controllers
         [HttpDelete("{id}")]
         public ActionResult<ProductTag> Delete(int id)
         {
-            var productTag = _service.Get(id).Value;
+            var productTag = _service.Find(id: id)[0];
             if (productTag == null) return NoContent();
             if (!_controllerAccess.CanDelete(GetUserFromContext(HttpContext), productTag)) return Unauthorized();
             return ReturnResult(_service.Remove(productTag));
