@@ -17,5 +17,15 @@ namespace VS_SLG6.Api.ControllerAccess
         {
             return CanDelete(ctxUser, obj);
         }
+
+        public override bool CanGet(ContextUser ctxUser, User obj)
+        {
+            return CanDelete(ctxUser, obj);
+        }
+
+        public bool CanGet(ContextUser ctxUser, int id)
+        {
+            return CanGet(ctxUser, _repo.FindOne(id));
+        }
     }
 }
