@@ -45,7 +45,7 @@ public class HomeViewModel extends ViewModel {
         if (products != null) products.clear();
         isFetchingData = true;
         ProductService apiServiceProduct = mRetrofit.create(ProductService.class);
-        if (keys.equals("")) keys = null;
+        if (keys != null && keys.equals("")) keys = null;
         apiServiceProduct.findProductsWithPhoto(-1,-1,keys,null,"CreationDate",true,0,10).enqueue(getProductListResponse());
     }
 
