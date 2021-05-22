@@ -55,6 +55,7 @@ namespace VS_SLG6.Services.Services
                 clone.Login = u.Login;
                 clone.Password = u.Password;
                 clone.Name = u.Name;
+                clonedList.Add(clone);
             }
             return clonedList;
         }
