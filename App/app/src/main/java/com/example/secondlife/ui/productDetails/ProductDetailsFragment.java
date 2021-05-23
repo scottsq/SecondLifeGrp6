@@ -78,7 +78,7 @@ public class ProductDetailsFragment extends Fragment {
             //S'il a voté : dans la fonction getUserRating --> isSuccessful ok et les champs seront caché ( car de base ils sont cachés)
             //S'il n'a pas voté :dans la fonction getUserRating --> isSuccessful pas ok / error 400 bad request  et les champs seront affichés
             Observer<ProductRating> o = productRating -> {
-                if (productRating != null) return;
+                if (productRating != null || binding == null) return;
                 binding.ratingBar.setVisibility(View.VISIBLE);
                 binding.rateButton.setVisibility(View.VISIBLE);
                 binding.textRatingBar.setVisibility(View.VISIBLE);
