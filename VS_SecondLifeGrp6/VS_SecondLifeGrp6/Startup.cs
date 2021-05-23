@@ -48,10 +48,6 @@ namespace VS_SecondLifeGrp6
             InjectValidators(services);
             InjectRepositories(services);
             services.AddDbContextPool<VS_SLG6DbContext>(x => x.UseMySql(Configuration.GetConnectionString("Slg6")));
-            /* "server=localhost;port=3306;database=slg6;uid=slg;password=slg;TreatTinyAsBoolean=false"
-            //"server=host.docker.internal;port=3306;database=slg6;uid=slg;password=slg;TreatTinyAsBoolean=false"
-            ); ;);*/
-
 
             var appsettingsRead = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appsettingsRead);
@@ -167,8 +163,6 @@ namespace VS_SecondLifeGrp6
             {
                 app.UseDeveloperExceptionPage();
             }
-
-            //app.UseHttpsRedirection();
 
             app.UseRouting();
 
