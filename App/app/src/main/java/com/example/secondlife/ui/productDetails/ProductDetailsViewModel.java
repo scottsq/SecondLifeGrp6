@@ -1,5 +1,6 @@
 package com.example.secondlife.ui.productDetails;
 
+import android.util.Log;
 import android.view.View;
 
 import com.example.secondlife.LocalData;
@@ -8,6 +9,9 @@ import com.example.secondlife.network.ProductRatingService;
 
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,11 +44,13 @@ public class ProductDetailsViewModel extends ViewModel {
         return new Callback<Float>() {
             @Override
             public void onResponse(Call<Float> call, Response<Float> response) {
+                Log.v("monstre4","monstre4");
                 mAverageLiveData.setValue(response.body());
             }
 
             @Override
             public void onFailure(Call<Float> call, Throwable t) {
+                Log.v("monstre3","monstre3");
 
             }
         };
@@ -58,27 +64,30 @@ public class ProductDetailsViewModel extends ViewModel {
         mApiService.createProductRating(LocalData.GetInstance().getToken(), rating).enqueue(new Callback<ProductRating>() {
             @Override
             public void onResponse(Call<ProductRating> call, Response<ProductRating> response) {
+                Log.v("monstre2","olivier2");
                 getProductAverage(rating.getProduct().getId()); // refresh rating
             }
 
             @Override
             public void onFailure(Call<ProductRating> call, Throwable t) {
+                Log.v("monstre","olivier");
                 // do nothing
             }
         });
     }
 
-    private Callback<ProductRating> getUserRatingApi(){
-        return new Callback<ProductRating>() {
+    private Callback<List<ProductRating>> getUserRatingApi(){
+        return new Callback<List<ProductRating>>() {
             @Override
-            public void onResponse(Call<ProductRating> call, Response<ProductRating> response) {
-                if (!response.isSuccessful()){
+            public void onResponse(Call<List<ProductRating>> call, Response<List<ProductRating>> response) {
+                if (!response.isSuccessful() || response.body().size() == 0){
                     mUserRating.setValue(null);
-                } else mUserRating.setValue(response.body());
+                }
+                else mUserRating.setValue(response.body().get(0));
             }
 
             @Override
-            public void onFailure(Call<ProductRating> call, Throwable t) {
+            public void onFailure(Call<List<ProductRating>> call, Throwable t) {
                 // Do nothing
             }
         };

@@ -73,6 +73,7 @@ public class ProductDetailsFragment extends Fragment {
         initProductInfo();
 
         if (localData.getUserId() > -1) {
+            mViewModel.getUserRating(product.getProduct().getId(),localData.getUserId());
             // Vérifie si l'utilisateur à voté avec l'appel API
             //S'il a voté : dans la fonction getUserRating --> isSuccessful ok et les champs seront caché ( car de base ils sont cachés)
             //S'il n'a pas voté :dans la fonction getUserRating --> isSuccessful pas ok / error 400 bad request  et les champs seront affichés
@@ -105,8 +106,12 @@ public class ProductDetailsFragment extends Fragment {
         binding.productName.setText(product.getProduct().getName());
         binding.productDesc.setText(product.getProduct().getDescription());
 
+        mViewModel.getProductAverage(product.getProduct().getId());
         Observer<Float> o = value -> {
-            binding.textStars.setText("Note: " + value +" ⭐");
+            if (binding != null)
+            {
+                binding.textStars.setText("Note: " + value +" ⭐");
+            }
         };
         mViewModel.getAverageLiveData().observe(getActivity(), o);
 
