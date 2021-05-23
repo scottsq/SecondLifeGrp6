@@ -122,7 +122,6 @@ public class MyProductsRecyclerViewAdapter extends RecyclerView.Adapter<MyProduc
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.v("test log","test fail log");
             }
         };
     }

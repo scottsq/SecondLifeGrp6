@@ -89,8 +89,6 @@ public class ProductDetailsFragment extends Fragment {
 
             binding.btnBuy.setVisibility(View.VISIBLE);
         }
-        Log.d("product", product.getProduct().getName());
-
 
         return view;
     }
@@ -130,8 +128,6 @@ public class ProductDetailsFragment extends Fragment {
         Button rateButton = binding.rateButton;
 
         rateButton.setOnClickListener(arg0 -> {
-            Log.v("test rating" , String.format("userId: [%d], productId: [%d], rating: [%f]", localData.getUserId(), product.getProduct().getId(), ratingbar.getRating()));
-
             User user = new User();
             user.setId(localData.getUserId());
 

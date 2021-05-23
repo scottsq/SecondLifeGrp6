@@ -53,15 +53,12 @@ public class HomeViewModel extends ViewModel {
         return new Callback<List<ProductWithPhoto>>() {
             @Override
             public void onResponse(Call<List<ProductWithPhoto>> call, Response<List<ProductWithPhoto>> response) {
-                Log.w("alalalal", new Gson().toJson(response.body()));
                 productsLiveData.setValue(response.body());
                 isFetchingData = false;
             }
 
             @Override
             public void onFailure(Call<List<ProductWithPhoto>> call, Throwable t) {
-                // Log error here since request failed
-                Log.i("alalalal","alalalal2");
                 t.printStackTrace();
                 productsLiveData.setValue(new ArrayList<>());
                 isFetchingData = false;

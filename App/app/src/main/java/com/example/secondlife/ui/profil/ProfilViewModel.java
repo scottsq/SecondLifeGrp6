@@ -37,14 +37,12 @@ public class ProfilViewModel extends ViewModel {
         return new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                Log.v("TESTT", "response.body()");
                 mUserLiveData.setValue(response.body().get(0));
 
             }
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
-                Log.i("test","fail");
                 t.printStackTrace();
             }
         };
@@ -54,14 +52,12 @@ public class ProfilViewModel extends ViewModel {
         return new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
-                Log.v("TESTT", "response.body()");
                 mUserLiveData.setValue(response.body());
 
             }
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                Log.i("test","fail");
                 t.printStackTrace();
             }
         };
