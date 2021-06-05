@@ -47,7 +47,7 @@ public class LocalData extends Application {
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                 .create();
         return new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:61169/api/")
+                .baseUrl("https://slg6.azurewebsites.net/api/")
                 .client(OkHttpClass.getUnsafeOkHttpClient())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
