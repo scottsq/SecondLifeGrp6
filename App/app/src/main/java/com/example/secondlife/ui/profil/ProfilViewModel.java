@@ -30,7 +30,22 @@ public class ProfilViewModel extends ViewModel {
     }
 
     private void getApiUser() {
-        mApiService.getUser(mLocalData.getToken(), mLocalData.getUserId()).enqueue(patchUser());
+        mApiService.getUser(mLocalData.getToken(), mLocalData.getUserId(), null,null,null,null,false,0,10).enqueue(getUser());
+    }
+
+    private Callback<List<User>> getUser() {
+        return new Callback<List<User>>() {
+            @Override
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                mUserLiveData.setValue(response.body().get(0));
+
+            }
+
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        };
     }
 
     private Callback<User> patchUser() {
@@ -43,7 +58,6 @@ public class ProfilViewModel extends ViewModel {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                Log.i("test","fail");
                 t.printStackTrace();
             }
         };

@@ -64,8 +64,6 @@ public class LoginViewModel extends ViewModel {
                 // TODO: change to false
                 isConnected.setValue(true);
 
-                // Log error here since request failed
-                Log.i("test","fail");
                 t.printStackTrace();
             }
         };

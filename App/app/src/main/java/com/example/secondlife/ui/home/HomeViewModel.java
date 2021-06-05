@@ -45,7 +45,7 @@ public class HomeViewModel extends ViewModel {
         if (products != null) products.clear();
         isFetchingData = true;
         ProductService apiServiceProduct = mRetrofit.create(ProductService.class);
-        if (keys.equals("")) keys = null;
+        if (keys != null && keys.equals("")) keys = null;
         apiServiceProduct.findProductsWithPhoto(-1,-1,keys,null,"CreationDate",true,0,10).enqueue(getProductListResponse());
     }
 
@@ -53,15 +53,12 @@ public class HomeViewModel extends ViewModel {
         return new Callback<List<ProductWithPhoto>>() {
             @Override
             public void onResponse(Call<List<ProductWithPhoto>> call, Response<List<ProductWithPhoto>> response) {
-                Log.w("alalalal", new Gson().toJson(response.body()));
                 productsLiveData.setValue(response.body());
                 isFetchingData = false;
             }
 
             @Override
             public void onFailure(Call<List<ProductWithPhoto>> call, Throwable t) {
-                // Log error here since request failed
-                Log.i("alalalal","alalalal2");
                 t.printStackTrace();
                 productsLiveData.setValue(new ArrayList<>());
                 isFetchingData = false;

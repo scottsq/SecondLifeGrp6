@@ -17,11 +17,19 @@ import retrofit2.http.Query;
 
 public interface ProductService {
 
-    @GET("product?id={id}&userId={userId}&keys={keys}&date={date}&orderby={orderBy}&reverse={reverse}&from={from}&max={max}")
-    Call<List<Product>> findProducts(@Path("id") int id, @Path("userId") int userId, @Path("keys") String keys, @Path("date") String date, @Path("orderBy") String orderBy, @Path("reverse") boolean reverse, @Path("from") int from, @Path("max") int max);
 
-    @GET("product/withphotos?id={id}&userId={userId}&keys={keys}&date={date}&orderby={orderBy}&reverse={reverse}&from={from}&max={max}")
-    Call<List<ProductWithPhoto>> findProductsWithPhoto(@Path("id") int id, @Path("userId") int userId, @Path("keys") String keys, @Path("date") String date, @Path("orderBy") String orderBy, @Path("reverse") boolean reverse, @Path("from") int from, @Path("max") int max);
+    @GET("product")
+    Call<List<Product>> findProducts(@Query("id") int id, @Query("userId") int userId, @Query("keys") String keys, @Query("date") String date, @Query("orderBy") String orderBy, @Query("reverse") boolean reverse, @Query("from") int from, @Query("max") int max);
+
+    @GET("product/withphotos")
+    Call<List<ProductWithPhoto>> findProductsWithPhoto(@Query("id") int id, @Query("userId") int userId, @Query("keys") String keys, @Query("date") String date, @Query("orderBy") String orderBy, @Query("reverse") boolean reverse, @Query("from") int from, @Query("max") int max);
+
+
+//    @GET("product?id={id}&userId={userId}&keys={keys}&date={date}&orderby={orderBy}&reverse={reverse}&from={from}&max={max}")
+//    Call<List<Product>> findProducts(@Query("id") int id, @Query("userId") int userId, @Query("keys") String keys, @Query("date") String date, @Query("orderBy") String orderBy, @Query("reverse") boolean reverse, @Query("from") int from, @Query("max") int max);
+//
+//    @GET("product/withphotos?id={id}&userId={userId}&keys={keys}&date={date}&orderby={orderBy}&reverse={reverse}&from={from}&max={max}")
+//    Call<List<ProductWithPhoto>> findProductsWithPhoto(@Query("id") int id, @Query("userId") int userId, @Query("keys") String keys, @Query("date") String date, @Query("orderBy") String orderBy, @Query("reverse") boolean reverse, @Query("from") int from, @Query("max") int max);
 
     /*@GET("product/{id}")
     Call<Product> getProduct(@Path("id") int id);

@@ -73,11 +73,12 @@ public class ProductDetailsFragment extends Fragment {
         initProductInfo();
 
         if (localData.getUserId() > -1) {
+            mViewModel.getUserRating(product.getProduct().getId(),localData.getUserId());
             // Vérifie si l'utilisateur à voté avec l'appel API
             //S'il a voté : dans la fonction getUserRating --> isSuccessful ok et les champs seront caché ( car de base ils sont cachés)
             //S'il n'a pas voté :dans la fonction getUserRating --> isSuccessful pas ok / error 400 bad request  et les champs seront affichés
             Observer<ProductRating> o = productRating -> {
-                if (productRating != null) return;
+                if (productRating != null || binding == null) return;
                 binding.ratingBar.setVisibility(View.VISIBLE);
                 binding.rateButton.setVisibility(View.VISIBLE);
                 binding.textRatingBar.setVisibility(View.VISIBLE);
@@ -88,8 +89,6 @@ public class ProductDetailsFragment extends Fragment {
 
             binding.btnBuy.setVisibility(View.VISIBLE);
         }
-        Log.d("product", product.getProduct().getName());
-
 
         return view;
     }
@@ -105,8 +104,12 @@ public class ProductDetailsFragment extends Fragment {
         binding.productName.setText(product.getProduct().getName());
         binding.productDesc.setText(product.getProduct().getDescription());
 
+        mViewModel.getProductAverage(product.getProduct().getId());
         Observer<Float> o = value -> {
-            binding.textStars.setText("Note: " + value +" ⭐");
+            if (binding != null)
+            {
+                binding.textStars.setText("Note: " + value +" ⭐");
+            }
         };
         mViewModel.getAverageLiveData().observe(getActivity(), o);
 
@@ -125,8 +128,6 @@ public class ProductDetailsFragment extends Fragment {
         Button rateButton = binding.rateButton;
 
         rateButton.setOnClickListener(arg0 -> {
-            Log.v("test rating" , String.format("userId: [%d], productId: [%d], rating: [%f]", localData.getUserId(), product.getProduct().getId(), ratingbar.getRating()));
-
             User user = new User();
             user.setId(localData.getUserId());
 
