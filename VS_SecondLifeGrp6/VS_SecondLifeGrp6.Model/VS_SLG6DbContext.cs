@@ -22,7 +22,7 @@ namespace VS_SLG6.Model
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql("server=localhost;port=3306;database=slg6;uid=slg;password=slg;TreatTinyAsBoolean=false");
+                optionsBuilder.UseMySql("server=j5zntocs2dn6c3fj.chr7pe7iynqr.eu-west-1.rds.amazonaws.com;port=3306;database=cn9t75q26l1rxt3u;uid=dmgvbxe88p399tes;password=m58y72f7j44ka7zp;TreatTinyAsBoolean=false");
             }
             base.OnConfiguring(optionsBuilder);
         }
