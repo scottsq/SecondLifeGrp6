@@ -49,6 +49,7 @@ namespace VS_SecondLifeGrp6
             InjectRepositories(services);
             services.AddDbContextPool<VS_SLG6DbContext>(x => x.UseMySql(Configuration.GetConnectionString("Slg6_PROD")));
 
+
             var appsettingsRead = Configuration.GetSection("AppSettings");
             services.Configure<AppSettings>(appsettingsRead);
             var settings = appsettingsRead.Get<AppSettings>();
